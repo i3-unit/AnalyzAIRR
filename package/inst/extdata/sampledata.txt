@@ -1,0 +1,9 @@
+sample	cell_subset	sex
+tripod-30-813	amTreg	F
+tripod-30-815	nTreg	F
+tripod-31-846	amTreg	M
+tripod-31-848	nTreg	M
+tripod-35-970	amTreg	F
+tripod-35-972	nTreg	F
+tripod-36-1003	nTreg	M
+tripod-36-1005	amTreg	M
