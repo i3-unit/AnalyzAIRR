@@ -37,10 +37,4 @@ pert <- perturbationScore(RepSeqData,
                                          "tripod-31-846_R1"),
                           distance = "manhattan")
 
-pert2 <- perturbationScore(RepSeqData,
-                          ctrl.names = c("tripod-30-813_R1",
-                                         "tripod-30-815_R1",
-                                         "tripod-31-846_R1"),
-                          distance = "euclidean")
-
 }

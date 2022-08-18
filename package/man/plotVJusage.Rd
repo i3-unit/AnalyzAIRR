@@ -39,19 +39,5 @@ snames <- rownames(mData(RepSeqData))
 
 plotVJusage(x = RepSeqData, sampleName = NULL, scale = "count", level="clone", prop=1)
 
-plotVJusage(x = RepSeqData, sampleName = NULL, scale = "count", level="clonotype", prop=0.1)
-
-plotVJusage(x = RepSeqData, sampleName = NULL, scale = "frequency", level="clone", prop=0)
-
-plotVJusage(x = RepSeqData, sampleName = NULL, scale = "frequency", level="clonotype")
-
-plotVJusage(x = RepSeqData, sampleName = snames[1], scale = "frequency", level="clone")
-
-plotVJusage(x = RepSeqData, sampleName = snames[1], scale = "frequency", level="clonotype", prop=0)
-
-plotVJusage(x = RepSeqData, sampleName = snames[2], scale = "count", level="clone", prop=0.05)
-
-plotVJusage(x = RepSeqData, sampleName = snames[2], scale = "frequency", level="clonotype")
-
 
 }

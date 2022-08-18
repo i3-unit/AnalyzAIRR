@@ -41,34 +41,5 @@ dds1 <- diffExpGroup(x = RepSeqData,
                     level = "V",
                     group = c("cell_subset", "amTreg", "nTreg"))
 
-dds2 <- diffExpGroup(x = RepSeqData,
-                    colGrp = "cell_subset" ,
-                    level = "J",
-                    group = c("cell_subset", "amTreg", "nTreg"))
-
-dds3 <- diffExpGroup(x = RepSeqData,
-                    colGrp = "cell_subset" ,
-                    level = "VJ",
-                    group = c("cell_subset", "amTreg", "nTreg"))
-
-dds4 <- diffExpGroup(x = RepSeqData,
-                    colGrp = "cell_subset" ,
-                    level = "clone",
-                    group = c("cell_subset", "amTreg", "nTreg"))
-
-dds5 <- diffExpGroup(x = RepSeqData,
-                    colGrp = "cell_subset" ,
-                    level = "clonotype",
-                    group = c("cell_subset", "amTreg", "nTreg"))
-
-dds6 <- diffExpGroup(x = RepSeqData,
-                    colGrp = "cell_subset" ,
-                    level = "CDR3nt",
-                    group = c("cell_subset", "amTreg", "nTreg"))
-dds7 <- diffExpGroup(x = RepSeqData,
-                    colGrp = "cell_subset" ,
-                    level = "CDR3aa",
-                    group = c("cell_subset", "amTreg", "nTreg"))
-
 
 }

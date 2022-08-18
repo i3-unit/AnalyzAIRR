@@ -48,18 +48,6 @@ data(RepSeqData)
 
 plotDiversity(x = RepSeqData, level = "V", groupBy = "sex", index="shannon")
 
-plotDiversity(x = RepSeqData, level = "J", groupBy = "cell_subset", index="shannon")
-
-plotDiversity(x = RepSeqData, level = "VJ", groupBy = "sex", index="shannon")
-
 plotDiversity(x = RepSeqData, level = "clone", groupBy = "cell_subset", index="simpson")
-
-plotDiversity(x = RepSeqData, level = "clonotype", groupBy = "sex", index="gini")
-
-plotDiversity(x = RepSeqData, level = "CDR3nt", groupBy = "cell_subset", index="iChao")
-
-plotDiversity(x = RepSeqData, level = "CDR3aa", groupBy = "sex", index="chao1")
-
-plotDiversity(x = RepSeqData, level = "J", groupBy = "sex", index="invsimpson")
 
 }

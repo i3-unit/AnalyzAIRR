@@ -26,30 +26,6 @@ utils::globalVariables(c("J", ".", "..sNames", "sdata", "metaData", ".SD", ".SDc
 #'                                   group=c("sex", "F"),
 #'                                   scale="count")
 #'
-#' level_statistics <- countFeatures(x = RepSeqData,
-#'                                   level = "VJ",
-#'                                   group=c("cell_subset", "amTreg"),
-#'                                   scale="frequency")
-#'
-#' level_statistics <- countFeatures(x = RepSeqData,
-#'                                   level = "clone",
-#'                                   group=c("sex", "M"),
-#'                                   scale="count")
-#'
-#' level_statistics <- countFeatures(x = RepSeqData,
-#'                                   level = "clonotype",
-#'                                   group=c("cell_subset", "amTreg"),
-#'                                   scale="frequency")
-#'
-#' level_statistics <- countFeatures(x = RepSeqData,
-#'                                   level = "CDR3nt",
-#'                                   group=c("sex", "F"),
-#'                                   scale="count")
-#'
-#' level_statistics <- countFeatures(x = RepSeqData,
-#'                                   level = "CDR3aa",
-#'                                   group=c("cell_subset", "amTreg"),
-#'                                   scale="frequency")
 #'
 #'
 countFeatures <- function(x,
@@ -117,10 +93,6 @@ countFeatures <- function(x,
 #'
 #' filterdata <- filterCount(x=RepSeqData, n=1, level = "clonotype", group=NULL)
 #'
-#' filterdata <- filterCount(x=RepSeqData, n=2, level = "CDR3nt", group=c("cell_subset", "nTreg"))
-#'
-#' filterdata <- filterCount(x=RepSeqData, n=3, level = "CDR3aa", group=c("sex", "F"))
-#'
 filterCount <- function(x, level=c("clone","clonotype","CDR3aa","CDR3nt"), n=1, group=NULL) {
     V1 <- NULL
     if (missing(x)) stop("x is missing.")
@@ -182,10 +154,6 @@ filterCount <- function(x, level=c("clone","clonotype","CDR3aa","CDR3nt"), n=1, 
 #' privateclones <- getPrivate(RepSeqData, level = "clone", singletons = TRUE)
 #'
 #' privateclonotypes <- getPrivate(RepSeqData, level = "clonotype", singletons = FALSE)
-#'
-#' privateCDR3nt <- getPrivate(RepSeqData, level = "CDR3nt", singletons = TRUE)
-#'
-#' privateCDR3aa <- getPrivate(RepSeqData, level = "CDR3aa", singletons = FALSE)
 #'
 getPrivate <- function(x,  level=c("clone","clonotype","CDR3aa","CDR3nt"), singletons=FALSE) {
     V1 <- NULL
@@ -249,7 +217,7 @@ getPrivate <- function(x,  level=c("clone","clonotype","CDR3aa","CDR3nt"), singl
 #' publicSeq <- getPublic(x = RepSeqData,
 #'                              level = "clone",
 #'                              group = c("cell_subset", "amTreg"))
-
+#'
 getPublic <- function(x, level=c("clone","clonotype","CDR3aa","CDR3nt"),
                         group = NULL) {
   V1 <- NULL
@@ -308,7 +276,7 @@ getPublic <- function(x, level=c("clone","clonotype","CDR3aa","CDR3nt"),
 #'                           level = "clone",
 #'                           group = c("cell_subset", "amTreg"))
 #'
-
+#'
 getTopSequences <- function(x, level=c("clone","clonotype","CDR3aa","CDR3nt"),
                          group = NULL, prop=0) {
   V1 <- NULL

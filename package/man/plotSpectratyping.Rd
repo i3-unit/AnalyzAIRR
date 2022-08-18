@@ -36,15 +36,10 @@ The strategy can be applied using the \code{\link{perturbationScore}} function.
 
 data(RepSeqData)
 snames <- rownames(mData(RepSeqData))
+
 plotSpectratyping(x = RepSeqData, sampleName = NULL, scale = "count", prop=1)
 
 plotSpectratyping(x = RepSeqData, sampleName = NULL, scale = "frequency", prop=0)
-
-plotSpectratyping(x = RepSeqData, sampleName = snames[1], scale = "count", prop=0.1)
-
-plotSpectratyping(x = RepSeqData, sampleName = snames[1], scale = "frequency")
-
-
 
 }
 \seealso{

@@ -106,16 +106,16 @@ if(.Platform$OS.type == "windows"){
 }
 
 ##### check #####
-# devtools::check("./package", cran = FALSE)
-# 
-# if(.Platform$OS.type == "windows"){
-# 	zipfile = list.files("./package.zip/", pattern = "*.zip", full.names = TRUE)
-# } else {
-# 	zipfile = list.files("./package.tar.gz/", pattern = "*.gz", full.names = TRUE)
-# }
-# 
-# BiocCheck::BiocCheck(zipfile[1], "no-check-vignettes" = TRUE)
-# BiocCheck::BiocCheck(zipfile[2], "no-check-vignettes" = TRUE)
+devtools::check("./package", cran = FALSE)
+
+if(.Platform$OS.type == "windows"){
+	zipfile = list.files("./package.zip/", pattern = "*.zip", full.names = TRUE)
+} else {
+	zipfile = list.files("./package.tar.gz/", pattern = "*.gz", full.names = TRUE)
+}
+
+BiocCheck::BiocCheck(zipfile[1], "no-check-vignettes" = TRUE)
+BiocCheck::BiocCheck(zipfile[2], "no-check-vignettes" = TRUE)
 
 ###### install package #####
 detach("package:AnalyzAIRR", unload = TRUE)

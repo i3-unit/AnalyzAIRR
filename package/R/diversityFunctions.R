@@ -29,18 +29,6 @@ utils::globalVariables(c("ranks", "exp_shannon"))
 #' data(RepSeqData)
 #' diversityIndices(RepSeqData, level="V")
 #'
-#' diversityIndices(RepSeqData, level="J")
-#'
-#' diversityIndices(RepSeqData, level="VJ")
-#'
-#' diversityIndices(RepSeqData, level="clone")
-#'
-#' diversityIndices(RepSeqData, level="clonotype")
-#'
-#' diversityIndices(RepSeqData, level="CDR3nt")
-#'
-#' diversityIndices(RepSeqData, level="CDR3aa")
-#'
 diversityIndices <- function(x,  level = c("clone","clonotype", "V", "J", "VJ", "CDR3nt","CDR3aa")) {
     if (missing(x)) stop("x is missing. An object of class RepSeqExperiment is expected.")
     if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected.")
@@ -99,8 +87,6 @@ diversityIndices <- function(x,  level = c("clone","clonotype", "V", "J", "VJ", 
 #' divLevel(x = RepSeqData, index = "shannon", level = "V", norm = TRUE)
 #'
 #' divLevel(x = RepSeqData, index = "simpson", level = "J", norm = FALSE)
-#'
-#' divLevel(x = RepSeqData, index = "invsimpson", level = "VJ", norm = FALSE)
 #'
 divLevel <- function(x, index = c("shannon", "simpson", "invsimpson"), level = c("VJ", "V", "J"), norm = TRUE, base = exp(1)) {
     if (missing(x)) stop("x is missing.")
@@ -166,14 +152,6 @@ divLevel <- function(x, index = c("shannon", "simpson", "invsimpson"), level = c
 #' data(RepSeqData)
 #'
 #' renyiIndex(RepSeqData, level = "V", alpha = 1)
-#'
-#' renyiIndex(RepSeqData, level = "J", alpha = 2)
-#'
-#' renyiIndex(RepSeqData, level = "VJ", alpha = 16)
-#'
-#' renyiIndex(RepSeqData, level = "clone", alpha = 32)
-#'
-#' renyiIndex(RepSeqData, level = "clonotype", alpha = 8)
 #'
 renyiIndex <- function(x, alpha = c(0, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, Inf),  level = c("clone","clonotype", "V", "J", "VJ", "CDR3nt","CDR3aa")) {
     if (missing(x)) stop("x is missing.")

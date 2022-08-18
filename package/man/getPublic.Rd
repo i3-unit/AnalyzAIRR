@@ -34,4 +34,5 @@ data(RepSeqData)
 publicSeq <- getPublic(x = RepSeqData,
                              level = "clone",
                              group = c("cell_subset", "amTreg"))
+
 }

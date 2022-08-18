@@ -41,16 +41,4 @@ The calculated indices are the following:
 data(RepSeqData)
 diversityIndices(RepSeqData, level="V")
 
-diversityIndices(RepSeqData, level="J")
-
-diversityIndices(RepSeqData, level="VJ")
-
-diversityIndices(RepSeqData, level="clone")
-
-diversityIndices(RepSeqData, level="clonotype")
-
-diversityIndices(RepSeqData, level="CDR3nt")
-
-diversityIndices(RepSeqData, level="CDR3aa")
-
 }

@@ -49,16 +49,4 @@ data(RepSeqData)
 
 plotStatistics(x = RepSeqData, groupBy = "sex", stat = "V")
 
-plotStatistics(x = RepSeqData, groupBy = "cell_subset", stat = "J")
-
-plotStatistics(x = RepSeqData, groupBy = "sex", stat = "VJ")
-
-plotStatistics(x = RepSeqData, groupBy = "cell_subset", stat = "clone")
-
-plotStatistics(x = RepSeqData, groupBy = "sex", stat = "clonotype")
-
-plotStatistics(x = RepSeqData, groupBy = "cell_subset", stat = "CDR3nt")
-
-plotStatistics(x = RepSeqData, groupBy = "sex", stat = "nSequences")
-
 }

@@ -35,13 +35,9 @@ For instance, the most frequent sequence is attributed a rank of 1, and its rela
 
 data("RepSeqData")
 
-plotRankDistrib(x = RepSeqData, level="CDR3nt", colorBy = "cell_subset", scale = "count")
-
 plotRankDistrib(x = RepSeqData, level="clone",colorBy = "sex", scale = "count")
 
 plotRankDistrib(x = RepSeqData,level="clonotype", colorBy = "cell_subset", scale = "frequency")
-
-plotRankDistrib(x = RepSeqData, level="CDR3aa", colorBy = "sex", scale = "frequency")
 
 
 }

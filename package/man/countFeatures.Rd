@@ -40,30 +40,6 @@ level_statistics <- countFeatures(x = RepSeqData,
                                   group=c("sex", "F"),
                                   scale="count")
 
-level_statistics <- countFeatures(x = RepSeqData,
-                                  level = "VJ",
-                                  group=c("cell_subset", "amTreg"),
-                                  scale="frequency")
-
-level_statistics <- countFeatures(x = RepSeqData,
-                                  level = "clone",
-                                  group=c("sex", "M"),
-                                  scale="count")
-
-level_statistics <- countFeatures(x = RepSeqData,
-                                  level = "clonotype",
-                                  group=c("cell_subset", "amTreg"),
-                                  scale="frequency")
-
-level_statistics <- countFeatures(x = RepSeqData,
-                                  level = "CDR3nt",
-                                  group=c("sex", "F"),
-                                  scale="count")
-
-level_statistics <- countFeatures(x = RepSeqData,
-                                  level = "CDR3aa",
-                                  group=c("cell_subset", "amTreg"),
-                                  scale="frequency")
 
 
 }

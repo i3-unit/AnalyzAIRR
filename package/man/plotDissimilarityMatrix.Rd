@@ -50,18 +50,4 @@ data(RepSeqData)
 
 plotDissimilarityMatrix(x = RepSeqData, level = "V", method = "euclidean")
 
-plotDissimilarityMatrix(x = RepSeqData, level = "J", method = "euclidean")
-
-plotDissimilarityMatrix(x = RepSeqData, level = "VJ", method = "euclidean")
-
-plotDissimilarityMatrix(x = RepSeqData, level = "clone", method = "euclidean")
-
-plotDissimilarityMatrix(x = RepSeqData, level = "clonotype", method = "euclidean")
-
-plotDissimilarityMatrix(x = RepSeqData, level = "CDR3nt", method = "euclidean")
-
-plotDissimilarityMatrix(x = RepSeqData, level = "CDR3aa", method = "euclidean")
-
-plotDissimilarityMatrix(x = RepSeqData, level = "J", method = "manhattan")
-
 }

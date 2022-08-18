@@ -39,32 +39,4 @@ plotVolcano(x = RepSeqData,
             FC.TH = 1,
             PV.TH = 0.05)
 
-plotVolcano(x = RepSeqData,
-            level = "J",
-            group = c("sex", "F", "M"),
-            top = 10,
-            FC.TH = 1,
-            PV.TH = 0.05)
-
-plotVolcano(x = RepSeqData,
-            level = "VJ",
-            group = c("cell_subset", "amTreg", "nTreg"),
-            top = 10,
-            FC.TH = 1,
-            PV.TH = 0.05)
-
-plotVolcano(x = RepSeqData,
-            level = "clone",
-            group = c("sex", "F", "M"),
-            top = 10,
-            FC.TH = 1,
-            PV.TH = 0.05)
-
-plotVolcano(x = RepSeqData,
-            level = "clonotype",
-            group = c("sex", "F", "M"),
-            top = 10,
-            FC.TH = 1,
-            PV.TH = 0.05)
-
 }

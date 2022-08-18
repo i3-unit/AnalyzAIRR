@@ -31,8 +31,4 @@ privateclones <- getPrivate(RepSeqData, level = "clone", singletons = TRUE)
 
 privateclonotypes <- getPrivate(RepSeqData, level = "clonotype", singletons = FALSE)
 
-privateCDR3nt <- getPrivate(RepSeqData, level = "CDR3nt", singletons = TRUE)
-
-privateCDR3aa <- getPrivate(RepSeqData, level = "CDR3aa", singletons = FALSE)
-
 }

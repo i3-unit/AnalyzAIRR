@@ -22,20 +22,6 @@ utils::globalVariables(c("..adj.rr.label..", "Group", "group", "method", "ste", 
 #'
 #' plotVJusage(x = RepSeqData, sampleName = NULL, scale = "count", level="clone", prop=1)
 #'
-#' plotVJusage(x = RepSeqData, sampleName = NULL, scale = "count", level="clonotype", prop=0.1)
-#'
-#' plotVJusage(x = RepSeqData, sampleName = NULL, scale = "frequency", level="clone", prop=0)
-#'
-#' plotVJusage(x = RepSeqData, sampleName = NULL, scale = "frequency", level="clonotype")
-#'
-#' plotVJusage(x = RepSeqData, sampleName = snames[1], scale = "frequency", level="clone")
-#'
-#' plotVJusage(x = RepSeqData, sampleName = snames[1], scale = "frequency", level="clonotype", prop=0)
-#'
-#' plotVJusage(x = RepSeqData, sampleName = snames[2], scale = "count", level="clone", prop=0.05)
-#'
-#' plotVJusage(x = RepSeqData, sampleName = snames[2], scale = "frequency", level="clonotype")
-#'
 #'
 #' @export
 #'
@@ -115,15 +101,10 @@ plotVJusage <- function(x, sampleName = NULL, scale = c("count", "frequency"),
 #'
 #' data(RepSeqData)
 #' snames <- rownames(mData(RepSeqData))
+#' 
 #' plotSpectratyping(x = RepSeqData, sampleName = NULL, scale = "count", prop=1)
 #'
 #' plotSpectratyping(x = RepSeqData, sampleName = NULL, scale = "frequency", prop=0)
-#'
-#' plotSpectratyping(x = RepSeqData, sampleName = snames[1], scale = "count", prop=0.1)
-#'
-#' plotSpectratyping(x = RepSeqData, sampleName = snames[1], scale = "frequency")
-#'
-#'
 #'
 plotSpectratyping <- function(x, sampleName = NULL,
                               scale = c("count", "frequency"),
@@ -203,18 +184,6 @@ plotSpectratyping <- function(x, sampleName = NULL,
 #' plotRenyiIndex(x = RepSeqData, level = "V", colorBy = "sex")
 #'
 #' plotRenyiIndex(x = RepSeqData, level = "J", colorBy = "sex", grouped=TRUE)
-#'
-#' plotRenyiIndex(x = RepSeqData, level = "VJ", colorBy = "sex")
-#'
-#' plotRenyiIndex(x = RepSeqData, level = "clone", colorBy = "sex")
-#'
-#' plotRenyiIndex(x = RepSeqData, level = "clonotype", colorBy = "sex",grouped=FALSE)
-#'
-#' plotRenyiIndex(x = RepSeqData, level = "CDR3nt", colorBy = "sex")
-#'
-#' plotRenyiIndex(x = RepSeqData, level = "CDR3aa", colorBy = "sex")
-#'
-#' plotRenyiIndex(x = RepSeqData, level = "V", colorBy = "cell_subset", grouped=TRUE)
 #'
 #'
 plotRenyiIndex <- function(x, alpha = c(0, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, Inf),
@@ -347,7 +316,7 @@ plotIndGeneUsage <- function(x,  sampleName = NULL, level = c("V", "J"), scale =
 #'
 #' plotGeneUsage(x = RepSeqData, level = "V",  scale = "frequency", groupBy="sex")
 #'
-
+#'
 plotGeneUsage <- function(x, level = c("V", "J"), scale = c("count", "frequency"), 
                              groupBy = NULL,label_colors = NULL) {
   frequency <- NULL
@@ -499,11 +468,7 @@ plotIndCountIntervals <- function(x, sampleName = NULL, level = c("clone","clono
 #'
 #' plotSpectratypingV(x = RepSeqData, sampleName = snames[1], scale = "frequency")
 #'
-#' plotSpectratypingV(x = RepSeqData, sampleName = NULL, scale = "count", prop=0.01)
 #'
-#' plotSpectratypingV(x = RepSeqData, sampleName = NULL, scale = "frequency")
-#'
-
 plotSpectratypingV <- function(x, sampleName = NULL, scale = c("count", "frequency"),
                                prop=0) {
   if (missing(x)) stop("x is missing.")
@@ -591,20 +556,6 @@ plotSpectratypingV <- function(x, sampleName = NULL, scale = c("count", "frequen
 #'
 #' plotDissimilarityMatrix(x = RepSeqData, level = "V", method = "euclidean")
 #'
-#' plotDissimilarityMatrix(x = RepSeqData, level = "J", method = "euclidean")
-#'
-#' plotDissimilarityMatrix(x = RepSeqData, level = "VJ", method = "euclidean")
-#'
-#' plotDissimilarityMatrix(x = RepSeqData, level = "clone", method = "euclidean")
-#'
-#' plotDissimilarityMatrix(x = RepSeqData, level = "clonotype", method = "euclidean")
-#'
-#' plotDissimilarityMatrix(x = RepSeqData, level = "CDR3nt", method = "euclidean")
-#'
-#' plotDissimilarityMatrix(x = RepSeqData, level = "CDR3aa", method = "euclidean")
-#'
-#' plotDissimilarityMatrix(x = RepSeqData, level = "J", method = "manhattan")
-#'
 plotDissimilarityMatrix <- function(x, level = c("clone","clonotype", "V", "J", "VJ", "CDR3nt","CDR3aa"),
                                     method = c("manhattan", "euclidean", "canberra", "clark", "bray", "kulczynski",
                                                "jaccard", "gower", "altGower", "morisita", "horn", "mountford", "raup",
@@ -661,13 +612,9 @@ plotDissimilarityMatrix <- function(x, level = c("clone","clonotype", "V", "J", 
 #'
 #' data("RepSeqData")
 #'
-#' plotRankDistrib(x = RepSeqData, level="CDR3nt", colorBy = "cell_subset", scale = "count")
-#'
 #' plotRankDistrib(x = RepSeqData, level="clone",colorBy = "sex", scale = "count")
 #'
 #' plotRankDistrib(x = RepSeqData,level="clonotype", colorBy = "cell_subset", scale = "frequency")
-#'
-#' plotRankDistrib(x = RepSeqData, level="CDR3aa", colorBy = "sex", scale = "frequency")
 #'
 #'
 plotRankDistrib <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3aa"),
@@ -774,18 +721,6 @@ plotRankDistrib <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3aa")
 #' plotEulerr(x = RepSeqData, level = "V", sampleNames = snames)
 #'
 #' plotEulerr(x = RepSeqData, level = "J", sampleNames = NULL)
-#'
-#' plotEulerr(x = RepSeqData, level = "VJ", sampleNames = NULL)
-#'
-#' plotEulerr(x = RepSeqData, level = "clone", sampleNames = NULL)
-#'
-#' plotEulerr(x = RepSeqData, level = "clonotype", sampleNames = snames)
-#'
-#' plotEulerr(x = RepSeqData, level = "CDR3nt", sampleNames = NULL)
-#'
-#' plotEulerr(x = RepSeqData, level = "CDR3aa", sampleNames = NULL)
-#'
-#' plotEulerr(x = RepSeqData, level = "V", sampleNames = snames)
 #'
 plotEulerr <- function(x, level = c("clone","clonotype", "V", "J", "VJ", "CDR3nt","CDR3aa"), sampleNames = NULL) {
   ..sampleNames <- NULL
@@ -908,20 +843,8 @@ plotScatter <- function(x, sampleNames = NULL,
 #' data(RepSeqData)
 #'
 #' plotDiversity(x = RepSeqData, level = "V", groupBy = "sex", index="shannon")
-#'
-#' plotDiversity(x = RepSeqData, level = "J", groupBy = "cell_subset", index="shannon")
-#'
-#' plotDiversity(x = RepSeqData, level = "VJ", groupBy = "sex", index="shannon")
-#'
+#' 
 #' plotDiversity(x = RepSeqData, level = "clone", groupBy = "cell_subset", index="simpson")
-#'
-#' plotDiversity(x = RepSeqData, level = "clonotype", groupBy = "sex", index="gini")
-#'
-#' plotDiversity(x = RepSeqData, level = "CDR3nt", groupBy = "cell_subset", index="iChao")
-#'
-#' plotDiversity(x = RepSeqData, level = "CDR3aa", groupBy = "sex", index="chao1")
-#'
-#' plotDiversity(x = RepSeqData, level = "J", groupBy = "sex", index="invsimpson")
 #'
 plotDiversity <- function(x, index=c("chao1","shannon","simpson", "invsimpson","bergerparker", "gini","iChao"),
                           level = c("clone","clonotype", "V", "J", "VJ", "CDR3nt","CDR3aa"),
@@ -999,7 +922,7 @@ plotDiversity <- function(x, index=c("chao1","shannon","simpson", "invsimpson","
 #'
 #' plotRarefaction(x = RepSeqData, colorBy = "cell_subset")
 #'
-
+#'
 plotRarefaction <- function(x, colorBy=NULL, label_colors=NULL){
   if(is.null(colorBy)) stop("need to specify a group column from mData")
   raretab<- rarefactionTab(x)
@@ -1246,18 +1169,6 @@ plotCountIntervals <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3a
 #'
 #' plotStatistics(x = RepSeqData, groupBy = "sex", stat = "V")
 #'
-#' plotStatistics(x = RepSeqData, groupBy = "cell_subset", stat = "J")
-#'
-#' plotStatistics(x = RepSeqData, groupBy = "sex", stat = "VJ")
-#'
-#' plotStatistics(x = RepSeqData, groupBy = "cell_subset", stat = "clone")
-#'
-#' plotStatistics(x = RepSeqData, groupBy = "sex", stat = "clonotype")
-#'
-#' plotStatistics(x = RepSeqData, groupBy = "cell_subset", stat = "CDR3nt")
-#'
-#' plotStatistics(x = RepSeqData, groupBy = "sex", stat = "nSequences")
-#'
 plotStatistics <- function(x, stat = c("nSequences", "clone", "clonotype","V", "J","VJ", "CDR3aa", "CDR3nt"),
                            groupBy = NULL, label_colors = NULL){
   group <- NULL
@@ -1345,26 +1256,7 @@ plotStatistics <- function(x, stat = c("nSequences", "clone", "clonotype","V", "
 #'                       ctrl.names = c("tripod-30-813" ,"tripod-31-846"  ,"tripod-35-970"),
 #'                       distance = "manhattan",
 #'                       order="cell_subset")
-#'
-#' plotPerturbationScore(x = RepSeqData,
-#'                       ctrl.names = c("tripod-30-813" ,"tripod-31-846"  ,"tripod-35-970"),
-#'                       distance = "euclidean",
-#'                       order="cell_subset")
-#'
-#' plotPerturbationScore(x = RepSeqData,
-#'                       ctrl.names = c("tripod-30-813" ,"tripod-31-846"  ,"tripod-35-970"),
-#'                       distance = "canberra",
-#'                       order="cell_subset")
-#'
-#' plotPerturbationScore(x = RepSeqData,
-#'                       ctrl.names = c("tripod-30-813" ,"tripod-31-846"  ,"tripod-35-970"),
-#'                       distance = "minkowski",
-#'                       order="cell_subset")
-#'
-#' plotPerturbationScore(x = RepSeqData,
-#'                       ctrl.names = c("tripod-30-813" ,"tripod-31-846"  ,"tripod-35-970"),
-#'                       distance = "maximum",
-#'                       order="cell_subset")
+#'                       
 plotPerturbationScore <- function(x, ctrl.names=NULL,
                                   distance = c("manhattan", "euclidean", "canberra",
                                                "minkowski", "maximum"),
@@ -1417,34 +1309,6 @@ plotPerturbationScore <- function(x, ctrl.names=NULL,
 #' plotVolcano(x = RepSeqData,
 #'             level = "V",
 #'             group = c("cell_subset", "amTreg", "nTreg"),
-#'             top = 10,
-#'             FC.TH = 1,
-#'             PV.TH = 0.05)
-#'
-#' plotVolcano(x = RepSeqData,
-#'             level = "J",
-#'             group = c("sex", "F", "M"),
-#'             top = 10,
-#'             FC.TH = 1,
-#'             PV.TH = 0.05)
-#'
-#' plotVolcano(x = RepSeqData,
-#'             level = "VJ",
-#'             group = c("cell_subset", "amTreg", "nTreg"),
-#'             top = 10,
-#'             FC.TH = 1,
-#'             PV.TH = 0.05)
-#'
-#' plotVolcano(x = RepSeqData,
-#'             level = "clone",
-#'             group = c("sex", "F", "M"),
-#'             top = 10,
-#'             FC.TH = 1,
-#'             PV.TH = 0.05)
-#'
-#' plotVolcano(x = RepSeqData,
-#'             level = "clonotype",
-#'             group = c("sex", "F", "M"),
 #'             top = 10,
 #'             FC.TH = 1,
 #'             PV.TH = 0.05)
@@ -1534,39 +1398,6 @@ plotVolcano <- function(x,
 #'
 #' plotDimReduction(x = RepSeqData,
 #'                 level = "J",
-#'                 colorBy = "cell_subset",
-#'                 dim_method="PCA")
-#'
-#' plotDimReduction(x = RepSeqData,
-#'                  level = "VJ",
-#'                  method = "canberra",
-#'                  colorBy = "cell_subset",
-#'                  dim_method="MDS")
-#'
-#' plotDimReduction(x = RepSeqData,
-#'                 level = "clone",
-#'                 colorBy = "cell_subset",
-#'                 dim_method="PCA")
-#'
-#' plotDimReduction(x = RepSeqData,
-#'                  level = "clonotype",
-#'                  method = "manhattan",
-#'                  colorBy = "cell_subset",
-#'                  dim_method="MDS")
-#'
-#' plotDimReduction(x = RepSeqData,
-#'                 level = "CDR3nt",
-#'                 colorBy = "cell_subset",
-#'                 dim_method="PCA")
-#'
-#' plotDimReduction(x = RepSeqData,
-#'                  level = "CDR3aa",
-#'                  method = "bray",
-#'                  colorBy = "cell_subset",
-#'                  dim_method="MDS")
-#'
-#' plotDimReduction(x = RepSeqData,
-#'                 level = "VJ",
 #'                 colorBy = "cell_subset",
 #'                 dim_method="PCA")
 #'

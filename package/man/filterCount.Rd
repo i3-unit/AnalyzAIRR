@@ -35,8 +35,4 @@ filterdata <- filterCount(x=RepSeqData, n=1, level = "clone", group=c("cell_subs
 
 filterdata <- filterCount(x=RepSeqData, n=1, level = "clonotype", group=NULL)
 
-filterdata <- filterCount(x=RepSeqData, n=2, level = "CDR3nt", group=c("cell_subset", "nTreg"))
-
-filterdata <- filterCount(x=RepSeqData, n=3, level = "CDR3aa", group=c("sex", "F"))
-
 }

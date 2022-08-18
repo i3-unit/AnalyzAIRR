@@ -24,35 +24,6 @@ utils::globalVariables(c("Log2FC", "sdata"))
 #'                     level = "V",
 #'                     group = c("cell_subset", "amTreg", "nTreg"))
 #'
-#' dds2 <- diffExpGroup(x = RepSeqData,
-#'                     colGrp = "cell_subset" ,
-#'                     level = "J",
-#'                     group = c("cell_subset", "amTreg", "nTreg"))
-#'
-#' dds3 <- diffExpGroup(x = RepSeqData,
-#'                     colGrp = "cell_subset" ,
-#'                     level = "VJ",
-#'                     group = c("cell_subset", "amTreg", "nTreg"))
-#'
-#' dds4 <- diffExpGroup(x = RepSeqData,
-#'                     colGrp = "cell_subset" ,
-#'                     level = "clone",
-#'                     group = c("cell_subset", "amTreg", "nTreg"))
-#'
-#' dds5 <- diffExpGroup(x = RepSeqData,
-#'                     colGrp = "cell_subset" ,
-#'                     level = "clonotype",
-#'                     group = c("cell_subset", "amTreg", "nTreg"))
-#'
-#' dds6 <- diffExpGroup(x = RepSeqData,
-#'                     colGrp = "cell_subset" ,
-#'                     level = "CDR3nt",
-#'                     group = c("cell_subset", "amTreg", "nTreg"))
-#' dds7 <- diffExpGroup(x = RepSeqData,
-#'                     colGrp = "cell_subset" ,
-#'                     level = "CDR3aa",
-#'                     group = c("cell_subset", "amTreg", "nTreg"))
-#'
 #'
 diffExpGroup <- function(x, colGrp,
                          level = c("clone","clonotype", "V", "J", "VJ", "CDR3nt","CDR3aa"),
@@ -246,12 +217,6 @@ named.contr.sum <- function(x, ...) {
 #'                                          "tripod-31-846_R1"),
 #'                           distance = "manhattan")
 #'
-#' pert2 <- perturbationScore(RepSeqData,
-#'                           ctrl.names = c("tripod-30-813_R1",
-#'                                          "tripod-30-815_R1",
-#'                                          "tripod-31-846_R1"),
-#'                           distance = "euclidean")
-#'
 perturbationScore <- function(x, ctrl.names, distance = c("manhattan", "euclidean", "canberra", "minkowski" ,"maximum"), p = 2) {
     if (missing(x)) stop("x is missing, an object of class RepSeqExperiment is expected.")
     if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected.")
@@ -313,12 +278,6 @@ perturbationScore <- function(x, ctrl.names, distance = c("manhattan", "euclidea
 #'                               scale="frequency", 
 #'                               sampleNames = c("tripod-30-813_R1","tripod-30-815_R1"), 
 #'                               remove.zeros = FALSE)
-#'
-#' diff_expression <- diffExpInd(RepSeqData, 
-#'                               level="clone", 
-#'                               scale="frequency", 
-#'                               sampleNames = c("tripod-30-813_R1","tripod-30-815_R1"),
-#'                                remove.zeros = FALSE)
 #'
 diffExpInd <- function(x,  sampleNames = NULL, level = c("clone","clonotype", "V", "J", "VJ", "CDR3nt","CDR3aa"),
                     scale = c("frequency", "count"), th=1.5, remove.zeros=TRUE) {

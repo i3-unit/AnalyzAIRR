@@ -36,8 +36,5 @@ plotSpectratypingV(x = RepSeqData, sampleName = snames[1], scale = "count",prop=
 
 plotSpectratypingV(x = RepSeqData, sampleName = snames[1], scale = "frequency")
 
-plotSpectratypingV(x = RepSeqData, sampleName = NULL, scale = "count", prop=0.01)
-
-plotSpectratypingV(x = RepSeqData, sampleName = NULL, scale = "frequency")
 
 }

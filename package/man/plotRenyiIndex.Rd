@@ -44,17 +44,5 @@ plotRenyiIndex(x = RepSeqData, level = "V", colorBy = "sex")
 
 plotRenyiIndex(x = RepSeqData, level = "J", colorBy = "sex", grouped=TRUE)
 
-plotRenyiIndex(x = RepSeqData, level = "VJ", colorBy = "sex")
-
-plotRenyiIndex(x = RepSeqData, level = "clone", colorBy = "sex")
-
-plotRenyiIndex(x = RepSeqData, level = "clonotype", colorBy = "sex",grouped=FALSE)
-
-plotRenyiIndex(x = RepSeqData, level = "CDR3nt", colorBy = "sex")
-
-plotRenyiIndex(x = RepSeqData, level = "CDR3aa", colorBy = "sex")
-
-plotRenyiIndex(x = RepSeqData, level = "V", colorBy = "cell_subset", grouped=TRUE)
-
 
 }

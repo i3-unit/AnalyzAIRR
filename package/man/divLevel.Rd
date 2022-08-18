@@ -40,7 +40,5 @@ divLevel(x = RepSeqData, index = "shannon", level = "V", norm = TRUE)
 
 divLevel(x = RepSeqData, index = "simpson", level = "J", norm = FALSE)
 
-divLevel(x = RepSeqData, index = "invsimpson", level = "VJ", norm = FALSE)
-
 }
 \keyword{internal}

@@ -33,16 +33,4 @@ plotEulerr(x = RepSeqData, level = "V", sampleNames = snames)
 
 plotEulerr(x = RepSeqData, level = "J", sampleNames = NULL)
 
-plotEulerr(x = RepSeqData, level = "VJ", sampleNames = NULL)
-
-plotEulerr(x = RepSeqData, level = "clone", sampleNames = NULL)
-
-plotEulerr(x = RepSeqData, level = "clonotype", sampleNames = snames)
-
-plotEulerr(x = RepSeqData, level = "CDR3nt", sampleNames = NULL)
-
-plotEulerr(x = RepSeqData, level = "CDR3aa", sampleNames = NULL)
-
-plotEulerr(x = RepSeqData, level = "V", sampleNames = snames)
-
 }

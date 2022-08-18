@@ -37,12 +37,4 @@ data(RepSeqData)
 
 renyiIndex(RepSeqData, level = "V", alpha = 1)
 
-renyiIndex(RepSeqData, level = "J", alpha = 2)
-
-renyiIndex(RepSeqData, level = "VJ", alpha = 16)
-
-renyiIndex(RepSeqData, level = "clone", alpha = 32)
-
-renyiIndex(RepSeqData, level = "clonotype", alpha = 8)
-
 }

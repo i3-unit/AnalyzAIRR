@@ -56,37 +56,4 @@ plotDimReduction(x = RepSeqData,
                 colorBy = "cell_subset",
                 dim_method="PCA")
 
-plotDimReduction(x = RepSeqData,
-                 level = "VJ",
-                 method = "canberra",
-                 colorBy = "cell_subset",
-                 dim_method="MDS")
-
-plotDimReduction(x = RepSeqData,
-                level = "clone",
-                colorBy = "cell_subset",
-                dim_method="PCA")
-
-plotDimReduction(x = RepSeqData,
-                 level = "clonotype",
-                 method = "manhattan",
-                 colorBy = "cell_subset",
-                 dim_method="MDS")
-
-plotDimReduction(x = RepSeqData,
-                level = "CDR3nt",
-                colorBy = "cell_subset",
-                dim_method="PCA")
-
-plotDimReduction(x = RepSeqData,
-                 level = "CDR3aa",
-                 method = "bray",
-                 colorBy = "cell_subset",
-                 dim_method="MDS")
-
-plotDimReduction(x = RepSeqData,
-                level = "VJ",
-                colorBy = "cell_subset",
-                dim_method="PCA")
-
 }
