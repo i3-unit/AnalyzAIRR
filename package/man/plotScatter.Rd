@@ -29,7 +29,7 @@ It allows a comparative analysis of the occurrence of a given repertoire level b
 data(RepSeqData)
 plotScatter(x = RepSeqData,
             level = "V",
-            sampleNames = c("tripod-30-813_R1", "tripod-30-815_R1"),
+            sampleNames = c("tripod-30-813", "tripod-30-815"),
             scale = "log")
 
 }

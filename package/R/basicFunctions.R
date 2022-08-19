@@ -151,8 +151,6 @@ filterCount <- function(x, level=c("clone","clonotype","CDR3aa","CDR3nt"), n=1, 
 #'
 #' data(RepSeqData)
 #'
-#' privateclones <- getPrivate(RepSeqData, level = "clone", singletons = TRUE)
-#'
 #' privateclonotypes <- getPrivate(RepSeqData, level = "clonotype", singletons = FALSE)
 #'
 getPrivate <- function(x,  level=c("clone","clonotype","CDR3aa","CDR3nt"), singletons=FALSE) {
@@ -272,9 +270,9 @@ getPublic <- function(x, level=c("clone","clonotype","CDR3aa","CDR3nt"),
 #' @examples
 #'
 #' data(RepSeqData)
-#' topClones <- getTopSequences(RepSeqData,
+#' topClones <- getTopSequences(x = RepSeqData,
 #'                           level = "clone",
-#'                           group = c("cell_subset", "amTreg"))
+#'                           group = c("cell_subset", "amTreg"), prop = 0.1)
 #'
 #'
 getTopSequences <- function(x, level=c("clone","clonotype","CDR3aa","CDR3nt"),
@@ -425,7 +423,7 @@ mergeRepSeq <- function(a, b) {
 #' data(RepSeqData)
 #'
 #' dropRepSeqData<- dropSamples(x = RepSeqData,
-#'             sampleNames=c("tripod-30-813_R1", "tripod-30-815_R1"))
+#'             sampleNames=c("tripod-30-813", "tripod-30-815"))
 #'
 dropSamples <- function(x, sampleNames) {
     if (missing(x)) stop("A RepSeqExperiment object is required.")

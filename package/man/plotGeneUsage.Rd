@@ -18,6 +18,10 @@ plotGeneUsage(
 \item{level}{a character specifying the level of the repertoire to be taken into account when calculating the gene usages. Should be one of clone" or "clonotype".}
 
 \item{scale}{a character specifying whether to plot the gene usage in "count" or "frequency".}
+
+\item{groupBy}{character indicating the groups to be compared. If not specified, no comparative statistical tests will be performed, and calculated values for each sample_id will be represented.}
+
+\item{label_colors}{a list of colors for each variable in ColorBy. See \code{\link{plotColors}}. If NULL, default colors are used.}
 }
 \description{
 This function compares the V or J gene usages between given groups.

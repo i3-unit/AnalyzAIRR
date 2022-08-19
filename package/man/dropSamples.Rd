@@ -22,6 +22,6 @@ This function allows the dropping of one or several samples from a RepSeqExperim
 data(RepSeqData)
 
 dropRepSeqData<- dropSamples(x = RepSeqData,
-            sampleNames=c("tripod-30-813_R1", "tripod-30-815_R1"))
+            sampleNames=c("tripod-30-813", "tripod-30-815"))
 
 }

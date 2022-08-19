@@ -29,9 +29,9 @@ This function extracts the top n sequences within all samples or a group of samp
 \examples{
 
 data(RepSeqData)
-topClones <- getTopSequences(RepSeqData,
+topClones <- getTopSequences(x = RepSeqData,
                           level = "clone",
-                          group = c("cell_subset", "amTreg"))
+                          group = c("cell_subset", "amTreg"), prop = 0.1)
 
 
 }

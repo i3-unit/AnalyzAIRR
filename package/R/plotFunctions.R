@@ -307,6 +307,8 @@ plotIndGeneUsage <- function(x,  sampleName = NULL, level = c("V", "J"), scale =
 #' @param x an object of class  \code{\linkS4class{RepSeqExperiment}}
 #' @param level a character specifying the level of the repertoire to be taken into account when calculating the gene usages. Should be one of clone" or "clonotype".
 #' @param scale a character specifying whether to plot the gene usage in "count" or "frequency".
+#' @param groupBy character indicating the groups to be compared. If not specified, no comparative statistical tests will be performed, and calculated values for each sample_id will be represented.
+#' @param label_colors a list of colors for each variable in ColorBy. See \code{\link{plotColors}}. If NULL, default colors are used.
 #' @export
 #' @examples
 #'
@@ -761,7 +763,7 @@ plotEulerr <- function(x, level = c("clone","clonotype", "V", "J", "VJ", "CDR3nt
 #' data(RepSeqData)
 #' plotScatter(x = RepSeqData,
 #'             level = "V",
-#'             sampleNames = c("tripod-30-813_R1", "tripod-30-815_R1"),
+#'             sampleNames = c("tripod-30-813", "tripod-30-815"),
 #'             scale = "log")
 #'
 plotScatter <- function(x, sampleNames = NULL,
@@ -1098,7 +1100,7 @@ plotCountIntervals <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3a
        plotBreaks <- c("1","]1, 10]","]10, 100]", "]100, 1000]" ,"]1000, 10000]","]10000, Inf]")
 
 
-    p1 <- ggplot2::ggplot(data = data2plot[data2plot$variable == "percent",], ggplot2::aes(x = sample_id, y =value, fill=factor(interval,level=rev(plotBreaks))) ,  alpha=.7) +
+    p1 <- ggplot2::ggplot(data = data2plot[data2plot$variable == "percent",], ggplot2::aes(x = sample_id, y =value, fill=factor(interval, levels=rev(plotBreaks))) ,  alpha=.7) +
       ggplot2::geom_bar(stat = "identity",  alpha=.8) +
       ggplot2::ylim(0, 1) +
       ggplot2::scale_fill_manual(values=colorBreaks)+

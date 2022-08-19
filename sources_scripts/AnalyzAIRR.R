@@ -29,6 +29,7 @@
 #' @import MESS
 #' @import ComplexHeatmap
 #' @importFrom car dataEllipse
+#' @importFrom lemon g_legend
 #' @importFrom circlize chordDiagram circos.track circos.text 
 #' @importFrom stats median sd as.formula var frequency cmdscale lag lm
 #' @importFrom grDevices colorRampPalette

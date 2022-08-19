@@ -212,9 +212,9 @@ named.contr.sum <- function(x, ...) {
 #'
 #' data(RepSeqData)
 #' pert <- perturbationScore(RepSeqData,
-#'                           ctrl.names = c("tripod-30-813_R1",
-#'                                          "tripod-30-815_R1",
-#'                                          "tripod-31-846_R1"),
+#'                           ctrl.names = c("tripod-30-813",
+#'                                          "tripod-30-815",
+#'                                          "tripod-31-846"),
 #'                           distance = "manhattan")
 #'
 perturbationScore <- function(x, ctrl.names, distance = c("manhattan", "euclidean", "canberra", "minkowski" ,"maximum"), p = 2) {
@@ -276,7 +276,7 @@ perturbationScore <- function(x, ctrl.names, distance = c("manhattan", "euclidea
 #' diff_expression <- diffExpInd(RepSeqData, 
 #'                               level="V", 
 #'                               scale="frequency", 
-#'                               sampleNames = c("tripod-30-813_R1","tripod-30-815_R1"), 
+#'                               sampleNames = c("tripod-30-813","tripod-30-815"), 
 #'                               remove.zeros = FALSE)
 #'
 diffExpInd <- function(x,  sampleNames = NULL, level = c("clone","clonotype", "V", "J", "VJ", "CDR3nt","CDR3aa"),

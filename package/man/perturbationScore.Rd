@@ -32,9 +32,9 @@ Scores are calculated as a distance between each repertoire and the mean of the 
 
 data(RepSeqData)
 pert <- perturbationScore(RepSeqData,
-                          ctrl.names = c("tripod-30-813_R1",
-                                         "tripod-30-815_R1",
-                                         "tripod-31-846_R1"),
+                          ctrl.names = c("tripod-30-813",
+                                         "tripod-30-815",
+                                         "tripod-31-846"),
                           distance = "manhattan")
 
 }

@@ -1,4 +1,4 @@
-utils::globalVariables(c("J", ".", "..sNames", ".SD", ".SDcols", "key", ".N", "count", "..keep.cols", "sampleNames", "CDR3aa.length", "CDR3aa", "pct", "ctrl.mean", "ID","prop"))
+utils::globalVariables(c("J", ".", "..sNames", ".SD", "variable2", "cdr3", "cdr3_nt", "v_gene", "j_gene", "barcode","raw_clonotype_id", ".SDcols", "key", ".N", "count", "..keep.cols", "sampleNames", "CDR3aa.length", "CDR3aa", "pct", "ctrl.mean", "ID","prop"))
 
 #' @title parse rTCR output
 #'
@@ -933,7 +933,7 @@ formatSingleCell<-function(path)
   summ<- tab %>% 
   count(barcode) %>%
   filter(n>1)
-  tab=inner_join(tab,summ)
+  tab <- dplyr::inner_join(tab,summ)
   
   namelist <- colnames(tab)
   aacdr3 <- "cdr3"

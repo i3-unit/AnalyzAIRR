@@ -1,6 +1,6 @@
 Version: 1.0.0
 Package: AnalyzAIRR
-Title: MiAIRR compliant R package for the analysis of bulk Ig/TCR repertoire datasets.
+Title: MiAIRR compliant R package for the analysis of bulk Ig/TCR repertoire datasets
 Description: AnalyzeAIRR allows a general data exploration to evaluate the homogeneity 
  within defined groups, identify outliers and filter them out. AnalyzeAIRR also proposes
  a set of diversity measures and statistical metrics applicable at any level of granularity. Thus, single-sample repertoire explorations or in-depth cross-comparisons of AIRR datasets 
@@ -12,7 +12,7 @@ Authors@R: c(person("Vanessa", "Mhanna", email = "vanessajmhanna@gmail.com", rol
 Maintainer: Vanessa Mhanna <vanessajmhanna@gmail.com> and Encarnita Mariotti-Ferrandiz <encarnita.mariotti@sorbonne-universite.fr>
 Depends: R (>= 4.0.0), data.table
 Imports: pbapply, parallel, utils, stats, methods, graphics, ggplot2, 
-	 pheatmap, DESeq2, ade4, limma, scales, rmdformats, kableExtra, 
+	 lemon, DESeq2, ade4, limma, scales, rmdformats, kableExtra, 
 	 vegan, naturalsort, RColorBrewer, dplyr, ggVennDiagram, gridExtra,
 	 plyr, grDevices,reshape2, ggprism, rstatix, eulerr, ggpubr, stringr,
 	 ggpmisc, tidyr, ggrepel, car, circlize, ComplexHeatmap, MESS

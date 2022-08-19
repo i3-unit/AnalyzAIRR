@@ -27,8 +27,6 @@ This function extract private sequences within the whole dataset, i.e. sequences
 
 data(RepSeqData)
 
-privateclones <- getPrivate(RepSeqData, level = "clone", singletons = TRUE)
-
 privateclonotypes <- getPrivate(RepSeqData, level = "clonotype", singletons = FALSE)
 
 }

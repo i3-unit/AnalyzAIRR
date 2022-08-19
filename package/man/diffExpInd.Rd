@@ -40,7 +40,7 @@ data(RepSeqData)
 diff_expression <- diffExpInd(RepSeqData, 
                               level="V", 
                               scale="frequency", 
-                              sampleNames = c("tripod-30-813_R1","tripod-30-815_R1"), 
+                              sampleNames = c("tripod-30-813","tripod-30-815"), 
                               remove.zeros = FALSE)
 
 }
