@@ -4,3 +4,4 @@
 .Ruserdata
 .DS_Store
 package.tar.gz/*
+packrat/lib*/
