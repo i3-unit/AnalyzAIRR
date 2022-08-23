@@ -2,7 +2,15 @@
 % Please edit documentation in R/AnalyzAIRR.R
 \name{AnalyzAIRR}
 \alias{AnalyzAIRR}
-\title{X}
+\title{AnalyzAIRR - MiAIRR compliant R package for the analysis of bulk Ig/TCR repertoire datasets}
 \description{
-AnalyzeAIRR is a MiAIRR compliant R package developed to analyze bulk Ig/TCR repertoire datasets.
+AnalyzAIRR is a MiAIRR compliant R package developed to analyze bulk Ig/TCR repertoire datasets.
+AnalyzAIRR allows a general data exploration to evaluate the homogeneity 
+within defined groups, identify outliers and filter them out. AnalyzAIRR also proposes
+a set of diversity measures and statistical metrics applicable at any level of granularity. Thus, single-sample repertoire explorations or in-depth cross-comparisons of AIRR datasets 
+can be conducted leading to ready-to-publish visualization graphics. 
+AnalyzAIRR is complemented with a guided workflow to help users in their analytical strategy, and a Shiny web application making it user-friendly for biologists with little or no background in bioinformatics.
+}
+\author{
+Vanessa Mhanna, Hang-Phuong Pham, Gabriel Pires, Nicolas Tchitchek, David Klatzmann, Adrien Six, Encarnita Mariotti-Ferrandiz
 }
