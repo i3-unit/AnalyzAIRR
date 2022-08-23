@@ -49,4 +49,6 @@ data(RepSeqData)
 
 plotStatistics(x = RepSeqData, groupBy = "sex", stat = "V")
 
+plotStatistics(x = RepSeqData, groupBy = c("cell_subset", "sex"), stat = "V")
+
 }

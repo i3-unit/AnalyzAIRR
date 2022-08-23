@@ -314,13 +314,13 @@ plotIndGeneUsage <- function(x,  sampleName = NULL, level = c("V", "J"), scale =
 #'
 #' data(RepSeqData)
 #'
-#' plotGeneUsage(x = RepSeqData, level = "J", scale = "count", groupBy="cell_subset")
+#' plotGeneUsage(x = RepSeqData, level = "J", scale = "count", groupBy = "cell_subset")
 #'
-#' plotGeneUsage(x = RepSeqData, level = "V",  scale = "frequency", groupBy="sex")
+#' plotGeneUsage(x = RepSeqData, level = "V",  scale = "frequency", groupBy=c("cell_subset", "sex"))
 #'
 #'
 plotGeneUsage <- function(x, level = c("V", "J"), scale = c("count", "frequency"), 
-                             groupBy = NULL,label_colors = NULL) {
+                             groupBy = NULL, label_colors = NULL) {
   frequency <- NULL
   sdata<-mData(x)
   if (missing(x)) stop("x is missing.")
@@ -343,25 +343,54 @@ plotGeneUsage <- function(x, level = c("V", "J"), scale = c("count", "frequency"
   data2plot <- data2plot %>% 
     replace(is.na(.),0) %>% setDT()
   
-  data2plot[, Group := lapply(.SD, function(x) sdata[x, groupBy]), .SDcols = "sample_id"]
+  if(length(groupBy)==1){
+    data2plot[, Group := lapply(.SD, function(x) sdata[x, groupBy]), .SDcols = "sample_id"]
+  } else if(length(groupBy)==2){
+    data2plot[, Group := lapply(.SD, function(x) sdata[x, groupBy[[1]]]), .SDcols = "sample_id"]
+    data2plot[, Group2 := lapply(.SD, function(x) sdata[x, groupBy[[2]]]), .SDcols = "sample_id"]
+  } else if(length(groupBy)==3){
+    data2plot[, Group := lapply(.SD, function(x) sdata[x, groupBy[[1]]]), .SDcols = "sample_id"]
+    data2plot[, Group2 := lapply(.SD, function(x) sdata[x, groupBy[[2]]]), .SDcols = "sample_id"]
+    data2plot[, Group3 := lapply(.SD, function(x) sdata[x, groupBy[[3]]]), .SDcols = "sample_id"]
+  }
   
-  stat.test <- data2plot %>%
-    dplyr::select(all_of(levelChoice),  sample_id ,all_of(scaleChoice),Group) %>%
-    dplyr::group_by(get(levelChoice)) %>%
-    rstatix::wilcox_test(formula=as.formula(paste(paste(scaleChoice),"Group",sep="~"))) %>%
-    rstatix::adjust_pvalue() %>%
-    rstatix::add_significance() %>%
-    rstatix::add_y_position()
+  if(length(groupBy)==1){
+    stat.test <- data2plot %>%
+      dplyr::select(all_of(levelChoice), sample_id, all_of(scaleChoice), Group) %>%
+      dplyr::group_by(get(levelChoice)) %>%
+      rstatix::wilcox_test(formula=as.formula(paste(paste(scaleChoice),"Group",sep="~"))) %>%
+      rstatix::adjust_pvalue() %>%
+      rstatix::add_significance() %>%
+      rstatix::add_y_position()  
+  } else if(length(groupBy)==2){
+    stat.test <- data2plot %>%
+      dplyr::select(all_of(levelChoice), sample_id, all_of(scaleChoice), Group, Group2) %>%
+      dplyr::group_by(get(levelChoice), Group2) %>%
+      rstatix::t_test(formula=as.formula(paste(paste(scaleChoice),"Group",sep="~"))) %>%
+      rstatix::adjust_pvalue() %>%
+      rstatix::add_significance() %>%
+      rstatix::add_y_position() 
+  } else if(length(groupBy)==3){
+    stat.test <- data2plot %>%
+      dplyr::select(all_of(levelChoice), sample_id, all_of(scaleChoice), Group, Group2, Group3) %>%
+      dplyr::group_by(get(levelChoice), Group2, Group3) %>%
+      rstatix::t_test(formula=as.formula(paste(paste(scaleChoice),"Group",sep="~"))) %>%
+      rstatix::adjust_pvalue() %>%
+      rstatix::add_significance() %>%
+      rstatix::add_y_position() 
+  }
   
   p <- ggplot2::ggplot(data = data2plot, ggplot2::aes_string(x=levelChoice, y = scaleChoice))+
-    ggplot2::geom_boxplot( ggplot2::aes_string(fill= "Group"), width=.4,notchwidth = .4, outlier.size = 1) +
-    ggplot2::scale_fill_manual(values=label_colors[[groupBy]])+
+    ggplot2::geom_boxplot(ggplot2::aes_string(fill= "Group"), width=.4,notchwidth = .4, outlier.size = 1) +
+    {if(length(groupBy)==2)list(ggplot2::facet_grid(~Group2))} +
+    {if(length(groupBy)==3)list(ggplot2::facet_grid(Group2~Group3))} +
+    ggplot2::scale_fill_manual(values=label_colors[[groupBy[[1]]]])+
     theme_RepSeq()+
     ggplot2::xlab("") +
     ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1,size=4),
                    axis.text.y = ggplot2::element_text(size=8))+
     ggpubr::stat_pvalue_manual(stat.test, label = "p.adj.signif",
-                             tip.length = 0,x="get(levelChoice)", hide.ns = TRUE)
+                             tip.length = 0, x="get(levelChoice)", hide.ns = TRUE)
   
   return(p)
 }
@@ -846,12 +875,14 @@ plotScatter <- function(x, sampleNames = NULL,
 #'
 #' plotDiversity(x = RepSeqData, level = "V", groupBy = "sex", index="shannon")
 #' 
-#' plotDiversity(x = RepSeqData, level = "clone", groupBy = "cell_subset", index="simpson")
+#' plotDiversity(x = RepSeqData, level = "clone", groupBy = c("cell_subset", "sex"), index="shannon")
 #'
 plotDiversity <- function(x, index=c("chao1","shannon","simpson", "invsimpson","bergerparker", "gini","iChao"),
                           level = c("clone","clonotype", "V", "J", "VJ", "CDR3nt","CDR3aa"),
                           groupBy = NULL, label_colors=NULL){
   group <- NULL
+  group2 <- NULL
+  group3 <- NULL
   sdata<-mData(x)
   levelChoice <- match.arg(level)
   if (missing(x)) stop("x is missing.")
@@ -864,30 +895,51 @@ plotDiversity <- function(x, index=c("chao1","shannon","simpson", "invsimpson","
   diversity <- diversityIndices(x, level=levelChoice)
   diversity_m <- diversity %>% dplyr::select(sample_id, paste(index)) %>% dplyr::rename(method=paste(index))
   if (!is.null(groupBy)){
-    diversity_m[, group := lapply(.SD, function(x) sdata[x, groupBy] ), .SDcols = "sample_id"]
-
-    my_comparisons <- combn(unique(as.character(diversity_m$group)), 2)
-    list<- list()
-    for (i in seq_len(ncol(my_comparisons))){
-      list[[i]]<- my_comparisons[,i]
+    if(length(groupBy)==1){
+      diversity_m[, group := lapply(.SD, function(x) sdata[x, groupBy] ), .SDcols = "sample_id"]
+    } else if(length(groupBy)==2){
+      diversity_m[, group := lapply(.SD, function(x) sdata[x, groupBy[[1]]] ), .SDcols = "sample_id"]
+      diversity_m[, groupB := lapply(.SD, function(x) sdata[x, groupBy[[2]]] ), .SDcols = "sample_id"]
+    } else if(length(groupBy)==3){
+      diversity_m[, group := lapply(.SD, function(x) sdata[x, groupBy[[1]]] ), .SDcols = "sample_id"]
+      diversity_m[, groupB := lapply(.SD, function(x) sdata[x, groupBy[[2]]] ), .SDcols = "sample_id"]
+      diversity_m[, groupC := lapply(.SD, function(x) sdata[x, groupBy[[3]]] ), .SDcols = "sample_id"]
     }
 
-
-    stat.test <- ggpubr::compare_means(data=diversity_m, formula=method ~ group) %>%
-      rstatix::adjust_pvalue() %>%
-      rstatix::add_significance() %>%
-      rstatix::add_xy_position(data=diversity_m, formula=method ~ group) #GPI
-
+    if(length(groupBy)==1){
+      stat.test <- ggpubr::compare_means(data=diversity_m, formula=method ~ group) %>%
+        rstatix::adjust_pvalue() %>%
+        rstatix::add_significance() %>%
+        rstatix::add_xy_position(data=diversity_m, formula=method ~ group) 
+    } else if(length(groupBy)==2){
+      stat.test <- diversity_m %>%
+        group_by(groupB) %>%
+        rstatix::t_test(formula=method ~ group) %>%
+        rstatix::adjust_pvalue() %>%
+        rstatix::add_significance() %>%
+        rstatix::add_xy_position(data=diversity_m, formula=method ~ group)
+    } else if(length(groupBy)==3){
+      stat.test <- diversity_m %>%
+        group_by(groupB, groupC) %>%
+        rstatix::t_test(formula=method ~ group) %>%
+        rstatix::adjust_pvalue() %>%
+        rstatix::add_significance() %>%
+        rstatix::add_xy_position(data=diversity_m, formula=method ~ group)
+    }
+    
     p<- ggplot2::ggplot(diversity_m,ggplot2::aes(x = group, y = method, fill = group)) +
       ggplot2::geom_boxplot(outlier.shape = NA) +
       ggplot2::geom_point(shape=21, position = ggplot2::position_dodge(width=.8))+
+      {if(length(groupBy)==2)list(ggplot2::facet_grid(~groupB))} +
+      {if(length(groupBy)==3)list(ggplot2::facet_grid(groupB~groupC))} +
       ggplot2::xlab("")+
       ggplot2::ylab(paste(index))+
-      ggplot2::scale_color_manual(values=label_colors[[groupBy]])+
-      ggplot2::scale_fill_manual(values=label_colors[[groupBy]])+
+      ggplot2::scale_color_manual(values=label_colors[[groupBy[[1]]]])+
+      ggplot2::scale_fill_manual(values=label_colors[[groupBy[[1]]]])+
       theme_RepSeq()+
       ggplot2::theme( legend.position = "none")+
       ggprism::add_pvalue(stat.test,  label = "p.adj.signif", bracket.nudge.y = .01,tip.length = 0, step.increase = 0.1)
+    
 }  else {
 
   p<- ggplot2::ggplot(diversity_m,ggplot2::aes(x = sample_id, y = method, fill = sample_id)) +
@@ -974,6 +1026,8 @@ plotRarefaction <- function(x, colorBy=NULL, label_colors=NULL){
 #' plotCountIntervals(x = RepSeqData, level="CDR3aa")
 #'
 #' plotCountIntervals(x = RepSeqData, level="CDR3nt",  groupBy="cell_subset")
+#' 
+#' plotCountIntervals(x = RepSeqData, level="CDR3nt",  groupBy=c("cell_subset", "sex"))
 #'
 plotCountIntervals <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3aa"),
                                groupBy=NULL, label_colors=NULL){
@@ -1000,35 +1054,57 @@ plotCountIntervals <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3a
   data2plot <- data2plot[, lapply(.SD, sum), by = c(levelChoice, "sample_id"), .SDcols = "count"][,interval := unlist(lapply(count, f)), by="sample_id"]
 
   data2plot_b <- data2plot %>% dplyr::group_by(interval, sample_id) %>% dplyr::summarize(sum=dplyr::n())
-  data2plot_b=data2plot_b %>% dplyr::group_by( sample_id) %>% dplyr::mutate(freq=sum/sum(sum))
-  data2plot<- data2plot[, lapply(.SD, sum), by = c("interval","sample_id"), .SDcols = "count"][,percent := prop.table(count), by="sample_id"]
-  data2plot<- merge(data2plot[,c(1,2,4)], data2plot_b[,c(1,2,4)], by=c("interval", "sample_id"))
+  data2plot_b <- data2plot_b %>% dplyr::group_by( sample_id) %>% dplyr::mutate(freq=sum/sum(sum))
+  data2plot <- data2plot[, lapply(.SD, sum), by = c("interval","sample_id"), .SDcols = "count"][,percent := prop.table(count), by="sample_id"]
+  data2plot <- merge(data2plot[,c(1,2,4)], data2plot_b[,c(1,2,4)], by=c("interval", "sample_id"))
 
-  data2plot<- setDT(data2plot)
-  sdata<- mData(x)
+  data2plot <- setDT(data2plot)
+  sdata <- mData(x)
   breaks <- unique(as.data.frame(data2plot)[, "interval"])
 
   if(!is.null(groupBy)){
     plotBreaks <- c("1","]1, 10]","]10, 100]", "]100, 1000]" ,"]1000, 10000]","]10000, Inf]")
     
-    data2plot[, grp := lapply(.SD, function(x) sdata[x, groupBy]), .SDcols = "sample_id"]
-    data2plot<- reshape2::melt(data2plot, id.vars=c("interval","sample_id","grp"))
-    
-    my_comparisons <- combn(unique(as.character(data2plot$grp)),2)
-    list <- list()
-    for (i in seq_len(ncol(my_comparisons))) {
-      list[[i]] <- my_comparisons[, i]
+    if(length(groupBy)==1){
+      data2plot[, grp := lapply(.SD, function(x) sdata[x, groupBy]), .SDcols = "sample_id"]
+      data2plot<- reshape2::melt(data2plot, id.vars=c("interval","sample_id","grp"))
+      
+    } else if(length(groupBy)==2){
+      data2plot[, grp := lapply(.SD, function(x) sdata[x, groupBy[[1]]]), .SDcols = "sample_id"]
+      data2plot[, grp2 := lapply(.SD, function(x) sdata[x, groupBy[[2]]]), .SDcols = "sample_id"]
+      data2plot<- reshape2::melt(data2plot, id.vars=c("interval","sample_id","grp", "grp2"))
+      
+    } else if(length(groupBy)==3){
+      data2plot[, grp := lapply(.SD, function(x) sdata[x, groupBy]), .SDcols = "sample_id"]
+      data2plot[, grp2 := lapply(.SD, function(x) sdata[x, groupBy[[2]]]), .SDcols = "sample_id"]
+      data2plot[, grp3 := lapply(.SD, function(x) sdata[x, groupBy[[3]]]), .SDcols = "sample_id"]
+      data2plot<- reshape2::melt(data2plot, id.vars=c("interval","sample_id","grp", "grp2", "grp3"))
     }
     
+    # my_comparisons <- combn(unique(as.character(data2plot$grp)),2)
+    # list <- list()
+    # for (i in seq_len(ncol(my_comparisons))) {
+    #   list[[i]] <- my_comparisons[, i]
+    # }
+    # 
     
     df<- vector("list")
-      for(i in unique(data2plot$sample_id)){
+    for(i in unique(data2plot$sample_id)){
         dfi<- data2plot %>% dplyr::filter(sample_id==i)
 
         if(length(unique(dfi$interval)) != length(unique(data2plot$interval))){
           rown= which(!unique(data2plot$interval) %in% dfi$interval)
-          add<- data.frame(interval=unique(data2plot$interval)[rown], sample_id=i,grp=unique(dfi$grp),variable="percent", value=0)
-          addb<- data.frame(interval=unique(data2plot$interval)[rown], sample_id=i,grp=unique(dfi$grp),variable="freq", value=0)
+          if(length(groupBy)==1){
+            add<- data.frame(interval=unique(data2plot$interval)[rown], sample_id=i,grp=unique(dfi$grp),variable="percent", value=0)
+            addb<- data.frame(interval=unique(data2plot$interval)[rown], sample_id=i,grp=unique(dfi$grp),variable="freq", value=0)  
+          } else if(length(groupBy)==2){
+            add<- data.frame(interval=unique(data2plot$interval)[rown], sample_id=i,grp=unique(dfi$grp), grp2=unique(dfi$grp2), variable="percent", value=0)
+            addb<- data.frame(interval=unique(data2plot$interval)[rown], sample_id=i,grp=unique(dfi$grp), grp2=unique(dfi$grp2), variable="freq", value=0)
+          } else if(length(groupBy)==3){
+            add<- data.frame(interval=unique(data2plot$interval)[rown], sample_id=i,grp=unique(dfi$grp), grp2=unique(dfi$grp2), grp3=unique(dfi$grp3),variable="percent", value=0)
+            addb<- data.frame(interval=unique(data2plot$interval)[rown], sample_id=i,grp=unique(dfi$grp), grp2=unique(dfi$grp2), grp3=unique(dfi$grp3),variable="freq", value=0)
+          }
+          
           
           df[[i]]<- rbind(dfi, add,addb)
         } else {
@@ -1039,47 +1115,87 @@ plotCountIntervals <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3a
     data2plot<- plyr::ldply(df, data.frame, .id = NULL)
     data2plot<- setDT(data2plot)
     
-    stat.test1 <- data2plot %>%
-      dplyr::filter(variable == "percent") %>%
-      dplyr::group_by(interval) %>%
-      rstatix::wilcox_test(value  ~ grp) %>%
-      rstatix::adjust_pvalue() %>%
-      rstatix::add_significance() %>%
-      rstatix::add_y_position()
+    if(length(groupBy)==1){
+      stat.test1 <- data2plot %>%
+        dplyr::filter(variable == "percent") %>%
+        dplyr::group_by(interval) %>%
+        rstatix::wilcox_test(value  ~ grp) %>%
+        rstatix::adjust_pvalue() %>%
+        rstatix::add_significance() %>%
+        rstatix::add_y_position()
+      
+      stat.test2 <- data2plot %>%
+        dplyr::filter(variable== "freq") %>%
+        dplyr::group_by(interval) %>%
+        rstatix::wilcox_test(value  ~ grp) %>%
+        rstatix::adjust_pvalue() %>%
+        rstatix::add_significance() %>%
+        rstatix::add_y_position()
+      
+    } else if(length(groupBy)==2){
+      stat.test1 <- data2plot %>%
+        dplyr::filter(variable == "percent") %>%
+        dplyr::group_by(interval, grp2) %>%
+        rstatix::wilcox_test(value  ~ grp) %>%
+        rstatix::adjust_pvalue() %>%
+        rstatix::add_significance() %>%
+        rstatix::add_y_position()
+      
+      stat.test2 <- data2plot %>%
+        dplyr::filter(variable== "freq") %>%
+        dplyr::group_by(interval, grp2) %>%
+        rstatix::wilcox_test(value  ~ grp) %>%
+        rstatix::adjust_pvalue() %>%
+        rstatix::add_significance() %>%
+        rstatix::add_y_position()
+      
+    } else if(length(groupBy)==3){
+      stat.test1 <- data2plot %>%
+        dplyr::filter(variable == "percent") %>%
+        dplyr::group_by(interval, grp2, grp3) %>%
+        rstatix::wilcox_test(value  ~ grp) %>%
+        rstatix::adjust_pvalue() %>%
+        rstatix::add_significance() %>%
+        rstatix::add_y_position()
+      
+      stat.test2 <- data2plot %>%
+        dplyr::filter(variable== "freq") %>%
+        dplyr::group_by(interval, grp2, grp3) %>%
+        rstatix::wilcox_test(value  ~ grp) %>%
+        rstatix::adjust_pvalue() %>%
+        rstatix::add_significance() %>%
+        rstatix::add_y_position()
+    }
+    
 
     p1 <- ggplot2::ggplot(data = data2plot[data2plot$variable == "percent",],
                          ggplot2::aes(x = factor(interval, levels=plotBreaks),
                                       y = .data[["value"]]), alpha=.7) +
       ggplot2::geom_boxplot(ggplot2::aes(fill=.data[["grp"]]),outlier.shape = NA) +
       ggplot2::geom_point(ggplot2::aes(fill=.data[["grp"]]),shape = 21, position=ggplot2::position_dodge(width=.8)) +
+      {if(length(groupBy)==2)list(ggplot2::facet_grid(~grp2))} +
+      {if(length(groupBy)==3)list(ggplot2::facet_grid(grp2~grp3))} +
       ggplot2::labs(subtitle = "Cumulative frequency")+
       ggplot2::xlab("")+ggplot2::ylab("")+
-      ggplot2::scale_color_manual(values = label_colors[[groupBy]]) +
-      ggplot2::scale_fill_manual(values = label_colors[[groupBy]]) +
+      ggplot2::scale_color_manual(values = label_colors[[groupBy[[1]]]]) +
+      ggplot2::scale_fill_manual(values = label_colors[[groupBy[[1]]]]) +
       theme_RepSeq() +
       ggplot2::theme(legend.position = "right",legend.direction = "horizontal",
                      axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))+
         ggpubr::stat_pvalue_manual(stat.test1, label = "p.adj.signif",
                             tip.length = 0,x="interval")
 
-
-    stat.test2 <- data2plot %>%
-      dplyr::filter(variable== "freq") %>%
-      dplyr::group_by(interval) %>%
-      rstatix::wilcox_test(value  ~ grp) %>%
-      rstatix::adjust_pvalue() %>%
-      rstatix::add_significance() %>%
-      rstatix::add_y_position()
-
     p2 <- ggplot2::ggplot(data = data2plot[data2plot$variable == "freq",],
                           ggplot2::aes(x = factor(interval, levels=plotBreaks),
                                        y = .data[["value"]]), alpha=.7) +
       ggplot2::geom_boxplot(ggplot2::aes(fill=.data[["grp"]]),outlier.shape = NA) +
       ggplot2::geom_point(ggplot2::aes(fill=.data[["grp"]]),shape = 21, position=ggplot2::position_dodge(width=.8)) +
+      {if(length(groupBy)==2)list(ggplot2::facet_grid(~grp2))} +
+      {if(length(groupBy)==3)list(ggplot2::facet_grid(grp2~grp3))} +
       ggplot2::labs(subtitle = "Distribution")+
       ggplot2::xlab("")+ggplot2::ylab("")+
-      ggplot2::scale_color_manual(values = label_colors[[groupBy]]) +
-      ggplot2::scale_fill_manual(values = label_colors[[groupBy]]) +
+      ggplot2::scale_color_manual(values = label_colors[[groupBy[[1]]]]) +
+      ggplot2::scale_fill_manual(values = label_colors[[groupBy[[1]]]]) +
       theme_RepSeq() +
       ggplot2::theme(legend.position = "right",legend.direction = "horizontal",
                      axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))+
@@ -1170,48 +1286,74 @@ plotCountIntervals <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3a
 #' data(RepSeqData)
 #'
 #' plotStatistics(x = RepSeqData, groupBy = "sex", stat = "V")
+#' 
+#' plotStatistics(x = RepSeqData, groupBy = c("cell_subset", "sex"), stat = "V")
 #'
 plotStatistics <- function(x, stat = c("nSequences", "clone", "clonotype","V", "J","VJ", "CDR3aa", "CDR3nt"),
                            groupBy = NULL, label_colors = NULL){
   group <- NULL
+  groupB <- NULL
+  groupC <- NULL
   sdata<-mData(x)
   if (missing(x)) stop("x is missing.")
   if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected.")
-
 
   if (is.null(label_colors)) {
     label_colors= plotColors(x)
   }
 
-
   if (!is.null(groupBy)){
-    sdata_m<- sdata %>% dplyr::select(sample_id, paste(groupBy),paste(stat))  %>% dplyr::rename(stats=paste(stat))
-    colnames(sdata_m)[2]<- "group"
-    my_comparisons <- combn(unique(as.character(sdata_m$group)), 2)
-    list<- list()
-    for (i in seq_len(ncol(my_comparisons))){
-      list[[i]]<- my_comparisons[,i]
+    
+    if(length(groupBy)==1){
+      sdata_m<- sdata %>% dplyr::select(sample_id, paste(groupBy),paste(stat))  %>% dplyr::rename(stats=paste(stat))
+      colnames(sdata_m)[2]<- "group"
+    } else if(length(groupBy)==2){
+      sdata_m<- sdata %>% dplyr::select(sample_id, paste(groupBy),paste(stat))  %>% dplyr::rename(stats=paste(stat))
+      colnames(sdata_m)[c(2,3)]<- c("group", "groupB")
+    } else if(length(groupBy)==3){
+      sdata_m<- sdata %>% dplyr::select(sample_id, paste(groupBy),paste(stat))  %>% dplyr::rename(stats=paste(stat))
+      colnames(sdata_m)[c(2, 3, 4)]<- c("group", "groupB", "groupC")
     }
     
     if(length(unique(sdata_m[,3]))>1){
-    stat.test <- sdata_m %>%
-      rstatix::wilcox_test( stats ~ group) %>%
-      rstatix::adjust_pvalue() %>%
-      rstatix::add_significance() %>%
-      rstatix::add_xy_position()
-
-    p<- ggplot2::ggplot(sdata_m,ggplot2::aes(x = group, y = stats, fill = group)) +
-      ggplot2::geom_boxplot(outlier.shape = NA) +
-      ggplot2::geom_point(shape=21,position=ggplot2::position_dodge(width=.8) )+
-      ggplot2::xlab("")+
-      ggplot2::ylab(paste(stat))+
-      ggplot2::scale_color_manual(values=label_colors[[groupBy]])+
-      ggplot2::scale_fill_manual(values=label_colors[[groupBy]])+
-      theme_RepSeq()+
-      ggplot2::theme( legend.position = "none")+
-      ggprism::add_pvalue(stat.test,  label = "p.adj.signif",bracket.nudge.y = .01,tip.length = 0, step.increase = 0.1)
+      
+      if(length(groupBy)==1){
+        stat.test <- sdata_m %>%
+          rstatix::wilcox_test( stats ~ group) %>%
+          rstatix::adjust_pvalue() %>%
+          rstatix::add_significance() %>%
+          rstatix::add_xy_position()
+      } else if(length(groupBy)==2){
+        stat.test <- sdata_m %>%
+          dplyr::group_by(groupB) %>%
+          rstatix::wilcox_test(stats ~ group) %>%
+          rstatix::adjust_pvalue() %>%
+          rstatix::add_significance() %>%
+          rstatix::add_xy_position()
+      } else if(length(groupBy)==3){
+        stat.test <- sdata_m %>%
+          dplyr::group_by(groupB, groupC)  %>%
+          rstatix::wilcox_test( stats ~ group) %>%
+          rstatix::adjust_pvalue() %>%
+          rstatix::add_significance() %>%
+          rstatix::add_xy_position()
+      }
+      
+      p <- ggplot2::ggplot(sdata_m,ggplot2::aes(x = group, y = stats, fill = group)) +
+        ggplot2::geom_boxplot(outlier.shape = NA) +
+        ggplot2::geom_point(shape=21,position=ggplot2::position_dodge(width=.8) )+
+        {if(length(groupBy)==2)list(ggplot2::facet_grid(~groupB))} +
+        {if(length(groupBy)==3)list(ggplot2::facet_grid(groupB~groupC))} +
+        ggplot2::xlab("")+
+        ggplot2::ylab(paste(stat))+
+        ggplot2::scale_color_manual(values=label_colors[[groupBy[[1]]]])+
+        ggplot2::scale_fill_manual(values=label_colors[[groupBy[[1]]]])+
+        theme_RepSeq()+
+        ggplot2::theme(legend.position = "none")+
+        ggprism::add_pvalue(stat.test,  label = "p.adj.signif",bracket.nudge.y = .01,tip.length = 0, step.increase = 0.1)
+      
     } else {
-      p<- ggplot2::ggplot(sdata_m,ggplot2::aes(x = group, y = stats, fill = group)) +
+      p <- ggplot2::ggplot(sdata_m,ggplot2::aes(x = group, y = stats, fill = group)) +
         ggplot2::geom_boxplot(outlier.shape = NA) +
         ggplot2::geom_point(shape=21,position=ggplot2::position_dodge(width=.8) )+
         ggplot2::xlab("")+

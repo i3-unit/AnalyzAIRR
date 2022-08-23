@@ -974,9 +974,9 @@ formatSingleCell<-function(path)
 #'
 #' @description This function
 #'
-#' @param fileList a path to the acell ranger filtered contigs file
-#' @param sampleinfo a path to the acell ranger filtered contigs file
-#' @param filter.singletons a path to the acell ranger filtered contigs file
+#' @param fileList a path to the cell ranger filtered contigs file
+#' @param sampleinfo a path to the cell ranger filtered contigs file
+#' @param filter.singletons a path to the cell ranger filtered contigs file
 #' @param cores a path to the acell ranger filtered contigs file
 #'
 #' @return an object of class \code{\link{RepSeqExperiment}}. See \code{\link{RepSeqExperiment-class}} for more details.

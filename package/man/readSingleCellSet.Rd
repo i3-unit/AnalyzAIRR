@@ -12,11 +12,11 @@ readSingleCellSet(
 )
 }
 \arguments{
-\item{fileList}{a path to the acell ranger filtered contigs file}
+\item{fileList}{a path to the cell ranger filtered contigs file}
 
-\item{sampleinfo}{a path to the acell ranger filtered contigs file}
+\item{sampleinfo}{a path to the cell ranger filtered contigs file}
 
-\item{filter.singletons}{a path to the acell ranger filtered contigs file}
+\item{filter.singletons}{a path to the cell ranger filtered contigs file}
 
 \item{cores}{a path to the acell ranger filtered contigs file}
 }

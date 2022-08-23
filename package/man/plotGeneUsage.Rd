@@ -30,9 +30,9 @@ This function compares the V or J gene usages between given groups.
 
 data(RepSeqData)
 
-plotGeneUsage(x = RepSeqData, level = "J", scale = "count", groupBy="cell_subset")
+plotGeneUsage(x = RepSeqData, level = "J", scale = "count", groupBy = "cell_subset")
 
-plotGeneUsage(x = RepSeqData, level = "V",  scale = "frequency", groupBy="sex")
+plotGeneUsage(x = RepSeqData, level = "V",  scale = "frequency", groupBy=c("cell_subset", "sex"))
 
 
 }

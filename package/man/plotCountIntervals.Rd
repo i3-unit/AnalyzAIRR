@@ -37,4 +37,6 @@ plotCountIntervals(x = RepSeqData, level="CDR3aa")
 
 plotCountIntervals(x = RepSeqData, level="CDR3nt",  groupBy="cell_subset")
 
+plotCountIntervals(x = RepSeqData, level="CDR3nt",  groupBy=c("cell_subset", "sex"))
+
 }

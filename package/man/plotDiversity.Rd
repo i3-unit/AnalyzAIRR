@@ -48,6 +48,6 @@ data(RepSeqData)
 
 plotDiversity(x = RepSeqData, level = "V", groupBy = "sex", index="shannon")
 
-plotDiversity(x = RepSeqData, level = "clone", groupBy = "cell_subset", index="simpson")
+plotDiversity(x = RepSeqData, level = "clone", groupBy = c("cell_subset", "sex"), index="shannon")
 
 }
