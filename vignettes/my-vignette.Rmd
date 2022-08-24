@@ -109,15 +109,8 @@ This guide provides an overview of the pipeline proposed in **AnalyzAIRR**.
 # Installation
 The latest release of **AnalyzAIRR** can be installed directly from its github repository:
 ```{r github1, echo = TRUE, eval = FALSE}
-#AnalyzAIRR dependencies installation
-list.pkgs <- c("data.table", "pbapply", "pheatmap", "DESeq2", "Rcpp", "vegan", "ggplot2","ade4","directlabels", "ggVennDiagram", "plyr", "reshape2", "ggprism", "ggpmisc", "circlize","naturalsort", "scales", "magick", "dplyr", "ggsci",  "gridextra", "ggpubr")
-
-pkgs <- list.pkgs[!(list.pkgs %in% installed.packages()[,"Package"])]
-if(length(pkgs)>0) install.packages(pkgs)
-
-#AnalyzAIRR package installation
 install.packages(devtools)  
-devtools::install_github("pham-ph/RepSeq")
+devtools::install_github("vanessajmh/AnalyzAIRR")
 ```
 ```{r load library, echo=T, eval=T, warning=F, message=F}
 library(AnalyzAIRR)
