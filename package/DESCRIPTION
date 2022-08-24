@@ -14,7 +14,7 @@ Depends: R (>= 4.0.0), data.table
 Imports: pbapply, parallel, utils, stats, methods, graphics, ggplot2, 
 	 lemon, DESeq2, ade4, limma, scales, rmdformats, kableExtra, 
 	 vegan, naturalsort, RColorBrewer, dplyr, ggVennDiagram, gridExtra,
-	 plyr, grDevices,reshape2, ggprism, rstatix, eulerr, ggpubr, stringr,
+	 plyr, grDevices,reshape2, ggprism, rstatix, ggpubr, stringr,
 	 ggpmisc, tidyr, ggrepel, car, circlize, ComplexHeatmap, MESS
 Suggests: BiocStyle, knitr, rmarkdown
 License: GPL-3 + file LICENSE

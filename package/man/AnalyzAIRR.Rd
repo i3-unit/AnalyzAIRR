@@ -5,12 +5,29 @@
 \title{AnalyzAIRR - MiAIRR compliant R package for the analysis of bulk Ig/TCR repertoire datasets}
 \description{
 AnalyzAIRR is a MiAIRR compliant R package developed to analyze bulk Ig/TCR repertoire datasets.
+}
+\details{
 AnalyzAIRR allows a general data exploration to evaluate the homogeneity 
 within defined groups, identify outliers and filter them out. AnalyzAIRR also proposes
 a set of diversity measures and statistical metrics applicable at any level of granularity. Thus, single-sample repertoire explorations or in-depth cross-comparisons of AIRR datasets 
 can be conducted leading to ready-to-publish visualization graphics. 
 AnalyzAIRR is complemented with a guided workflow to help users in their analytical strategy, and a Shiny web application making it user-friendly for biologists with little or no background in bioinformatics.
 }
+\seealso{
+Useful links:
+\itemize{
+ \item \href{https://github.com/vanessajmh/AnalyzAIRR}{https://github.com/vanessajmh/AnalyzAIRR}
+ \item \href{https://github.com/vanessajmh/Shiny-AnalyzAIRR}{https://github.com/vanessajmh/Shiny-AnalyzAIRR}
+}
+}
 \author{
-Vanessa Mhanna, Hang-Phuong Pham, Gabriel Pires, Nicolas Tchitchek, David Klatzmann, Adrien Six, Encarnita Mariotti-Ferrandiz
+\itemize{
+\item Vanessa Mhanna
+\item Hang-Phuong Pham
+\item Gabriel Pires
+\item Nicolas Tchitchek
+\item David Klatzmann
+\item Adrien Six
+\item Encarnita Mariotti-Ferrandiz 
+}
 }

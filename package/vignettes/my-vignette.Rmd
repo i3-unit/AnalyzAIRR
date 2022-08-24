@@ -110,7 +110,7 @@ This guide provides an overview of the pipeline proposed in **AnalyzAIRR**.
 The latest release of **AnalyzAIRR** can be installed directly from its github repository:
 ```{r github1, echo = TRUE, eval = FALSE}
 #AnalyzAIRR dependencies installation
-list.pkgs <- c("data.table", "pbapply", "pheatmap", "DESeq2", "Rcpp", "vegan", "ggplot2","ade4","directlabels", "ggVennDiagram", "plyr", "reshape2", "ggprism", "eulerr", "ggpmisc", "circlize","naturalsort", "scales", "magick", "dplyr", "ggsci",  "gridextra", "ggpubr")
+list.pkgs <- c("data.table", "pbapply", "pheatmap", "DESeq2", "Rcpp", "vegan", "ggplot2","ade4","directlabels", "ggVennDiagram", "plyr", "reshape2", "ggprism", "ggpmisc", "circlize","naturalsort", "scales", "magick", "dplyr", "ggsci",  "gridextra", "ggpubr")
 
 pkgs <- list.pkgs[!(list.pkgs %in% installed.packages()[,"Package"])]
 if(length(pkgs)>0) install.packages(pkgs)
@@ -756,12 +756,12 @@ Different statistical methods are proposed herein to evaluate this convergence.
 
  + **Compute the number of shared sequences**
 
-   The number of shared sequences, at any level, between samples belonging for instance to the same experimental group can be obtained using the `plotEulerr()` function.
+   The number of shared sequences, at any level, between samples belonging for instance to the same experimental group can be obtained using the `plotVenn()` function.
   If `sampleNames` is not specified, the first 3 samples in the datasets will be analyzed.
 
 ```{r venn, fig.pos="p",echo = T, eval=T,  fig.width=8, fig.height=4,fig.cap="Figure 21: Euler diagram representing the number of shared clones between the nTreg samples."}
 ctrnames <- rownames(mData(RepSeqData))[which(mData(RepSeqData)[,"cell_subset" ] %in% "nTreg")]
-plotEulerr(x = RepSeqData, 
+plotVenn(x = RepSeqData, 
            level = "clone",
            sampleNames = ctrnames)
 ```

@@ -732,7 +732,7 @@ plotRankDistrib <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3aa")
 }
 
 
-#' @title Visualization of the inter-repertoire sharing on an Euler diagram
+#' @title Visualization of the inter-repertoire sharing on an Venn diagram
 #'
 #' @description The repertoire sharing at any level evaluates the degree of convergence between repertoires and experimental conditions.
 #'
@@ -749,17 +749,17 @@ plotRankDistrib <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3aa")
 #'
 #' snames <- rownames(mData(RepSeqData))[1:4]
 #'
-#' plotEulerr(x = RepSeqData, level = "V", sampleNames = snames)
+#' plotVenn(x = RepSeqData, level = "V", sampleNames = snames)
 #'
-#' plotEulerr(x = RepSeqData, level = "J", sampleNames = NULL)
+#' plotVenn(x = RepSeqData, level = "J", sampleNames = NULL)
 #'
-plotEulerr <- function(x, level = c("clone","clonotype", "V", "J", "VJ", "CDR3nt","CDR3aa"), sampleNames = NULL) {
+plotVenn <- function(x, level = c("clone","clonotype", "V", "J", "VJ", "CDR3nt","CDR3aa"), sampleNames = NULL) {
   ..sampleNames <- NULL
   if (missing(x)) stop("x is missing.")
   if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected.")
   levelChoice <- match.arg(level)
   sdata <- mData(x)
-  label_colors= plotColors(x)
+  label_colors <- plotColors(x)
 
   if (is.null(sampleNames)) sampleNames <- rownames(sdata)[seq_len(3)]
   if (length(sampleNames) == 1) stop("At least 2 sampleNames must be provided.")
@@ -771,7 +771,11 @@ plotEulerr <- function(x, level = c("clone","clonotype", "V", "J", "VJ", "CDR3nt
     list[[i]]<- unique(counts_i[[levelChoice]])
   }
 
- plot<- plot(eulerr::euler(list, shape = "ellipse"), fills=label_colors$sample_id,legend=TRUE,quantities = TRUE)
+ plot <- ggVennDiagram::ggVennDiagram(
+   list,  label_alpha = 0,
+   label_percent_digit = 1 )+
+   scale_fill_distiller(palette = "RdBu")+
+   scale_color_manual(values=label_colors$sample_id)
 
   return(plot)
 }
