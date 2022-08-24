@@ -8,7 +8,7 @@ getTopSequences(
   x,
   level = c("clone", "clonotype", "CDR3aa", "CDR3nt"),
   group = NULL,
-  prop = 0
+  prop = 0.01
 )
 }
 \arguments{

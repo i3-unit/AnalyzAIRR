@@ -18,6 +18,7 @@ Useful links:
 \itemize{
  \item \href{https://github.com/vanessajmh/AnalyzAIRR}{https://github.com/vanessajmh/AnalyzAIRR}
  \item \href{https://github.com/vanessajmh/Shiny-AnalyzAIRR}{https://github.com/vanessajmh/Shiny-AnalyzAIRR}
+ \item \href{https://vanessajmh.github.io/AnalyzAIRR.github.io}{vignette}
 }
 }
 \author{

@@ -276,7 +276,7 @@ getPublic <- function(x, level=c("clone","clonotype","CDR3aa","CDR3nt"),
 #'
 #'
 getTopSequences <- function(x, level=c("clone","clonotype","CDR3aa","CDR3nt"),
-                         group = NULL, prop=0) {
+                         group = NULL, prop=0.01) {
   V1 <- NULL
   if (missing(x)) stop("x is missing.")
   if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected.")
