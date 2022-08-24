@@ -107,7 +107,7 @@ knitr::opts_chunk$set(
 This guide provides an overview of the pipeline proposed in **AnalyzAIRR**.
 
 # Installation
-The latest release of **AnalyzAIRR** can be installed directly from its github repository:
+The latest release of **AnalyzAIRR** can be installed from Github using **devtools**:
 ```{r github1, echo = TRUE, eval = FALSE}
 install.packages(devtools)  
 devtools::install_github("vanessajmh/AnalyzAIRR")
