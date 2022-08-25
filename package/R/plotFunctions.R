@@ -70,10 +70,10 @@ plotVJusage <- function(x, sampleName = NULL, scale = c("count", "frequency"),
     p1<-ComplexHeatmap::pheatmap(data2plot,col = colorRampPalette(c("navy", "white", "firebrick3"))(50),
                           cluster_rows = FALSE, cluster_cols = FALSE, name = " ",
                           silent =TRUE, angle_col="90",fontsize =4, scale="column")
-
+    return(p1)
+    
   }
    }
-  return(p1)
 
 }
 
@@ -998,7 +998,8 @@ plotRarefaction <- function(x, colorBy=NULL, label_colors=NULL){
   raretab<- rarefactionTab(x)
 
   if (is.null(label_colors)) {
-    label_colors= plotColors(x) }
+    label_colors= plotColors(x) 
+    }
 
   sdata <- mData(x)
   raretab[, group := lapply(.SD, function(x) sdata[x, colorBy] ), .SDcols = "sample_id"]
@@ -1015,7 +1016,9 @@ plotRarefaction <- function(x, colorBy=NULL, label_colors=NULL){
       nudge_x = -0.2, direction = "y", hjust = "left", ggplot2::aes(label = sample_id)
     ) +
     theme_RepSeq()+
-    ggplot2::theme(legend.position = "none")
+    ggplot2::theme(legend.position = "none")+
+    ggplot2::scale_x_continuous(expand = ggplot2::expansion(mult = .1))
+  
 
   return(p)
 }

@@ -1,5 +1,5 @@
 ---
-title: " AnalyzAIRR"
+title: "AnalyzAIRR"
 author:
 - name: V. Mhanna, G. Pires, N. Tchitchek, D. Klatzmann, A. Six, E. Mariotti-Ferrandiz
   affiliation: Sorbonne Université, INSERM, Immunology-Immunopathology-Immunotherapy (i3), Paris, France
@@ -118,6 +118,7 @@ The latest release of **AnalyzAIRR** can be installed from Github using **devtoo
 install.packages(devtools)  
 devtools::install_github("vanessajmh/AnalyzAIRR")
 ```
+Load the **AnalyzAIRR** package
 ```{r load library, echo=T, eval=T, warning=F, message=F}
 library(AnalyzAIRR)
 ```
@@ -620,7 +621,8 @@ plotRenyiIndex(x=RepSeqData, level="J", grouped=FALSE, colorBy = "sample_id")
 ```{r intervals, fig.height=4, fig.width=8,fig.align="center"}
 plotCountIntervals(x=RepSeqData, level="clone")
 ```
-<figcaption align = "justify"><em class="special">Figure 7: Stacked bars showing the proportion (left plot) and the cumulative frequency (right plot) of clones within each count interval in each sample.</em></figcaption>
+<figcaption align = "center"><em class="special">Figure 7: Stacked bars showing the proportion (left plot) and the cumulative frequency (right plot) of clones within each count interval in each sample.</em></figcaption>
+<br>
 
 + **Clonal Distribution per decreasing rank**
 
@@ -642,11 +644,11 @@ In all the following functions, the **sample_id** of interest needs to be specif
 
    `plotIndCountIntervals()` allows the analysis of the clonal distribution per count interval in a single sample.
 
-```{r plotIndCountIntervals, echo=TRUE,message=FALSE, warning=FALSE,fig.width=8, fig.height = 4,fig.align="center", cache.comments=FALSE}
-plotIndCountIntervals(RepSeqData,level = "clone")
+```{r plotIndCountIntervals, echo=TRUE,message=FALSE, warning=FALSE,fig.width=7, fig.height = 4,fig.align="center", cache.comments=FALSE}
+plotIndCountIntervals(RepSeqData,level = "clone", sampleName="tripod-30-813")
 ```
 <figcaption align = "center"><em class="special">Figure 9: Barplots showing the proportion (upper plot) and the cumulative frequency (bottom plot) of clones within each count interval for a selected sample.</em></figcaption>
-
+<br>
 * **Analyze V and J gene usages**
 
     `plotIndGeneUsage()`computes V and J gene usages.
@@ -665,6 +667,7 @@ plotVJusage(x=RepSeqData, scale = "frequency", prop=0.01)
 ```
 <figcaption align = "center"><em class="special">Figure 11: A circos plot showing the 1% most frequent VJ combinations in a selected sample.</em></figcaption>
 <br>
+
 + **CDR3 Spectratyping**
 
 Spectratyping analyzes the CDR3 amino acid length distribution in a sample.
@@ -708,13 +711,13 @@ plotStatistics(x = RepSeqData,
 ```
 </div>
 
-<br><br>
+<br>
 
 + **Compare gene usage**
 
   `plotGeneUsage()` allows the comparison of V or J gene usages between groups of samples using the `groupBy` parameter
 
-```{r J usage , echo = TRUE, fig.width=9, fig.height=4, message=F,warning=F,fig.align="center"}
+```{r J usage , echo = TRUE, fig.width=12, fig.height=3.5, message=F,warning=F,fig.align="center"}
 plotGeneUsage(x=RepSeqData, level="J", scale="frequency", groupBy="cell_subset")
 ```
 <figcaption align = "center"><em class="special">Figure 16: Boxplots showing the frequency of each J gene within each group of samples. A Wilcoxon test is applied and adjusted p-values using the Holm method are shown. Only significant values are plotted.</em></figcaption>
@@ -774,6 +777,7 @@ plotVenn(x = RepSeqData,
 ```
 <figcaption align = "center"><em class="special">Figure 20: Euler diagram representing the number of shared clones between the nTreg samples.</em></figcaption>
 <br>
+
 + **Assess the correlation between a pair of samples**
 
   The correlation between a pair of repertoires can be calculated using the `plotScatter()` function by simply specifying a pair of `sampleNames` to compare.
@@ -858,7 +862,7 @@ knitr::kable(DS) %>%
 
 ```
 
-
+<br>
 `diffExpGroup` is integrated in the:
 
    - `plotVolcano()` function which can be directly applied to a RepSeqExperiment object, allowing an easy visualization of the results in a volcano plot.
@@ -888,7 +892,6 @@ plotDimReduction(x = RepSeqData,
 </div>
 
 <br><br><br>
-<br><br>
 
 ## Spectratyping comparison
 
