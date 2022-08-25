@@ -121,7 +121,7 @@ if(.Platform$OS.type == "windows"){
 detach("package:AnalyzAIRR", unload = TRUE)
 remove.packages("AnalyzAIRR")
 Sys.sleep(2)
-print("Install package AnalyzAIRR")
+print("Installing package AnalyzAIRR")
 if(.Platform$OS.type == "windows"){
 	install.packages("./package.zip/AnalyzAIRR_1.0.0.zip", repos = NULL, type = "source")
 } else{

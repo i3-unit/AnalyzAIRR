@@ -774,9 +774,21 @@ plotVenn <- function(x, level = c("clone","clonotype", "V", "J", "VJ", "CDR3nt",
  plot <- ggVennDiagram::ggVennDiagram(
    list,  label_alpha = 0,
    label_percent_digit = 1 )+
-   scale_fill_distiller(palette = "RdBu")+
-   scale_color_manual(values=label_colors$sample_id)
+   ggplot2::scale_fill_distiller(palette = "RdBu")+
+   ggplot2::scale_color_manual(values=label_colors$sample_id)
+ 
+ 
 
+ 
+ plot <- ggVennDiagram::plot_venn(list, label_alpha = 0,edge_lty="solid",
+                                  show_intersect=F,label="both",label_percent_digit = 1,
+                                  set_size=3,edge_size=.5 ,set_color="black",
+                                  label_geom="label", label_color="black",
+                                  label_size=2.5)+
+         ggplot2::scale_color_manual(values=label_colors$sample_id[sampleNames])+
+         ggplot2::scale_fill_distiller(palette = "RdBu")+
+         ggplot2::scale_x_continuous(expand = ggplot2::expansion(mult = .2))
+ 
   return(plot)
 }
 
@@ -1003,7 +1015,7 @@ plotRarefaction <- function(x, colorBy=NULL, label_colors=NULL){
       nudge_x = -0.2, direction = "y", hjust = "left", ggplot2::aes(label = sample_id)
     ) +
     theme_RepSeq()+
-    ggplot2::theme(legend.position = "none", aspect.ratio = .7)
+    ggplot2::theme(legend.position = "none")
 
   return(p)
 }
@@ -1084,13 +1096,6 @@ plotCountIntervals <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3a
       data2plot[, grp3 := lapply(.SD, function(x) sdata[x, groupBy[[3]]]), .SDcols = "sample_id"]
       data2plot<- reshape2::melt(data2plot, id.vars=c("interval","sample_id","grp", "grp2", "grp3"))
     }
-    
-    # my_comparisons <- combn(unique(as.character(data2plot$grp)),2)
-    # list <- list()
-    # for (i in seq_len(ncol(my_comparisons))) {
-    #   list[[i]] <- my_comparisons[, i]
-    # }
-    # 
     
     df<- vector("list")
     for(i in unique(data2plot$sample_id)){
@@ -1184,8 +1189,9 @@ plotCountIntervals <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3a
       ggplot2::scale_color_manual(values = label_colors[[groupBy[[1]]]]) +
       ggplot2::scale_fill_manual(values = label_colors[[groupBy[[1]]]]) +
       theme_RepSeq() +
-      ggplot2::theme(legend.position = "right",legend.direction = "horizontal",
-                     axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))+
+      ggplot2::theme(legend.position = "none",
+                     axis.text.x = ggplot2::element_text(angle = 45, hjust = 1, size=8),
+                     axis.text.y = ggplot2::element_text(size=8))+
         ggpubr::stat_pvalue_manual(stat.test1, label = "p.adj.signif",
                             tip.length = 0,x="interval")
 
@@ -1201,8 +1207,13 @@ plotCountIntervals <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3a
       ggplot2::scale_color_manual(values = label_colors[[groupBy[[1]]]]) +
       ggplot2::scale_fill_manual(values = label_colors[[groupBy[[1]]]]) +
       theme_RepSeq() +
-      ggplot2::theme(legend.position = "right",legend.direction = "horizontal",
-                     axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))+
+      ggplot2::theme(legend.position = "right",
+                     legend.direction = "vertical",
+                     axis.text.x = ggplot2::element_text(angle = 45, hjust = 1, size=8),
+                     axis.text.y = ggplot2::element_text(size=8),
+                     legend.background = ggplot2::element_blank(),
+                     legend.text = ggplot2::element_text(size=8),
+                     legend.justification = "center" )+
       ggpubr::stat_pvalue_manual(stat.test2, label = "p.adj.signif",
                                  tip.length = 0,x="interval")
 
@@ -1210,14 +1221,12 @@ plotCountIntervals <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3a
     g <- gridExtra::grid.arrange(gridExtra::arrangeGrob(p2 + ggplot2::theme(legend.position="none"),
                                                         p1 + ggplot2::theme(legend.position="none"),
                                                         nrow=1),
-                                 legend, nrow=2,heights=c(10, 1))
-    grid::grid.draw(g)
-
+                                 legend, nrow=1,widths=c(8, 1.3))
 
      } else{
-       data2plot<- reshape2::melt(data2plot, id.vars=c("interval","sample_id"))
-       colorBreaks <-  c("1"="#FFD92F","]1, 10]"="#A6D854","]10, 100]"= "#E78AC3" , "]100, 1000]"="#8DA0CB" ,"]1000, 10000]"="#FC8D62","]10000, Inf]"="#66C2A5")
-       plotBreaks <- c("1","]1, 10]","]10, 100]", "]100, 1000]" ,"]1000, 10000]","]10000, Inf]")
+   data2plot<- reshape2::melt(data2plot, id.vars=c("interval","sample_id"))
+   colorBreaks <-  c("1"="#FFD92F","]1, 10]"="#A6D854","]10, 100]"= "#E78AC3" , "]100, 1000]"="#8DA0CB" ,"]1000, 10000]"="#FC8D62","]10000, Inf]"="#66C2A5")
+   plotBreaks <- c("1","]1, 10]","]10, 100]", "]100, 1000]" ,"]1000, 10000]","]10000, Inf]")
 
 
     p1 <- ggplot2::ggplot(data = data2plot[data2plot$variable == "percent",], ggplot2::aes(x = sample_id, y =value, fill=factor(interval, levels=rev(plotBreaks))) ,  alpha=.7) +
@@ -1225,10 +1234,9 @@ plotCountIntervals <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3a
       ggplot2::ylim(0, 1) +
       ggplot2::scale_fill_manual(values=colorBreaks)+
       theme_RepSeq()+
-      ggplot2::theme( axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
-                     legend.position = "right",
-                     legend.key.size = ggplot2::unit(.7, 'cm'),
-                     legend.text = ggplot2::element_text(size=11))+
+      ggplot2::theme( axis.text.x = ggplot2::element_text(angle = 45, hjust = 1, size=8),
+                      axis.text.y = ggplot2::element_text(size=8),
+                      legend.position = "none")+
       ggplot2::labs(subtitle = "Cumulative frequency")+
       ggplot2::xlab("")+ggplot2::ylab("")
 
@@ -1237,11 +1245,13 @@ plotCountIntervals <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3a
       ggplot2::ylim(0, 1) +
       ggplot2::scale_fill_manual(values=colorBreaks)+
       theme_RepSeq()+
-      ggplot2::theme( axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
+      ggplot2::theme( axis.text.x = ggplot2::element_text(angle = 45, hjust = 1,size=8),
+                      axis.text.y = ggplot2::element_text(size=8),
                       legend.position = "right",
-                     # legend.key.size = ggplot2::unit(.7, 'cm'),
-                      #legend.text = ggplot2::element_text(size=11),
-                      legend.direction = "horizontal")+
+                      legend.direction = "vertical",
+                      legend.background = ggplot2::element_blank(),
+                      legend.text = ggplot2::element_text(size=8),
+                      legend.justification = "center")+
       ggplot2::labs(subtitle = "Distribution")+
       ggplot2::xlab("")+ggplot2::ylab("")
 
@@ -1249,8 +1259,7 @@ plotCountIntervals <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3a
     g <- gridExtra::grid.arrange(gridExtra::arrangeGrob(p2 + ggplot2::theme(legend.position="none"),
                                    p1 + ggplot2::theme(legend.position="none"),
                                    nrow=1),
-                       legend, nrow=2,heights=c(10, 1))
-    grid::grid.draw(g)
+                       legend, nrow=1,widths=c(8, 1.3))
      }
 
 }
