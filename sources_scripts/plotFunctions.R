@@ -316,7 +316,6 @@ plotIndGeneUsage <- function(x,  sampleName = NULL, level = c("V", "J"), scale =
 #'
 #' plotGeneUsage(x = RepSeqData, level = "J", scale = "count", groupBy = "cell_subset")
 #'
-#' plotGeneUsage(x = RepSeqData, level = "V",  scale = "frequency", groupBy=c("cell_subset", "sex"))
 #'
 #'
 plotGeneUsage <- function(x, level = c("V", "J"), scale = c("count", "frequency"), 
@@ -366,7 +365,7 @@ plotGeneUsage <- function(x, level = c("V", "J"), scale = c("count", "frequency"
     stat.test <- data2plot %>%
       dplyr::select(all_of(levelChoice), sample_id, all_of(scaleChoice), Group, Group2) %>%
       dplyr::group_by(get(levelChoice), Group2) %>%
-      rstatix::t_test(formula=as.formula(paste(paste(scaleChoice),"Group",sep="~"))) %>%
+      rstatix::wilcox_test(formula=as.formula(paste(paste(scaleChoice),"Group",sep="~"))) %>%
       rstatix::adjust_pvalue() %>%
       rstatix::add_significance() %>%
       rstatix::add_y_position() 
@@ -374,7 +373,7 @@ plotGeneUsage <- function(x, level = c("V", "J"), scale = c("count", "frequency"
     stat.test <- data2plot %>%
       dplyr::select(all_of(levelChoice), sample_id, all_of(scaleChoice), Group, Group2, Group3) %>%
       dplyr::group_by(get(levelChoice), Group2, Group3) %>%
-      rstatix::t_test(formula=as.formula(paste(paste(scaleChoice),"Group",sep="~"))) %>%
+      rstatix::wilcox_test(formula=as.formula(paste(paste(scaleChoice),"Group",sep="~"))) %>%
       rstatix::adjust_pvalue() %>%
       rstatix::add_significance() %>%
       rstatix::add_y_position() 
@@ -382,7 +381,7 @@ plotGeneUsage <- function(x, level = c("V", "J"), scale = c("count", "frequency"
   
   p <- ggplot2::ggplot(data = data2plot, ggplot2::aes_string(x=levelChoice, y = scaleChoice))+
     ggplot2::geom_boxplot(ggplot2::aes_string(fill= "Group"), width=.4,notchwidth = .4, outlier.size = 1) +
-    {if(length(groupBy)==2)list(ggplot2::facet_grid(~Group2))} +
+    {if(length(groupBy)==2)list(ggplot2::facet_grid(Group2~.))} +
     {if(length(groupBy)==3)list(ggplot2::facet_grid(Group2~Group3))} +
     ggplot2::scale_fill_manual(values=label_colors[[groupBy[[1]]]])+
     theme_RepSeq()+
