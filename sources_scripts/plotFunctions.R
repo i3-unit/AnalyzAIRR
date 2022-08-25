@@ -930,14 +930,14 @@ plotDiversity <- function(x, index=c("chao1","shannon","simpson", "invsimpson","
     } else if(length(groupBy)==2){
       stat.test <- diversity_m %>%
         group_by(groupB) %>%
-        rstatix::t_test(formula=method ~ group) %>%
+        ggpubr::compare_means(formula=method ~ group) %>%
         rstatix::adjust_pvalue() %>%
         rstatix::add_significance() %>%
         rstatix::add_xy_position(data=diversity_m, formula=method ~ group)
     } else if(length(groupBy)==3){
       stat.test <- diversity_m %>%
         group_by(groupB, groupC) %>%
-        rstatix::t_test(formula=method ~ group) %>%
+        ggpubr::compare_means(formula=method ~ group) %>%
         rstatix::adjust_pvalue() %>%
         rstatix::add_significance() %>%
         rstatix::add_xy_position(data=diversity_m, formula=method ~ group)
