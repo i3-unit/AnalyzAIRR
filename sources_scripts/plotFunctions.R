@@ -882,7 +882,7 @@ plotScatter <- function(x, sampleNames = NULL,
 #' @param x an object of class \code{\linkS4class{RepSeqExperiment}}
 #' @param index a character specifying the diversity index to be estimated. Should be one of "chao1", shannon","invsimpson","simpson" or "gini".
 #' @param level a character specifying the level of the repertoire on which the diversity should be estimated. Should be one of "clone","clonotype", "V", "J", "VJ", "CDR3nt" or "CDR3aa".
-#' @param groupBy character indicating the groups to be compared. If not specified, no comparative statistical tests will be performed, and calculated values for each sample_id will be represented.
+#' @param groupBy a character indicating one or multiple groups to be compared. A Wilcoxon test is thus performed and adjusted p-values using the Holm method are shown. Colors are attributed to the different groups within the first column, and a facet is applied on the second column. If not specified, no statistical tests will be performed, and calculated values for each sample_id will be represented. 
 #' @param label_colors a list of colors for each variable in ColorBy. See \code{\link{plotColors}}. If NULL, default colors are used.
 #' @export
 #' @examples
@@ -1035,7 +1035,7 @@ plotRarefaction <- function(x, colorBy=NULL, label_colors=NULL){
 #' Samples can be statistically compared in each interval using the \code{groupBy} parameter.
 #' @param x an object of class  \code{\linkS4class{RepSeqExperiment}}
 #' @param level a character specifying the level of the repertoire to be taken into account when calculating the clonal distribution. Should be one of clone","clonotype", "CDR3nt" or "CDR3aa".
-#' @param groupBy a character indicating a column name in mData. Colors are thus attributed to the different groups within this column, and statistical tests are performed between the chosen groups. The chosen column must be of class factor.
+#' @param groupBy a character indicating one or multiple column names in mData. Colors are thus attributed to the different groups within the first column, and a facet is applied on the second column. Statistical tests are performed between the chosen groups. The chosen column must be of class factor.
 #' @param label_colors a list of colors for each variable in groupBy See \code{\link{plotColors}}. If NULL, default colors are used.
 #' @export
 #' @examples
@@ -1293,7 +1293,7 @@ plotCountIntervals <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3a
 #' They can be compared between groups of samples or simply plotted for each sample.
 #'
 #' @param x an object of class \code{\linkS4class{RepSeqExperiment}}
-#' @param groupBy a character indicating the groups to be compared. A Wilcoxon test is thus performed and adjusted p-values using the Holm method are shown. If not specified, no statistical tests will be performed, and calculated values for each sample_id will be represented.
+#' @param groupBy a character indicating one or multiple groups to be compared. A Wilcoxon test is thus performed and adjusted p-values using the Holm method are shown. Colors are attributed to the different groups within the first column, and a facet is applied on the second column. If not specified, no statistical tests will be performed, and calculated values for each sample_id will be represented. 
 #' @param label_colors a list of colors for each variable in groupBy See \code{\link{plotColors}}. If NULL, default colors are used.
 #' @param stat a character specifying the statistic to plot. Should one of the statistics in the metaData slot.
 #' @export
