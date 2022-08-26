@@ -32,7 +32,6 @@ data(RepSeqData)
 
 plotGeneUsage(x = RepSeqData, level = "J", scale = "count", groupBy = "cell_subset")
 
-plotGeneUsage(x = RepSeqData, level = "V",  scale = "frequency", groupBy=c("cell_subset", "sex"))
 
 
 }
