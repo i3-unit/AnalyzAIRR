@@ -16,7 +16,7 @@ plotCountIntervals(
 
 \item{level}{a character specifying the level of the repertoire to be taken into account when calculating the clonal distribution. Should be one of clone","clonotype", "CDR3nt" or "CDR3aa".}
 
-\item{groupBy}{a character indicating one or multiple column names in mData. Colors are thus attributed to the different groups within the first column, and a facet is applied on the second column. Statistical tests are performed between the chosen groups. The chosen column must be of class factor.}
+\item{groupBy}{a character indicating a column name in mData. Colors are thus attributed to the different groups within this column, and statistical tests are performed between the chosen groups. The chosen column must be of class factor.}
 
 \item{label_colors}{a list of colors for each variable in groupBy See \code{\link{plotColors}}. If NULL, default colors are used.}
 }

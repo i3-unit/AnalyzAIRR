@@ -16,7 +16,7 @@ plotStatistics(
 
 \item{stat}{a character specifying the statistic to plot. Should one of the statistics in the metaData slot.}
 
-\item{groupBy}{a character indicating one or multiple groups to be compared. A Wilcoxon test is thus performed and adjusted p-values using the Holm method are shown. Colors are attributed to the different groups within the first column, and a facet is applied on the second column. If not specified, no statistical tests will be performed, and calculated values for each sample_id will be represented.}
+\item{groupBy}{a character indicating the groups to be compared. A Wilcoxon test is thus performed and adjusted p-values using the Holm method are shown. If not specified, no statistical tests will be performed, and calculated values for each sample_id will be represented.}
 
 \item{label_colors}{a list of colors for each variable in groupBy See \code{\link{plotColors}}. If NULL, default colors are used.}
 }

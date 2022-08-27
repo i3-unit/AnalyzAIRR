@@ -19,7 +19,7 @@ plotDiversity(
 
 \item{level}{a character specifying the level of the repertoire on which the diversity should be estimated. Should be one of "clone","clonotype", "V", "J", "VJ", "CDR3nt" or "CDR3aa".}
 
-\item{groupBy}{a character indicating one or multiple groups to be compared. A Wilcoxon test is thus performed and adjusted p-values using the Holm method are shown. Colors are attributed to the different groups within the first column, and a facet is applied on the second column. If not specified, no statistical tests will be performed, and calculated values for each sample_id will be represented.}
+\item{groupBy}{character indicating the groups to be compared. If not specified, no comparative statistical tests will be performed, and calculated values for each sample_id will be represented.}
 
 \item{label_colors}{a list of colors for each variable in ColorBy. See \code{\link{plotColors}}. If NULL, default colors are used.}
 }
