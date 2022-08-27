@@ -316,7 +316,6 @@ plotIndGeneUsage <- function(x,  sampleName = NULL, level = c("V", "J"), scale =
 #'
 #' plotGeneUsage(x = RepSeqData, level = "J", scale = "count", groupBy = "cell_subset")
 #'
-#' plotGeneUsage(x = RepSeqData, level = "V",  scale = "frequency", groupBy=c("cell_subset", "sex"))
 #'
 #'
 plotGeneUsage <- function(x, level = c("V", "J"), scale = c("count", "frequency"), 
@@ -366,7 +365,7 @@ plotGeneUsage <- function(x, level = c("V", "J"), scale = c("count", "frequency"
     stat.test <- data2plot %>%
       dplyr::select(all_of(levelChoice), sample_id, all_of(scaleChoice), Group, Group2) %>%
       dplyr::group_by(get(levelChoice), Group2) %>%
-      rstatix::t_test(formula=as.formula(paste(paste(scaleChoice),"Group",sep="~"))) %>%
+      rstatix::wilcox_test(formula=as.formula(paste(paste(scaleChoice),"Group",sep="~"))) %>%
       rstatix::adjust_pvalue() %>%
       rstatix::add_significance() %>%
       rstatix::add_y_position() 
@@ -374,7 +373,7 @@ plotGeneUsage <- function(x, level = c("V", "J"), scale = c("count", "frequency"
     stat.test <- data2plot %>%
       dplyr::select(all_of(levelChoice), sample_id, all_of(scaleChoice), Group, Group2, Group3) %>%
       dplyr::group_by(get(levelChoice), Group2, Group3) %>%
-      rstatix::t_test(formula=as.formula(paste(paste(scaleChoice),"Group",sep="~"))) %>%
+      rstatix::wilcox_test(formula=as.formula(paste(paste(scaleChoice),"Group",sep="~"))) %>%
       rstatix::adjust_pvalue() %>%
       rstatix::add_significance() %>%
       rstatix::add_y_position() 
@@ -382,7 +381,7 @@ plotGeneUsage <- function(x, level = c("V", "J"), scale = c("count", "frequency"
   
   p <- ggplot2::ggplot(data = data2plot, ggplot2::aes_string(x=levelChoice, y = scaleChoice))+
     ggplot2::geom_boxplot(ggplot2::aes_string(fill= "Group"), width=.4,notchwidth = .4, outlier.size = 1) +
-    {if(length(groupBy)==2)list(ggplot2::facet_grid(~Group2))} +
+    {if(length(groupBy)==2)list(ggplot2::facet_grid(Group2~.))} +
     {if(length(groupBy)==3)list(ggplot2::facet_grid(Group2~Group3))} +
     ggplot2::scale_fill_manual(values=label_colors[[groupBy[[1]]]])+
     theme_RepSeq()+
@@ -882,7 +881,7 @@ plotScatter <- function(x, sampleNames = NULL,
 #' @param x an object of class \code{\linkS4class{RepSeqExperiment}}
 #' @param index a character specifying the diversity index to be estimated. Should be one of "chao1", shannon","invsimpson","simpson" or "gini".
 #' @param level a character specifying the level of the repertoire on which the diversity should be estimated. Should be one of "clone","clonotype", "V", "J", "VJ", "CDR3nt" or "CDR3aa".
-#' @param groupBy character indicating the groups to be compared. If not specified, no comparative statistical tests will be performed, and calculated values for each sample_id will be represented.
+#' @param groupBy a character indicating one or multiple groups to be compared. A Wilcoxon test is thus performed and adjusted p-values using the Holm method are shown. Colors are attributed to the different groups within the first column, and a facet is applied on the second column. If not specified, no statistical tests will be performed, and calculated values for each sample_id will be represented. 
 #' @param label_colors a list of colors for each variable in ColorBy. See \code{\link{plotColors}}. If NULL, default colors are used.
 #' @export
 #' @examples
@@ -930,14 +929,14 @@ plotDiversity <- function(x, index=c("chao1","shannon","simpson", "invsimpson","
     } else if(length(groupBy)==2){
       stat.test <- diversity_m %>%
         group_by(groupB) %>%
-        rstatix::t_test(formula=method ~ group) %>%
+        ggpubr::compare_means(formula=method ~ group) %>%
         rstatix::adjust_pvalue() %>%
         rstatix::add_significance() %>%
         rstatix::add_xy_position(data=diversity_m, formula=method ~ group)
     } else if(length(groupBy)==3){
       stat.test <- diversity_m %>%
         group_by(groupB, groupC) %>%
-        rstatix::t_test(formula=method ~ group) %>%
+        ggpubr::compare_means(formula=method ~ group) %>%
         rstatix::adjust_pvalue() %>%
         rstatix::add_significance() %>%
         rstatix::add_xy_position(data=diversity_m, formula=method ~ group)
@@ -1035,7 +1034,7 @@ plotRarefaction <- function(x, colorBy=NULL, label_colors=NULL){
 #' Samples can be statistically compared in each interval using the \code{groupBy} parameter.
 #' @param x an object of class  \code{\linkS4class{RepSeqExperiment}}
 #' @param level a character specifying the level of the repertoire to be taken into account when calculating the clonal distribution. Should be one of clone","clonotype", "CDR3nt" or "CDR3aa".
-#' @param groupBy a character indicating a column name in mData. Colors are thus attributed to the different groups within this column, and statistical tests are performed between the chosen groups. The chosen column must be of class factor.
+#' @param groupBy a character indicating one or multiple column names in mData. Colors are thus attributed to the different groups within the first column, and a facet is applied on the second column. Statistical tests are performed between the chosen groups. The chosen column must be of class factor.
 #' @param label_colors a list of colors for each variable in groupBy See \code{\link{plotColors}}. If NULL, default colors are used.
 #' @export
 #' @examples
@@ -1293,7 +1292,7 @@ plotCountIntervals <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3a
 #' They can be compared between groups of samples or simply plotted for each sample.
 #'
 #' @param x an object of class \code{\linkS4class{RepSeqExperiment}}
-#' @param groupBy a character indicating the groups to be compared. A Wilcoxon test is thus performed and adjusted p-values using the Holm method are shown. If not specified, no statistical tests will be performed, and calculated values for each sample_id will be represented.
+#' @param groupBy a character indicating one or multiple groups to be compared. A Wilcoxon test is thus performed and adjusted p-values using the Holm method are shown. Colors are attributed to the different groups within the first column, and a facet is applied on the second column. If not specified, no statistical tests will be performed, and calculated values for each sample_id will be represented. 
 #' @param label_colors a list of colors for each variable in groupBy See \code{\link{plotColors}}. If NULL, default colors are used.
 #' @param stat a character specifying the statistic to plot. Should one of the statistics in the metaData slot.
 #' @export

@@ -108,7 +108,8 @@ filterCount <- function(x, level=c("clone","clonotype","CDR3aa","CDR3nt"), n=1, 
       keep <- cts[, sum(count) <= n, by =  c(levelChoice,"sample_id")]
       keep <- keep[ V1==FALSE | !sample_id %in% sampleNames,]
     }  else {
-    keep <- cts[, sum(count) <= n, by =  c(levelChoice,"sample_id")][V1 == FALSE, ]}
+    keep <- cts[, sum(count) <= n, by =  c(levelChoice,"sample_id")][V1 == FALSE, ]
+    }
 
     res <- cts[keep, on = c(levelChoice,"sample_id")][, V1:=NULL]
     setkey(res, sample_id)
@@ -121,7 +122,7 @@ filterCount <- function(x, level=c("clone","clonotype","CDR3aa","CDR3nt"), n=1, 
     sdata <- data.frame(base::merge(metaData, stats, by = 0, sort = FALSE),
                         row.names=1,  stringsAsFactors = TRUE)
     
-    sdata <- sdata[match(rownames(metaData), rownames(stats)), ]
+    sdata <- sdata[order(match(rownames(sdata), rownames(stats))), ]
 
     out <- new("RepSeqExperiment",
                     assayData = res,

@@ -63,7 +63,6 @@
 #' @importFrom stats median sd as.formula var frequency cmdscale lag lm
 #' @importFrom grDevices colorRampPalette
 #' @importFrom dplyr %>% group_by summarize n mutate filter select rename
-#' @importFrom eulerr euler
 #' @importFrom ggrepel geom_text_repel
 #' @name AnalyzAIRR
 NULL
