@@ -23,7 +23,7 @@ BugReports: https://github.com/vanessajmh/AnalyzAIRR/issues
 LazyData: true
 VignetteBuilder: knitr
 Encoding: UTF-8
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 NeedsCompilation: yes
 biocViews: SystemsBiology, Sequencing, DifferentialExpression, QualityControl
 Packaged: 2021-03-02 09:01:16 UTC; phuong

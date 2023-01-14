@@ -67,7 +67,7 @@ diffExpGroup <- function(x, colGrp,
   if (length(colGrp) > 1)
     colGrp <- paste(colGrp, collapse="+")
   rownames(coldat) <- gsub("-", ".", rownames(coldat))
-  cts <- data.frame(cts, row.names=1)
+  cts <- data.frame(cts, row.names=1, check.names = FALSE)
   colnames(cts) <- gsub("-", ".", colnames(cts))
   cts <- cts[, match(rownames(coldat),colnames(cts))]
   dds <- DESeq2::DESeqDataSetFromMatrix(countData = cts, colData = coldat, design = as.formula(paste0("~" , colGrp)))

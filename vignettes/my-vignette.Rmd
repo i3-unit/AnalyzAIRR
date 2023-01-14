@@ -1,7 +1,7 @@
 ---
 title: "AnalyzAIRR"
 author:
-- name: V. Mhanna, G. Pires, N. Tchitchek, D. Klatzmann, A. Six, E. Mariotti-Ferrandiz
+- name: V. Mhanna, G. Pires, G. Bohl, K. El Soufi, <br> N. Tchitchek, D. Klatzmann, A. Six, E. Mariotti-Ferrandiz
   affiliation: Sorbonne Université, INSERM, Immunology-Immunopathology-Immunotherapy (i3), Paris, France
 - name: H. P. Pham
   affiliation: Parean Biotechnologies

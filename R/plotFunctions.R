@@ -353,43 +353,39 @@ plotGeneUsage <- function(x, level = c("V", "J"), scale = c("count", "frequency"
     data2plot[, Group3 := lapply(.SD, function(x) sdata[x, groupBy[[3]]]), .SDcols = "sample_id"]
   }
   
-  if(length(groupBy)==1){
     stat.test <- data2plot %>%
-      dplyr::select(all_of(levelChoice), sample_id, all_of(scaleChoice), Group) %>%
+      dplyr::select(all_of(levelChoice), sample_id, all_of(scaleChoice), tidyr::starts_with("Gr")) %>%
       dplyr::group_by(get(levelChoice)) %>%
       rstatix::wilcox_test(formula=as.formula(paste(paste(scaleChoice),"Group",sep="~"))) %>%
       rstatix::adjust_pvalue() %>%
       rstatix::add_significance() %>%
-      rstatix::add_y_position()  
-  } else if(length(groupBy)==2){
-    stat.test <- data2plot %>%
-      dplyr::select(all_of(levelChoice), sample_id, all_of(scaleChoice), Group, Group2) %>%
-      dplyr::group_by(get(levelChoice), Group2) %>%
-      rstatix::wilcox_test(formula=as.formula(paste(paste(scaleChoice),"Group",sep="~"))) %>%
-      rstatix::adjust_pvalue() %>%
-      rstatix::add_significance() %>%
       rstatix::add_y_position() 
-  } else if(length(groupBy)==3){
-    stat.test <- data2plot %>%
-      dplyr::select(all_of(levelChoice), sample_id, all_of(scaleChoice), Group, Group2, Group3) %>%
-      dplyr::group_by(get(levelChoice), Group2, Group3) %>%
-      rstatix::wilcox_test(formula=as.formula(paste(paste(scaleChoice),"Group",sep="~"))) %>%
-      rstatix::adjust_pvalue() %>%
-      rstatix::add_significance() %>%
-      rstatix::add_y_position() 
-  }
   
-  p <- ggplot2::ggplot(data = data2plot, ggplot2::aes_string(x=levelChoice, y = scaleChoice))+
-    ggplot2::geom_boxplot(ggplot2::aes_string(fill= "Group"), width=.4,notchwidth = .4, outlier.size = 1) +
+  data2plot.summary<- data2plot %>%
+         dplyr::group_by_at(vars(tidyr::starts_with("Gr"), paste(levelChoice))) %>%
+          dplyr::summarise(
+            sd = sd(get(scaleChoice), na.rm = TRUE),
+            mean = mean(get(scaleChoice)),
+            n = n(),
+            se = sd / sqrt(n)
+          ) %>%
+    dplyr::rename(levelChoice=paste(levelChoice))
+  
+  p <-ggplot2::ggplot(data2plot.summary, 
+                      aes(x = levelChoice, y = mean ))+
+       ggplot2::geom_bar(aes(fill=Group), stat="identity", position = position_dodge()) +
+      ggplot2::geom_errorbar(aes(ymin=mean-se, ymax=mean+se, group=Group), width=.2,position=position_dodge(.9))+
     {if(length(groupBy)==2)list(ggplot2::facet_grid(Group2~.))} +
     {if(length(groupBy)==3)list(ggplot2::facet_grid(Group2~Group3))} +
     ggplot2::scale_fill_manual(values=label_colors[[groupBy[[1]]]])+
     theme_RepSeq()+
     ggplot2::xlab("") +
-    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1,size=4),
-                   axis.text.y = ggplot2::element_text(size=8))+
-    ggpubr::stat_pvalue_manual(stat.test, label = "p.adj.signif",
-                             tip.length = 0, x="get(levelChoice)", hide.ns = TRUE)
+    ggplot2::ylab(paste(scaleChoice)) +
+    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, hjust = 1,size=8),
+                   axis.text.y = ggplot2::element_text(size=8),
+                   legend.position = "top")+
+    ggpubr::stat_pvalue_manual(stat.test, label = "p.adj.signif", 
+                               tip.length = 0,x="get(levelChoice)", hide.ns = TRUE)
   
   return(p)
 }
