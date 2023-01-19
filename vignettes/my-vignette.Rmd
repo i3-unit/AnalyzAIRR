@@ -395,11 +395,11 @@ Different functions were developed to manipulate, filter, and normalize samples 
 
 ## Filtering
 
-+ **Filter sequences based on their count in each sample.**
++ **Filter sequences based on their count in each sample**
 
   `filterCount()` filters out sequences having a count below the chosen threshold. The function returns a RepSeqExperiment object that can be used to perform in-depth analyses on the remaining dataset
 
-+ **Extract sequences that are either shared across samples, or private to a single sample. **
++ **Extract sequences that are either shared across samples, or private to a single sample**
 
   `getPublic()` allows to subset a RepSeqExperiment object in order to keep sequences that are shared by: 
 
@@ -427,7 +427,7 @@ getPublic(x=RepSeqData, level="clone", group=c("cell_subset", "amTreg"))
 
   `getProductive()` and `getUnproductive()` allow the extraction of productive and unproductive sequences respectively in case no filters were applied during the building of the RepSeqExperiment object.
 
-+ **Exclude one or multiple samples from a RepSeqExperiment object.**
++ **Exclude one or multiple samples from a RepSeqExperiment object**
 
   `dropSample()` offers the possibility to filter out one or multiple repertoires by specifying their corresponding sample_id. 
  These repertoires can be ones identified as outliers during the exploratory analysis routine described further below.
@@ -459,7 +459,7 @@ RepSeqData_sh<- ShannonNorm(x=RepSeqData)
 
 Eliminated sequences in each sample are stored in the **otherData** slot.
 
-# Exploratory statistics {#Exploratory}
+# Exploratory statistics
 
 Data characterization can be performed using different exploratory functions proposed by **AnalyzAIRR**.
 
@@ -483,8 +483,9 @@ plotStatistics(x = RepSeqData,
                groupBy = NULL)
 ```
 </div>
+</div>
 
-+  **Calculate the count or the proportion of a chosen repertoire level.**
++  **Calculate the count or the proportion of a chosen repertoire level**
 
    `countFeatures()` returns the calculated values for all the samples within the RepSeqExperiment object.
 
@@ -518,23 +519,23 @@ plotRarefaction(x=RepSeqData, colorBy="sample_id")
 <figcaption align = "center"><em class="special">Figure 3: Rarefaction curves plotting the number of clonotypes against the number of sequences in a sample.</em></figcaption>
 <br>
 
-+  **Calculation of diversity indices.**
++  **Calculation of diversity indices**
 
    The function `diversityIndices()` computes a set of diversity indices on a chosen repertoire level for each sample. The calculated indices are the following:
 
    - **Shannon index**: Calculates the proportional abundance of species in a repertoire (Shannon, 1948).
 
-  - **Simpson index**: a measure taking into account the number of species present as well as their abundance. It gives relatively little weight to the rare species and more weight to the frequent ones (Simpson, 1949).
+   - **Simpson index**: a measure taking into account the number of species present as well as their abundance. It gives relatively little weight to the rare species and more weight to the frequent ones (Simpson, 1949).
 
-  - **Inverse Simpson index**: Is the effective number of species that is obtained when the weighted arithmetic mean is used to quantify average proportional abundance of species.
+   - **Inverse Simpson index**: Is the effective number of species that is obtained when the weighted arithmetic mean is used to quantify average proportional abundance of species.
 
-  - **Berger-Parker index**: Expresses the proportional importance of the most abundant species. This metric is highly biased by sample size and richness (Berger and Parker 1970).
+   - **Berger-Parker index**: Expresses the proportional importance of the most abundant species. This metric is highly biased by sample size and richness (Berger and Parker 1970).
 
-  - **Gini coefficient**: Measures the degree of inequality in a distribution of abundances (Gini, 1921).
+   - **Gini coefficient**: Measures the degree of inequality in a distribution of abundances (Gini, 1921).
 
-  - **Chao1**: Estimates undetected species using the information on the rarest species (the numbers of singletons and doubletons) (Chao, 1984).
+   - **Chao1**: Estimates undetected species using the information on the rarest species (the numbers of singletons and doubletons) (Chao, 1984).
 
-  - **Improved Chao1**: An extension of **Chao1** which uses additional information, namely, the numbers of tripletons and quadrupletons  (Chiu et al., 2014).
+   - **Improved Chao1**: An extension of **Chao1** which uses additional information, namely, the numbers of tripletons and quadrupletons  (Chiu et al., 2014).
 
 ```{r indices, echo = TRUE, eval=F}
 diversityIndices(x=RepSeqData, level="clone")
@@ -633,8 +634,9 @@ plotCountIntervals(x=RepSeqData, level="clone")
 plotRankDistrib(x=RepSeqData,level="clone", colorBy="sample_id", grouped=F, scale="frequency")
 ```
 <figcaption align = "center"><em class="special">Figure 8: Plotted is the distribution of the clones as a function of their occurrence rank within each sample.</em></figcaption>
+<div>
 
-# One-sample analysis
+# One-sample analysis 
 
 Descriptive analyses of each repertoire can be performed individually.
 These analyses include the ones previously described as well as other metrics.
@@ -649,7 +651,8 @@ plotIndCountIntervals(RepSeqData,level = "clone", sampleName="tripod-30-813")
 ```
 <figcaption align = "center"><em class="special">Figure 9: Barplots showing the proportion (upper plot) and the cumulative frequency (bottom plot) of clones within each count interval for a selected sample.</em></figcaption>
 <br>
-* **Analyze V and J gene usages**
+
++ **Analyze V and J gene usages**
 
     `plotIndGeneUsage()`computes V and J gene usages.
   The parameter `scale` allows to choose whether to compute the count or the frequency.

@@ -293,7 +293,7 @@ plotIndGeneUsage <- function(x,  sampleName = NULL, level = c("V", "J"), scale =
     ggplot2::scale_fill_manual(values=colorRampPalette(RColorBrewer::brewer.pal(8, "Set2"))(nrow(unique(data2plot[, 1]))))+
     theme_RepSeq()+
     ggplot2::xlab("") +
-    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1,size=4),
+    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, hjust = 1,size=8),
                    axis.text.y = ggplot2::element_text(size=8))
 
 
@@ -837,11 +837,11 @@ plotScatter <- function(x, sampleNames = NULL,
   , FUN.VALUE = character(1))
   data2plot<- data.frame(data2plot, check.names = FALSE)
   formulas <- y ~ x
-  p <- ggplot2::ggplot(data2plot, ggplot2::aes_string(x = sampleNames[1], y = sampleNames[2], label = levelChoice)) +
+  p <- ggplot2::ggplot(data2plot, ggplot2::aes_string(x = sampleNames[1], y = sampleNames[2])) +
     ggplot2::geom_count(size = 1.5, shape=21, alpha=.5) +
     ggplot2::geom_smooth(method="lm", se=FALSE, linetype="dashed", color="red")+
     theme_RepSeq()+
-    ggpmisc::stat_poly_eq(ggplot2::aes(label=paste(stat(adj.rr.label),stat(p.value.label),sep = "~~~~")),
+    ggpmisc::stat_poly_eq(ggplot2::aes(label=paste(ggplot2::after_stat(adj.rr.label),ggplot2::after_stat(p.value.label),sep = "~~~~")),
                           formula=formulas,
                           parse = TRUE)+
     ggplot2::theme(legend.position = "right")
