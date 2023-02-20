@@ -563,12 +563,13 @@ getUnproductive <- function(x) {
 #' colors <- plotColors(x = RepSeqData)
 #'
 plotColors<- function(x){
-  qual_col_pals = RColorBrewer::brewer.pal.info[RColorBrewer::brewer.pal.info$maxcolors  == 8 & RColorBrewer::brewer.pal.info$colorblind == 'TRUE',]
-  PAIRED = RColorBrewer::brewer.pal(n = 12, name = 'Paired')[c(2,4,6,8,10,12,1,3,5,7,9,11)]
-  
-  mycolors = c(as.vector(unlist(mapply(RColorBrewer::brewer.pal, qual_col_pals$maxcolors, rownames(qual_col_pals)))), PAIRED)
-
+  # qual_col_pals = RColorBrewer::brewer.pal.info[RColorBrewer::brewer.pal.info$maxcolors  == 8 & RColorBrewer::brewer.pal.info$colorblind == 'TRUE',]
+  # PAIRED = RColorBrewer::brewer.pal(n = 12, name = 'Paired')[c(2,4,6,8,10,12,1,3,5,7,9,11)]
   # mycolors <- colorRampPalette(RColorBrewer::brewer.pal(12, "Set3"))(as.vector(as.matrix(mData(x)[, unlist(lapply(mData(x), is.factor)), drop = FALSE])) %>% unique() %>% length())
+  # mycolors = as.vector(unlist(mapply(RColorBrewer::brewer.pal, qual_col_pals$maxcolors, rownames(qual_col_pals))))
+
+  mycolors = as.vector(unlist(mapply(RColorBrewer::brewer.pal, RColorBrewer::brewer.pal.info$maxcolors, rownames(RColorBrewer::brewer.pal.info))))
+  mycolors=sample(mycolors, length(mycolors))
   names=as.vector(mData(x)[, unlist(lapply(mData(x), is.factor)), drop = FALSE]) %>% names()
   ann_colors<-vector("list")
   for(i in unique(names)){
