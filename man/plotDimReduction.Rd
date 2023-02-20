@@ -22,7 +22,7 @@ plotDimReduction(
 
 \item{method}{a character specifying the distance method to be computed. Should be specified only if the dim_method parameter is set to "MDS", and should be one of the following: "manhattan", "euclidean", "canberra", "clark", "bray", "kulczynski", "jaccard", "gower", "altGower", "morisita", "horn", "mountford", "raup", "binomial", "chao", "cao", "mahalanobis."}
 
-\item{colorBy}{a character specifying the column name in mData to be used to attribute group colors. If not specified, a color is attributed per sample_id.}
+\item{colorBy}{a character specifying the column name in mData to be used to attribute group colors.}
 
 \item{label_colors}{a list of colors for each factor column in metaData. See \code{\link{plotColors}}. If NULL, default colors are used.}
 

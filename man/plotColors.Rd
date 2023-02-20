@@ -4,7 +4,7 @@
 \alias{plotColors}
 \title{Color palette}
 \usage{
-plotColors(x)
+plotColors(x, samplenames = TRUE)
 }
 \arguments{
 \item{x}{an object of class \code{\linkS4class{RepSeqExperiment}}}

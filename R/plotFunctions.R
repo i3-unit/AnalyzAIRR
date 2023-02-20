@@ -194,9 +194,7 @@ plotRenyiIndex <- function(x, alpha = c(0, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, In
   if (length(alpha) < 2) stop("At least 2 alpha values are needed.")
   if(is.null(colorBy)) stop("need to specify a group column from mData")
 
-  if (is.null(label_colors)) {
-    label_colors = plotColors(x) }
-
+ 
   variable=value <- NULL
   sdata <- mData(x)
   sNames <- rownames(sdata)
@@ -210,6 +208,11 @@ plotRenyiIndex <- function(x, alpha = c(0, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, In
   
   
   if (grouped) {
+    
+    if (is.null(label_colors)) {
+      label_colors = plotColors(x, samplenames = FALSE) 
+      }
+    
         aucs <- data2plot %>%
           dplyr::group_by(sample_id) %>%
           dplyr::mutate(AUC=MESS::auc(x=as.numeric(variable2), y=value))
@@ -236,7 +239,25 @@ plotRenyiIndex <- function(x, alpha = c(0, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, In
             ggplot2::scale_color_manual(values=label_colors[[colorBy]])+
             ggplot2::scale_fill_manual(values=label_colors[[colorBy]])+
             theme_RepSeq()+ggplot2::theme(legend.position="right", plot.subtitle = element_text(hjust=0.90, vjust=-10))
+    } else if (colorBy!="sample_id") {
+      if (is.null(label_colors)) {
+        label_colors = plotColors(x, samplenames = FALSE) 
+      }
+     
+      p<- ggplot2::ggplot(data = data2plot, ggplot2::aes(x = variable2, y = value, color=Group)) +
+        ggplot2::geom_line(ggplot2::aes(group = sample_id), size = .8) +
+        ggplot2::geom_point( shape=21, size=2)+
+        ggplot2::xlab("alpha")+
+        ggplot2::ylab("Renyi's Entropy") +
+        ggplot2::scale_color_manual(values=label_colors[[colorBy]])+
+        ggplot2::scale_fill_manual(values=label_colors[[colorBy]])+
+        theme_RepSeq()+ggplot2::theme(legend.position="right")
     } else {
+      
+      if (is.null(label_colors)) {
+        label_colors = plotColors(x, samplenames = TRUE) 
+      }
+      
       p<- ggplot2::ggplot(data = data2plot, ggplot2::aes(x = variable2, y = value, color=Group)) +
         ggplot2::geom_line(ggplot2::aes(group = sample_id), size = .8) +
         ggplot2::geom_point( shape=21, size=2)+
@@ -325,8 +346,9 @@ plotGeneUsage <- function(x, level = c("V", "J"), scale = c("count", "frequency"
   if (missing(x)) stop("x is missing.")
   if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected.")
   if (is.null(groupBy)) stop("a group column from the metadata is expected.")
-  if (is.null(label_colors)) {
-    label_colors = plotColors(x)
+ 
+   if (is.null(label_colors)) {
+    label_colors = plotColors(x, samplenames = FALSE)
   }
   
   levelChoice <- match.arg(level)
@@ -601,10 +623,10 @@ plotDissimilarityMatrix <- function(x, level = c("clone","clonotype", "V", "J", 
   tmp <- data.table::copy(assay(x))[, ..cols]
   sdata <- mData(x)
   sNames <- rownames(sdata)
-  groups <- sdata[, unlist(lapply(sdata, is.factor)), drop = FALSE]
+  groups <- sdata[, unlist(lapply(sdata, is.factor)), drop = FALSE][-1]
 
   if (is.null(label_colors)) {
-    label_colors= plotColors(x)
+    label_colors= plotColors(x, samplenames = FALSE)
   }
 
   dat <- data.table::dcast(data = tmp, paste(levelChoice, "~sample_id"), value.var = "count", fun.aggregate = sum)
@@ -652,10 +674,6 @@ plotRankDistrib <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3aa")
   if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected.")
   if(is.null(colorBy)) stop("need to specify a column from mData. Can be the sample_id column")
 
-  if (is.null(label_colors)) {
-    label_colors = plotColors(x)
-  }
-
   scl <- match.arg(scale)
   levelChoice <- match.arg(level)
   sName <- rownames(mData(x))
@@ -666,6 +684,11 @@ plotRankDistrib <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3aa")
   counts[, group := lapply(.SD, function(x) sdata[x, colorBy]), .SDcols = "sample_id"]
   
   if (grouped) {
+    
+    if (is.null(label_colors)) {
+      label_colors = plotColors(x, samplenames = FALSE)
+    }
+    
     aucs <- counts %>%
       dplyr::group_by(sample_id) %>%
       dplyr::mutate(AUC=MESS::auc(x=rank, y=count))
@@ -702,8 +725,12 @@ plotRankDistrib <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3aa")
       theme_RepSeq()+
       ggplot2::theme(legend.position = "right", plot.subtitle = element_text(hjust=0.90, vjust=-10))
 
-  } else {
-
+  } else if(colorBy!="sample_id") {
+    
+    if (is.null(label_colors)) {
+      label_colors = plotColors(x, samplenames = FALSE)
+    }
+    
     if (scl == "frequency"){
       counts <- counts %>% dplyr::group_by(sample_id) %>% dplyr::mutate(count = count/sum(count))
       counts <- data.table::setDT(counts)
@@ -721,6 +748,28 @@ plotRankDistrib <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3aa")
           ggplot2::theme( legend.position = "right")+
           ggplot2::ylab(paste(scl))
 
+  } else {
+    if (is.null(label_colors)) {
+      label_colors = plotColors(x, samplenames = TRUE)
+    }
+    
+    if (scl == "frequency"){
+      counts <- counts %>% dplyr::group_by(sample_id) %>% dplyr::mutate(count = count/sum(count))
+      counts <- data.table::setDT(counts)
+    } else {
+      counts <- counts
+    }
+    
+    p <-  ggplot2::ggplot(counts, ggplot2::aes(x = rank, y = count, colour = group)) +
+      ggplot2::geom_point(shape=21) +
+      ggplot2::geom_line(ggplot2::aes(group=sample_id))+
+      ggplot2::scale_color_manual(values=label_colors[[colorBy]])+
+      ggplot2::scale_fill_manual(values=label_colors[[colorBy]])+
+      ggplot2::scale_x_log10()+
+      theme_RepSeq()+
+      ggplot2::theme( legend.position = "right")+
+      ggplot2::ylab(paste(scl))
+    
   }
 
   return(p)
@@ -899,13 +948,14 @@ plotDiversity <- function(x, index=c("chao1","shannon","simpson", "invsimpson","
   if (missing(x)) stop("x is missing.")
   if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected.")
 
-  if (is.null(label_colors)) {
-    label_colors <- plotColors(x)
-  }
-
   diversity <- diversityIndices(x, level=levelChoice)
   diversity_m <- diversity %>% dplyr::select(sample_id, paste(index)) %>% dplyr::rename(method=paste(index))
+  
   if (!is.null(groupBy)){
+    if (is.null(label_colors)) {
+      label_colors <- plotColors(x, samplenames=FALSE)
+    }
+    
     if(length(groupBy)==1){
       diversity_m[, group := lapply(.SD, function(x) sdata[x, groupBy] ), .SDcols = "sample_id"]
     } else if(length(groupBy)==2){
@@ -952,6 +1002,10 @@ plotDiversity <- function(x, index=c("chao1","shannon","simpson", "invsimpson","
       ggprism::add_pvalue(stat.test,  label = "p.adj.signif", bracket.nudge.y = .01,tip.length = 0, step.increase = 0.1)
     
 }  else {
+  
+  if (is.null(label_colors)) {
+    label_colors <- plotColors(x, samplenames=TRUE)
+  }
 
   p<- ggplot2::ggplot(diversity_m,ggplot2::aes(x = sample_id, y = method, fill = sample_id)) +
     ggplot2::geom_bar(stat="identity", size=.5, color="black") +
@@ -992,13 +1046,15 @@ plotRarefaction <- function(x, colorBy=NULL, label_colors=NULL){
   if(is.null(colorBy)) stop("need to specify a group column from mData")
   raretab<- rarefactionTab(x)
 
-  if (is.null(label_colors)) {
-    label_colors= plotColors(x) 
-    }
-
   sdata <- mData(x)
   raretab[, group := lapply(.SD, function(x) sdata[x, colorBy] ), .SDcols = "sample_id"]
 
+  if(colorBy=="sample_id"){
+    
+    if (is.null(label_colors)) {
+      label_colors= plotColors(x, samplenames = TRUE) 
+    }
+    
   p <- ggplot2::ggplot(data = raretab, ggplot2::aes(x = x, y = y, fill = group, color = group)) +
     ggplot2::geom_line(ggplot2::aes(group=sample_id)) +
     ggplot2::guides(fill = "none") +
@@ -1013,7 +1069,29 @@ plotRarefaction <- function(x, colorBy=NULL, label_colors=NULL){
     theme_RepSeq()+
     ggplot2::theme(legend.position = "none")+
     ggplot2::scale_x_continuous(expand = ggplot2::expansion(mult = .1))
-  
+  } else {
+    
+    if (is.null(label_colors)) {
+      label_colors= plotColors(x, samplenames = FALSE) 
+    }
+    
+    p <- ggplot2::ggplot(data = raretab, ggplot2::aes(x = x, y = y, fill = group, color = group)) +
+      ggplot2::geom_line(ggplot2::aes(group=sample_id)) +
+      ggplot2::guides(fill = "none") +
+      ggplot2::labs(
+        x = "Number of sequences",
+        y = "Number of clonotypes") +
+      ggplot2::scale_color_manual(values=label_colors[[colorBy]])+
+      ggplot2::scale_fill_manual(values=label_colors[[colorBy]])+
+      ggrepel::geom_text_repel(data=raretab %>% group_by(sample_id) %>% dplyr::slice_max(x),
+                               nudge_x = -0.2, direction = "y", hjust = "left", ggplot2::aes(label = sample_id)
+      ) +
+      theme_RepSeq()+
+      ggplot2::theme(legend.position = "none")+
+      ggplot2::scale_x_continuous(expand = ggplot2::expansion(mult = .1))
+    
+    
+  }
 
   return(p)
 }
@@ -1061,7 +1139,7 @@ plotCountIntervals <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3a
   }
 
   if (is.null(label_colors)) {
-    label_colors = plotColors(x)
+    label_colors = plotColors(x, samplenames = FALSE)
   }
 
   ff<- data.frame(interval=c("1","]1, 10]","]10, 100]", "]100, 1000]","]1000, 10000]","]10000, Inf]"))
@@ -1309,11 +1387,12 @@ plotStatistics <- function(x, stat = c("nSequences", "clone", "clonotype","V", "
   if (missing(x)) stop("x is missing.")
   if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected.")
 
-  if (is.null(label_colors)) {
-    label_colors= plotColors(x)
-  }
 
   if (!is.null(groupBy)){
+    
+    if (is.null(label_colors)) {
+      label_colors= plotColors(x, samplenames=FALSE)
+    }
     
     if(length(groupBy)==1){
       sdata_m<- sdata %>% dplyr::select(sample_id, paste(groupBy),paste(stat))  %>% dplyr::rename(stats=paste(stat))
@@ -1376,6 +1455,10 @@ plotStatistics <- function(x, stat = c("nSequences", "clone", "clonotype","V", "
 
     }
   }  else {
+    
+    if (is.null(label_colors)) {
+      label_colors= plotColors(x, samplenames=TRUE)
+    }
     sdata_m<- sdata %>% dplyr::select(sample_id, paste(stat))  %>% dplyr::rename(stats=paste(stat))
 
     p<- ggplot2::ggplot(sdata_m,ggplot2::aes(x = sample_id, y = stats, fill = sample_id)) +
@@ -1426,10 +1509,10 @@ plotPerturbationScore <- function(x, ctrl.names=NULL,
     stop("ctrl.names is missing. A vector of characters containing the names of control samples is expected.")
 
   sdata <- mData(x)
-  groups <- sdata[, unlist(lapply(sdata, is.factor)), drop = FALSE]
+  groups <- sdata[, unlist(lapply(sdata, is.factor)), drop = FALSE][-1]
 
   if (is.null(label_colors)) {
-    label_colors = plotColors(x)
+    label_colors = plotColors(x,samplenames = FALSE)
   }
 
   per<- perturbationScore(x, ctrl.names, distance =distance)
@@ -1533,7 +1616,7 @@ plotVolcano <- function(x,
 #' @param x an object of class \code{\linkS4class{RepSeqExperiment}}
 #' @param level a character specifying the level of the repertoire on which the diversity should be estimated. Should be one of "clone","clonotype", "V", "J", "VJ", "CDR3nt" or "CDR3aa".
 #' @param method a character specifying the distance method to be computed. Should be specified only if the dim_method parameter is set to "MDS", and should be one of the following: "manhattan", "euclidean", "canberra", "clark", "bray", "kulczynski", "jaccard", "gower", "altGower", "morisita", "horn", "mountford", "raup", "binomial", "chao", "cao", "mahalanobis."
-#' @param colorBy a character specifying the column name in mData to be used to attribute group colors. If not specified, a color is attributed per sample_id.
+#' @param colorBy a character specifying the column name in mData to be used to attribute group colors.
 #' @param label_colors a list of colors for each factor column in metaData. See \code{\link{plotColors}}. If NULL, default colors are used.
 #' @param dim_method a character indicating the dimensional reduction method to be performed. Should be one of "PCA" or "MDS".
 #' @details Details on the proposed dissimilarity indices can be found in the vegan package:
@@ -1566,18 +1649,16 @@ plotDimReduction <- function(x, level = c("clone","clonotype", "V", "J", "VJ", "
   if (missing(method) && dim_method=="MDS") stop("method is missing.")
   if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected.")
 
-  if (is.null(label_colors)) {
-    label_colors = plotColors(x)
-  }
-
   sdata <- mData(x)
   sNames <- rownames(sdata)
 
-  if (is.null(colorBy)) {
-    colorBy <- "sample_id"
-  } else {
+  if (is.null(colorBy)) stop("a group column from the metadata must be specified.")
+  
     if (length(grep(colorBy, colnames(sdata))) == 0) colorBy <- "sample_id" else colorBy <- colorBy
-  }
+    if (is.null(label_colors)) {
+      label_colors = plotColors(x, samplenames = FALSE)
+    }
+    
 
   levelChoice <- match.arg(level)
   if(dim_method=="MDS"){
