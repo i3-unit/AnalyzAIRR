@@ -184,9 +184,9 @@ plotSpectratyping <- function(x, sampleName = NULL,
 #' data(RepSeqData)
 #' plotRenyiIndex(x = RepSeqData, level = "V", colorBy = "sex")
 #'
-#' plotRenyiIndex(x = RepSeqData, level = "J", colorBy = "sex", grouped=TRUE, groupBy="sex")
+#' plotRenyiIndex(x = RepSeqData, level = "J", colorBy = "sex", grouped=TRUE)
 #' 
-#' plotRenyiIndex(x = RepSeqData, level = "J", colorBy = "sex", grouped=TRUE, groupBy=c("sex", "cell_subset"))
+#' plotRenyiIndex(x = RepSeqData, level = "J", colorBy = c("sex", "cell_subset"), grouped=TRUE)
 #'
 plotRenyiIndex <- function(x, alpha = c(0, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, Inf),
                               level = c("clone","clonotype", "V", "J", "VJ", "CDR3nt","CDR3aa"),
@@ -217,9 +217,8 @@ plotRenyiIndex <- function(x, alpha = c(0, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, In
     data2plot[, Group := lapply(.SD, function(x) sdata[x, colorBy[[1]]]), .SDcols = "sample_id"]
     data2plot[, Group2 := lapply(.SD, function(x) sdata[x, colorBy[[2]]]), .SDcols = "sample_id"]
     data2plot[, Group3 := lapply(.SD, function(x) sdata[x, colorBy[[3]]]), .SDcols = "sample_id"]
-  } else {
-    data2plot[, Group := lapply(.SD, function(x) sdata[x, colorBy]), .SDcols = "sample_id"]
-  }
+  } 
+  
   colnames(data2plot)[1]<-"variable2"
   
   if (grouped) {
@@ -241,21 +240,21 @@ plotRenyiIndex <- function(x, alpha = c(0, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, In
         
         if(length(colorBy)==2) {
         auc_test <- data.frame(aucs) %>%
-                    group_by(Group2) %>%
+                    dplyr::group_by(Group2) %>%
                     rstatix::wilcox_test(formula = AUC ~ Group) %>%
                     rstatix::adjust_pvalue(method="holm") %>%
                     dplyr::mutate(stats=paste("Wilcoxon test, p.adj =", p.adj))
         } else if (length(colorBy)==3){
           auc_test <- data.frame(aucs) %>%
-            group_by(Group2,Group3) %>%
-            rstatix::wilcox_test(formula = AUC ~ Group) %>%
-            rstatix::adjust_pvalue(method="holm") %>%
-            dplyr::mutate(stats=paste("Wilcoxon test, p.adj =", p.adj))
-        } else {
+                      dplyr::group_by(Group2,Group3) %>%
+                      rstatix::wilcox_test(formula = AUC ~ Group) %>%
+                      rstatix::adjust_pvalue(method="holm") %>%
+                      dplyr::mutate(stats=paste("Wilcoxon test, p.adj =", p.adj))
+        } else if (length(colorBy)==1){
           auc_test <- data.frame(aucs) %>%
-            rstatix::wilcox_test(formula = AUC ~ Group) %>%
-            rstatix::adjust_pvalue(method="holm") %>%
-            dplyr::mutate(stats=paste("Wilcoxon test, p.adj =", p.adj))
+                      rstatix::wilcox_test(formula = AUC ~ Group) %>%
+                      rstatix::adjust_pvalue(method="holm") %>%
+                      dplyr::mutate(stats=paste("Wilcoxon test, p.adj =", p.adj))
         }
         
       
@@ -915,9 +914,6 @@ plotVenn <- function(x, level = c("clone","clonotype", "V", "J", "VJ", "CDR3nt",
    ggplot2::scale_fill_distiller(palette = "RdBu")+
    ggplot2::scale_color_manual(values=label_colors$sample_id)
  
- 
-
- 
  plot <- ggVennDiagram::plot_venn(list, label_alpha = 0,edge_lty="solid",
                                   show_intersect=F,label="both",label_percent_digit = 1,
                                   set_size=3,edge_size=.5 ,set_color="black",
@@ -1068,15 +1064,13 @@ plotDiversity <- function(x, index=c("chao1","shannon","simpson", "invsimpson","
         rstatix::add_xy_position(data=diversity_m, formula=method ~ group) 
     } else if(length(groupBy)==2){
       stat.test <- diversity_m %>%
-        group_by(groupB) %>%
-        ggpubr::compare_means(formula=method ~ group) %>%
+        ggpubr::compare_means(formula=method ~ group, group.by ="groupB") %>%
         rstatix::adjust_pvalue() %>%
         rstatix::add_significance() %>%
         rstatix::add_xy_position(data=diversity_m, formula=method ~ group)
     } else if(length(groupBy)==3){
       stat.test <- diversity_m %>%
-        group_by(groupB, groupC) %>%
-        ggpubr::compare_means(formula=method ~ group) %>%
+        ggpubr::compare_means(formula=method ~ group, group.by =c("groupB","groupC")) %>%
         rstatix::adjust_pvalue() %>%
         rstatix::add_significance() %>%
         rstatix::add_xy_position(data=diversity_m, formula=method ~ group)
@@ -1157,7 +1151,7 @@ plotRarefaction <- function(x, colorBy=NULL, label_colors=NULL){
       y = "Number of clonotypes") +
     ggplot2::scale_color_manual(values=label_colors[[colorBy]])+
     ggplot2::scale_fill_manual(values=label_colors[[colorBy]])+
-    ggrepel::geom_text_repel(data=raretab %>% group_by(sample_id) %>% dplyr::slice_max(x),
+    ggrepel::geom_text_repel(data=raretab %>% dplyr::group_by(sample_id) %>% dplyr::slice_max(x),
       nudge_x = -0.2, direction = "y", hjust = "left", ggplot2::aes(label = sample_id)
     ) +
     theme_RepSeq()+
@@ -1177,7 +1171,7 @@ plotRarefaction <- function(x, colorBy=NULL, label_colors=NULL){
         y = "Number of clonotypes") +
       ggplot2::scale_color_manual(values=label_colors[[colorBy]])+
       ggplot2::scale_fill_manual(values=label_colors[[colorBy]])+
-      ggrepel::geom_text_repel(data=raretab %>% group_by(sample_id) %>% dplyr::slice_max(x),
+      ggrepel::geom_text_repel(data=raretab %>% dplyr::group_by(sample_id) %>% dplyr::slice_max(x),
                                nudge_x = -0.2, direction = "y", hjust = "left", ggplot2::aes(label = sample_id)
       ) +
       theme_RepSeq()+

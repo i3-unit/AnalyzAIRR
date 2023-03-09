@@ -766,7 +766,7 @@ plotRenyiIndex(x = RepSeqData,
 ```
 <figcaption align = "center"><em class="special">Figure 19: The Renyi values were calculated at the clone level for each of the pre-defined alpha values. For each specified group, the mean (circles) and stantard error (shade) are plotted. The area under the curve (AUC) is calculated for each sample and compared between chosen groups using a Wilcoxon test with Holm's correction.</em></figcaption>
 
-
+<br><br>
 
 + **Compare clonal distributions**
 
