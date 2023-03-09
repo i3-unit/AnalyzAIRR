@@ -12,7 +12,7 @@ AnalyzAIRR is a MiAIRR compliant R package for the analysis of bulk Ig/TCR reper
 
 The latest release of **AnalyzAIRR** can be installed from Github using **devtools**:
 ```r
-#install.packages(devtools)  
+#install.packages("devtools")  
 #devtools::install_github("vanessajmh/AnalyzAIRR")
 library(AnalyzAIRR)
 ```

@@ -42,7 +42,8 @@ alpha = 2 corresponds to the Simpson index and alpha=Inf corresponds to the Berg
 data(RepSeqData)
 plotRenyiIndex(x = RepSeqData, level = "V", colorBy = "sex")
 
-plotRenyiIndex(x = RepSeqData, level = "J", colorBy = "sex", grouped=TRUE)
+plotRenyiIndex(x = RepSeqData, level = "J", colorBy = "sex", grouped=TRUE, groupBy="sex")
 
+plotRenyiIndex(x = RepSeqData, level = "J", colorBy = "sex", grouped=TRUE, groupBy=c("sex", "cell_subset"))
 
 }

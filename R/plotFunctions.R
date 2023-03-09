@@ -4,30 +4,27 @@ utils::globalVariables(c("..adj.rr.label..", "Group", "group", "method", "ste", 
 #'
 #' @description  This function calculates the count or frequency of each combination by taking into account the weight of the chosen repertoire level: either "clone" or "clonotype".
 #'
-#' It offers two types of visualization of the calculated VJ usage in a given sample.
-#'
-#' - For prop=1, a heatmap with all the VJ combinations is plotted, with the V genes as columns and the J genes as rows.
-#'
-#' - For prop!=1, a circos plot is drawn showing the top proportions of VJ combinations specified in the prop parameter.
+#' It offers two types of visualization of the calculated VJ usage in a given sample, either a circos plot or a heatmap.
 #'
 #' @param x an object of class \code{\linkS4class{RepSeqExperiment}}
 #' @param sampleName a character specifying the sample_id to analyze. Default is NULL, which plots the first sample in the dataset.
 #' @param scale a character specifying whether to plot the VJ usage in "count" or "frequency".
 #' @param level a character specifying the level of the repertoire to be taken into account when calculate VJ usages. Should be one of "clone" or "clonotype".
 #' @param prop a numeric indicating the proportions of top VJ combinations to be plotted. It ranges from 0 to 1.
+#' @param plot a character indicating the type of visualization in which the results will be represented, either a heatmap or a circos plot.
 #' @examples
 #'
-#' data(RepSeqData)
-#' snames <- rownames(mData(RepSeqData))
-#'
-#' plotVJusage(x = RepSeqData, sampleName = NULL, scale = "count", level="clone", prop=1)
-#'
+#' data(RepSeqData)#'
+#' plotVJusage(x = RepSeqData, sampleName = NULL, scale = "count", level="clone", prop=0.1, plot="Circos")
+#' 
+#' plotVJusage(x = RepSeqData, sampleName = NULL, scale = "count", level="clone", prop=0.8, plot="Heatmap")
 #'
 #' @export
 #'
 plotVJusage <- function(x, sampleName = NULL, scale = c("count", "frequency"),
                         level = c("clone","clonotype"),
-                        prop=1) {
+                        prop=1,
+                        plot=c("Circos","Heatmap")) {
   if (missing(x)) stop("x is missing.")
   if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected.")
   sNames <- rownames(mData(x))
@@ -49,15 +46,15 @@ plotVJusage <- function(x, sampleName = NULL, scale = c("count", "frequency"),
   if(scale == "frequency"){
     data2plot <- prop.table(data2plot)
   }
- if (0!=prop & prop<1){
   data2plot$to<- rownames(data2plot)
   data2plot_m<- data2plot %>%
-                reshape2::melt() %>%
-                dplyr::filter(value!=0)%>%
-                  dplyr::arrange(desc(value) ) %>%
-                  dplyr::slice(seq_len(floor(prop*nrow(.)))) %>%
-                dplyr::relocate(to, .after = variable)
-
+    reshape2::melt() %>%
+    dplyr::filter(value!=0)%>%
+    dplyr::arrange(desc(value) ) %>%
+    dplyr::slice(seq_len(floor(prop*nrow(.)))) %>%
+    dplyr::relocate(to, .after = variable)
+ 
+  if (plot=="Circos"){
   p<- circlize::chordDiagram(data2plot_m, annotationTrack =  "grid", annotationTrackHeight = 0.03,
                preAllocateTracks = list(track.height=0.2), big.gap = 20)
   p1<- circlize::circos.track(track.index=1, panel.fun=function(x,y){
@@ -65,13 +62,17 @@ plotVJusage <- function(x, sampleName = NULL, scale = c("count", "frequency"),
                 facing="clockwise", niceFacing = TRUE, adj=c(0,0.5), cex=0.45)
   }, bg.border=NA)
  } else {
-
   if (requireNamespace("ComplexHeatmap", quietly = TRUE)) {
-    p1<-ComplexHeatmap::pheatmap(data2plot,col = colorRampPalette(c("navy", "white", "firebrick3"))(50),
-                          cluster_rows = FALSE, cluster_cols = FALSE, name = " ",
-                          silent =TRUE, angle_col="90",fontsize =4, scale="column")
-    return(p1)
+    data2plot_m<- data2plot_m %>%
+                  reshape2::dcast(to~variable) %>%
+                  replace(is.na(.),0) 
+    rownames(data2plot_m) <- data2plot_m$to
     
+    
+    p1<-ComplexHeatmap::pheatmap(as.matrix(data2plot_m[,-1]),col = colorRampPalette(c("navy", "white", "firebrick3"))(50),
+                          cluster_rows = FALSE, cluster_cols = FALSE, name = " ",
+                         angle_col="90",fontsize =4, scale="column")
+    return(p1)
   }
    }
 
@@ -183,8 +184,9 @@ plotSpectratyping <- function(x, sampleName = NULL,
 #' data(RepSeqData)
 #' plotRenyiIndex(x = RepSeqData, level = "V", colorBy = "sex")
 #'
-#' plotRenyiIndex(x = RepSeqData, level = "J", colorBy = "sex", grouped=TRUE)
-#'
+#' plotRenyiIndex(x = RepSeqData, level = "J", colorBy = "sex", grouped=TRUE, groupBy="sex")
+#' 
+#' plotRenyiIndex(x = RepSeqData, level = "J", colorBy = "sex", grouped=TRUE, groupBy=c("sex", "cell_subset"))
 #'
 plotRenyiIndex <- function(x, alpha = c(0, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, Inf),
                               level = c("clone","clonotype", "V", "J", "VJ", "CDR3nt","CDR3aa"),
@@ -193,8 +195,10 @@ plotRenyiIndex <- function(x, alpha = c(0, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, In
   if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected.")
   if (length(alpha) < 2) stop("At least 2 alpha values are needed.")
   if(is.null(colorBy)) stop("need to specify a group column from mData")
-
  
+  Group <- NULL
+  Group2 <- NULL
+  Group3 <- NULL 
   variable=value <- NULL
   sdata <- mData(x)
   sNames <- rownames(sdata)
@@ -203,9 +207,20 @@ plotRenyiIndex <- function(x, alpha = c(0, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, In
   tmp <- renyiIndex(x, alpha = alpha, level=levelChoice)
 
   data2plot <- data.table::melt(data = tmp, id.vars = "variable", measure.vars = sNames, variable.name = "sample_id")
-  data2plot[, Group := lapply(.SD, function(x) sdata[x, colorBy]), .SDcols = "sample_id"]
-  colnames(data2plot)[1]<-"variable2"
   
+  if(length(colorBy)==1){
+    data2plot[, Group := lapply(.SD, function(x) sdata[x, colorBy]), .SDcols = "sample_id"]
+  } else if(length(colorBy)==2){
+    data2plot[, Group := lapply(.SD, function(x) sdata[x, colorBy[[1]]]), .SDcols = "sample_id"]
+    data2plot[, Group2 := lapply(.SD, function(x) sdata[x, colorBy[[2]]]), .SDcols = "sample_id"]
+  } else if(length(colorBy)==3){
+    data2plot[, Group := lapply(.SD, function(x) sdata[x, colorBy[[1]]]), .SDcols = "sample_id"]
+    data2plot[, Group2 := lapply(.SD, function(x) sdata[x, colorBy[[2]]]), .SDcols = "sample_id"]
+    data2plot[, Group3 := lapply(.SD, function(x) sdata[x, colorBy[[3]]]), .SDcols = "sample_id"]
+  } else {
+    data2plot[, Group := lapply(.SD, function(x) sdata[x, colorBy]), .SDcols = "sample_id"]
+  }
+  colnames(data2plot)[1]<-"variable2"
   
   if (grouped) {
     
@@ -214,32 +229,52 @@ plotRenyiIndex <- function(x, alpha = c(0, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, In
       }
     
         aucs <- data2plot %>%
-          dplyr::group_by(sample_id) %>%
-          dplyr::mutate(AUC=MESS::auc(x=as.numeric(variable2), y=value))
+                dplyr::group_by(sample_id) %>%
+                dplyr::mutate(AUC=MESS::auc(x=as.numeric(variable2), y=value))
         
         se<- function(x) sqrt(var(x)/length(x))
-        data2plot <-  data2plot %>% dplyr::group_by(Group, variable2) %>% dplyr::mutate(ste=se(value))
-        data2plot <- data2plot %>% dplyr::group_by(Group, variable2, ste) %>% dplyr::summarize(mean=mean(value))
+        data2plot <-  data2plot %>% dplyr::group_by_at(vars(tidyr::starts_with("Gr"), variable2)) %>% dplyr::mutate(ste=se(value))
+        data2plot <-  data2plot %>% dplyr::group_by_at(vars(tidyr::starts_with("Gr"), variable2, ste)) %>% dplyr::summarize(mean=mean(value))
     
         data2plot<- setDT(data2plot)
         data2plot[, `:=`(alpha, as.numeric(as.character(variable2)))]
         
+        if(length(colorBy)==2) {
         auc_test <- data.frame(aucs) %>%
-          rstatix::wilcox_test(formula = AUC ~ Group) %>%
-          rstatix::adjust_pvalue(method="holm")
+                    group_by(Group2) %>%
+                    rstatix::wilcox_test(formula = AUC ~ Group) %>%
+                    rstatix::adjust_pvalue(method="holm") %>%
+                    dplyr::mutate(stats=paste("Wilcoxon test, p.adj =", p.adj))
+        } else if (length(colorBy)==3){
+          auc_test <- data.frame(aucs) %>%
+            group_by(Group2,Group3) %>%
+            rstatix::wilcox_test(formula = AUC ~ Group) %>%
+            rstatix::adjust_pvalue(method="holm") %>%
+            dplyr::mutate(stats=paste("Wilcoxon test, p.adj =", p.adj))
+        } else {
+          auc_test <- data.frame(aucs) %>%
+            rstatix::wilcox_test(formula = AUC ~ Group) %>%
+            rstatix::adjust_pvalue(method="holm") %>%
+            dplyr::mutate(stats=paste("Wilcoxon test, p.adj =", p.adj))
+        }
         
+      
         p <- ggplot2::ggplot(data = data2plot, ggplot2::aes(x = as.numeric(as.character(variable2)), y = mean)) +
             ggplot2::geom_line(ggplot2::aes(group = Group, color=Group), size = .8) +
             ggplot2::geom_point(ggplot2::aes( color=Group),  shape=21, size=2)+
-            ggplot2::labs(subtitle=gsub('p', 'p.adj', get_test_label(auc_test, detailed=FALSE, p.col = "p.adj", type="text")))+
             ggplot2::geom_ribbon(
             ggplot2::aes(ymin=mean-ste, ymax=mean+ste,  fill=Group),
             alpha = 0.3,colour=NA )+
-            ggplot2::xlab("alpha")  + ggplot2::ylab("Renyi's Entropy") +
-            ggplot2::scale_color_manual(values=label_colors[[colorBy]])+
-            ggplot2::scale_fill_manual(values=label_colors[[colorBy]])+
-            theme_RepSeq()+ggplot2::theme(legend.position="right", plot.subtitle = element_text(hjust=0.90, vjust=-10))
-    } else if (colorBy!="sample_id") {
+            ggplot2::xlab("alpha")  +
+            ggplot2::ylab("Renyi's Entropy") +
+            {if(length(colorBy)==2)list(ggplot2::facet_grid(~Group2))} +
+            {if(length(colorBy)==3)list(ggplot2::facet_grid(Group2~Group3))} +
+            ggplot2::scale_color_manual(values=label_colors[[colorBy[[1]]]])+
+            ggplot2::scale_fill_manual(values=label_colors[[colorBy[[1]]]])+
+            theme_RepSeq()+
+            geom_text(data=auc_test, aes(label=stats), x=40, y=floor(max(data2plot$mean)))
+            
+        } else if (colorBy != "sample_id") {
       if (is.null(label_colors)) {
         label_colors = plotColors(x, samplenames = FALSE) 
       }
@@ -251,7 +286,8 @@ plotRenyiIndex <- function(x, alpha = c(0, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, In
         ggplot2::ylab("Renyi's Entropy") +
         ggplot2::scale_color_manual(values=label_colors[[colorBy]])+
         ggplot2::scale_fill_manual(values=label_colors[[colorBy]])+
-        theme_RepSeq()+ggplot2::theme(legend.position="right")
+        theme_RepSeq()+
+        ggplot2::theme(legend.position="right")
     } else {
       
       if (is.null(label_colors)) {
@@ -411,7 +447,6 @@ plotGeneUsage <- function(x, level = c("V", "J"), scale = c("count", "frequency"
   
   return(p)
 }
-
 
 
 #' @title Visualization of the clonal distribution per count interval in a single ample
@@ -578,8 +613,7 @@ plotSpectratypingV <- function(x, sampleName = NULL, scale = c("count", "frequen
 
 #' @title Visualization of repertoire dissimilarities
 #'
-#' @description This function assesses the repertoire dissimilarities by plotting a heatmap of a squared distance matrix computed between samples using a specific dissimilarity method.
-#'
+#' @description This function assesses pairwise repertoire dissimilarities using a specific dissimilarity method.
 #'
 #' It calculates a list of dissimilarity indices, each taking into account different parameters. The proposed methods include:
 #' 
@@ -587,13 +621,15 @@ plotSpectratypingV <- function(x, sampleName = NULL, scale = c("count", "frequen
 #'
 #'  The Morisita-Horn similarity: a measure of similarity that tends to be over-sensitive to abundant species.
 #'
-#' The function also performs a hierarchical clustering on the calculated distance scores.
+#' The function also performs a hierarchical clustering on the calculated distance scores in case the results are represented on a heatmap.
 #'
 #' @param x an object of class \code{\linkS4class{RepSeqExperiment}}
 #' @param level a character specifying the level of the repertoire on which the indices are computed. Should be one of "clone","clonotype", "V", "J", "VJ", "CDR3nt" or "CDR3aa".
 #' @param method a character specifying the distance method to be computed. Should be one of the following: "manhattan", "euclidean", "canberra", "clark", "bray", "kulczynski", "jaccard", "gower", "altGower", "morisita", "horn", "mountford", "raup", "binomial", "chao", "cao", "mahalanobis."
-#' @param clustering a character specifying the clustering method to be used.
+#' @param clustering a character specifying the clustering method to be used in case a heatmap is plotted. If not, the parameter can be set to NULL.
 #' @param binary a boolean indicating whether or not to transform the data into a presence/absence data. Default is FALSE
+#' @param colorBy a vector indicating at least on column name in mData. Colors are thus attributed to the different groups within this column. The chosen column must be of class factor.
+#' @param plot a character indicating the type of visualization in which the results will be represented, either a heatmap or a MDS.
 #' @param label_colors a list of colors for each factor column in metaData. See \code{\link{plotColors}}. If NULL, default colors are used.
 #'
 #' @details Details on the calculated indices as well as the clustering methods can be found in the vegan package: https://www.rdocumentation.org/packages/vegan/versions/2.4-2/topics/vegdist
@@ -602,19 +638,25 @@ plotSpectratypingV <- function(x, sampleName = NULL, scale = c("count", "frequen
 #'
 #' data(RepSeqData)
 #'
-#' plotDissimilarityMatrix(x = RepSeqData, level = "V", method = "euclidean")
+#' plotDissimilarity(x = RepSeqData, level = "V", method = "euclidean", colorBy="sex", plot="MDS")
 #'
-plotDissimilarityMatrix <- function(x, level = c("clone","clonotype", "V", "J", "VJ", "CDR3nt","CDR3aa"),
+#' plotDissimilarity(x = RepSeqData, level = "V", method = "euclidean", colorBy="sex", plot="Heatmap")
+
+plotDissimilarity <- function(x, level = c("clone","clonotype", "V", "J", "VJ", "CDR3nt","CDR3aa"),
                                     method = c("manhattan", "euclidean", "canberra", "clark", "bray", "kulczynski",
                                                "jaccard", "gower", "altGower", "morisita", "horn", "mountford", "raup",
                                                "binomial", "chao", "cao", "mahalanobis"),
                                     clustering=c("ward.D", "ward.D2", "single", "complete", "average", "mcquitty" ,
                                                 "median", "centroid" ),
                                     binary = FALSE,
+                                    colorBy=NULL,
+                                    plot=c("Heatmap", "MDS"),
                                     label_colors=NULL) {
+  
   if (missing(x)) stop("x is missing.")
   if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected.")
-
+  if (is.null(colorBy)) stop("at least one group column name is expected.")
+  
   variable <- NULL
   levelChoice <- match.arg(level)
   methodChoice <- match.arg(method)
@@ -623,22 +665,73 @@ plotDissimilarityMatrix <- function(x, level = c("clone","clonotype", "V", "J", 
   tmp <- data.table::copy(assay(x))[, ..cols]
   sdata <- mData(x)
   sNames <- rownames(sdata)
-  groups <- sdata[, unlist(lapply(sdata, is.factor)), drop = FALSE][-1]
 
   if (is.null(label_colors)) {
-    label_colors= plotColors(x, samplenames = FALSE)
+   label_colors= plotColors(x, samplenames = FALSE)
   }
 
   dat <- data.table::dcast(data = tmp, paste(levelChoice, "~sample_id"), value.var = "count", fun.aggregate = sum)
-
   simmat <- dat[, vegan::vegdist(t(.SD), method = methodChoice, diag = TRUE, upper = TRUE, binary = binary), .SDcols=sNames]
 
+  if(plot=="Heatmap"){
+  groups <- sdata[, colorBy, drop = FALSE]
+    
   p <- ComplexHeatmap::pheatmap(as.matrix(simmat),
                      cluster_rows = TRUE, cluster_cols = TRUE, name = " ",  col = colorRampPalette(c("navy", "white", "firebrick3"))(50),
                      treeheight_row = 0L, clustering_distance_rows = simmat, clustering_distance_cols = simmat,
                      annotation_col=groups, show_colnames=FALSE, labels_col = sNames, annotation_colors = label_colors,
                      show_rownames=FALSE, clustering_method = clust, silent = FALSE, fontsize =7)
-  return(p)
+  } else {
+    
+    fit <- simmat %>% stats::cmdscale( k = 2) %>%  tidyr::as_tibble(.name_repair="unique" )
+    colnames(fit) <- c("D1" ,"D2")
+    
+    if(length(colorBy)==1){
+      fit <- fit %>%
+        dplyr::mutate(groups=x@metaData[[colorBy]])
+    } else if (length(colorBy)==2){
+      fit <- fit %>%
+        dplyr::mutate(groups=paste(x@metaData[,colorBy[1]], x@metaData[,colorBy[2]]))
+      mData(x)=mData(x) %>% mutate(groups=as.factor(fit$groups))
+    } else if (length(colorBy)==3){
+      fit <- fit %>%
+        dplyr::mutate(groups=paste(x@metaData[,colorBy[1]], x@metaData[,colorBy[2]], x@metaData[,colorBy[3]]))
+      mData(x)=mData(x) %>% mutate(groups=as.factor(fit$groups))
+    }
+    
+    if (is.null(label_colors)) {
+      label_colors = plotColors(x, samplenames = FALSE)
+    }
+    
+    mnmx<- list()
+    for(i in unique(fit$groups)){
+      outi <- car::dataEllipse(fit$D1[fit$groups==i],fit$D2[fit$groups==i], levels=c(0.95,0.95), draw = FALSE)
+      rng <- do.call(rbind, lapply( outi, function(mtx) apply(mtx,2,range)))
+      mnmx[[i]] <- apply(rng, 2, range)
+    }
+    mnmx <- plyr::ldply(mnmx, data.frame)
+    
+    ref= mnmx %>% 
+      select(x,y) %>%
+      abs(.) %>% max()
+    
+    p<-ggpubr::ggscatter(fit, x = "D1", y = "D2",
+                         color = "black",
+                         fill = "groups",
+                         palette = if(length(colorBy)==1) label_colors[[colorBy]] else unique(label_colors$groups),
+                         shape = 21,
+                         conf.int = TRUE,
+                         conf.int.level=0.95,
+                         ellipse = TRUE, 
+                         repel = TRUE,
+                         ggtheme = theme_RepSeq())+
+      ggplot2::geom_hline(yintercept = 0, color = "gray", size = 0.1, linetype = "dashed")+
+      ggplot2::geom_vline(xintercept = 0, color = "gray", size = 0.1, linetype = "dashed")+
+      ggplot2::scale_x_continuous(limits = c(-ref-(ref/10), ref+(ref/10)))+
+      ggplot2::scale_y_continuous(limits = c(-ref-(ref/10), ref+(ref/10)))
+    
+  }
+   return(p)
 }
 
 
@@ -666,18 +759,18 @@ plotDissimilarityMatrix <- function(x, level = c("clone","clonotype", "V", "J", 
 #'
 #'
 plotRankDistrib <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3aa"),
-                             scale=c("count","frequency"),
-                             colorBy = NULL, grouped=FALSE,
-                             label_colors=NULL){
+                            scale=c("count","frequency"),
+                            colorBy = NULL, grouped=FALSE,
+                            label_colors=NULL){
   group <- NULL
   if (missing(x)) stop("x is missing.")
   if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected.")
   if(is.null(colorBy)) stop("need to specify a column from mData. Can be the sample_id column")
-
+  
   scl <- match.arg(scale)
   levelChoice <- match.arg(level)
   sName <- rownames(mData(x))
-
+  
   sdata <- mData(x)
   counts <- data.table::copy(assay(x))
   counts <- counts[, .(count = sum(count)), by=c("sample_id", levelChoice)][, rank := lapply(.SD, frankv, ties.method = "first", order = -1L), by = "sample_id", .SDcols = "count"]
@@ -694,17 +787,17 @@ plotRankDistrib <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3aa")
       dplyr::mutate(AUC=MESS::auc(x=rank, y=count))
     
     se<- function(x) sqrt(var(x)/length(x))
-
+    
     if (scl == "count"){
       counts[, ste := lapply(.SD, se), by = .( group, rank), .SDcols = "count"]
       counts <- counts[, lapply(.SD, mean), by = .( group,rank, ste), .SDcols = "count"]
-
+      
     } else if (scl == "frequency"){
       counts <- counts %>% dplyr::group_by(sample_id) %>% dplyr::mutate(count=count/sum(count))
       counts <- data.table::setDT(counts)
       counts[, ste := lapply(.SD, se), by = .( group,rank), .SDcols = "count"]
       counts <- counts[, lapply(.SD, mean), by = .( group,rank, ste), .SDcols = "count"]
-
+      
     }
     
     auc_test <- data.frame(aucs) %>%
@@ -712,7 +805,7 @@ plotRankDistrib <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3aa")
       rstatix::adjust_pvalue(method="holm")
     
     p <- ggplot2::ggplot(counts, ggplot2::aes(x = rank, y = count, colour = group)) +
-    ggplot2::geom_point(shape=21) +
+      ggplot2::geom_point(shape=21) +
       ggplot2::geom_ribbon(
         ggplot2::aes(ymin = count-ste, ymax = count+ste,  fill=group),
         alpha = 0.3, colour = NA)+
@@ -724,7 +817,7 @@ plotRankDistrib <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3aa")
       ggplot2::ylab(paste0("mean ", scl))+
       theme_RepSeq()+
       ggplot2::theme(legend.position = "right", plot.subtitle = element_text(hjust=0.90, vjust=-10))
-
+    
   } else if(colorBy!="sample_id") {
     
     if (is.null(label_colors)) {
@@ -737,17 +830,17 @@ plotRankDistrib <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3aa")
     } else {
       counts <- counts
     }
-
+    
     p <-  ggplot2::ggplot(counts, ggplot2::aes(x = rank, y = count, colour = group)) +
-          ggplot2::geom_point(shape=21) +
-          ggplot2::geom_line(ggplot2::aes(group=sample_id))+
-          ggplot2::scale_color_manual(values=label_colors[[colorBy]])+
-          ggplot2::scale_fill_manual(values=label_colors[[colorBy]])+
-          ggplot2::scale_x_log10()+
-          theme_RepSeq()+
-          ggplot2::theme( legend.position = "right")+
-          ggplot2::ylab(paste(scl))
-
+      ggplot2::geom_point(shape=21) +
+      ggplot2::geom_line(ggplot2::aes(group=sample_id))+
+      ggplot2::scale_color_manual(values=label_colors[[colorBy]])+
+      ggplot2::scale_fill_manual(values=label_colors[[colorBy]])+
+      ggplot2::scale_x_log10()+
+      theme_RepSeq()+
+      ggplot2::theme( legend.position = "right")+
+      ggplot2::ylab(paste(scl))
+    
   } else {
     if (is.null(label_colors)) {
       label_colors = plotColors(x, samplenames = TRUE)
@@ -771,9 +864,10 @@ plotRankDistrib <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3aa")
       ggplot2::ylab(paste(scl))
     
   }
-
+  
   return(p)
 }
+
 
 
 #' @title Visualization of the inter-repertoire sharing on an Venn diagram
@@ -941,8 +1035,8 @@ plotDiversity <- function(x, index=c("chao1","shannon","simpson", "invsimpson","
                           level = c("clone","clonotype", "V", "J", "VJ", "CDR3nt","CDR3aa"),
                           groupBy = NULL, label_colors=NULL){
   group <- NULL
-  group2 <- NULL
-  group3 <- NULL
+  groupB <- NULL
+  groupC <- NULL
   sdata<-mData(x)
   levelChoice <- match.arg(level)
   if (missing(x)) stop("x is missing.")
@@ -1537,33 +1631,49 @@ plotPerturbationScore <- function(x, ctrl.names=NULL,
 #' @param x an object of class  \code{\linkS4class{RepSeqExperiment}}
 #' @param level a character specifying the level of the repertoire on which the diversity should be estimated. Should be one of "clone","clonotype", "V", "J", "VJ", "CDR3nt" or "CDR3aa".
 #' @param group a vector of character indicating the column name in the mData slot, as well as the two groups to be compared.
-#' @param top an integer indicating the top n significant labels to be shown on the plot. Default is 10.
-#' @param FC.TH an integer indicating the log2FoldChange threshold. Default is 2.
-#' @param PV.TH an integer indicating the adjusted pvalue threshold. Default is 0.05.
+#' @param plot a character indicating the type of visualization in which the results will be represented, either a volcano plot or a PCA.
+#' @param top an integer indicating the top n significant labels to be shown on the volcano plot. Default is 10. Only required when plot is set to "Volcano".
+#' @param FC.TH an integer indicating the log2FoldChange threshold. Default is 2. Only required when plot is set to "Volcano".
+#' @param PV.TH an integer indicating the adjusted pvalue threshold. Default is 0.05. Only required when plot is set to "Volcano".
+#' @param label_colors a list of colors for each factor column in metaData. See \code{\link{plotColors}}. If NULL, default colors are used. Only used when plot is set to "PCA".
 #' @export
 #' @examples
 #'
 #' data(RepSeqData)
-#' plotVolcano(x = RepSeqData,
+#' plotDiffExp(x = RepSeqData,
 #'             level = "V",
 #'             group = c("cell_subset", "amTreg", "nTreg"),
+#'             plot="Volcano",
 #'             top = 10,
 #'             FC.TH = 1,
 #'             PV.TH = 0.05)
 #'
-plotVolcano <- function(x,
+#' plotDiffExp(x = RepSeqData,
+#'             level = "V",
+#'             group = c("cell_subset", "amTreg", "nTreg"),
+#'             plot="PCA",
+#'             label_colors=NULL)
+#'             
+plotDiffExp <- function(x,
                         level = c("clone","clonotype", "V", "J", "VJ", "CDR3nt","CDR3aa"),
                         group = c("cell_subset", "amTreg", "nTreg"),
-                        FC.TH=2, PV.TH=0.05,  top=10 ){
+                        plot=c("Volcano", "PCA"),
+                        label_colors=NULL,
+                        FC.TH=2, 
+                        PV.TH=0.05, 
+                        top=10){
 
   if (missing(x))
     stop("x is missing, an object of class RepSeqExperiment is expected.")
   if (!is.RepSeqExperiment(x))
     stop("an object of class RepSeqExperiment is expected.")
-
+  
   dds <- .toDESeq2(x, colGrp = group[1], level = level)
   dds <- DESeq2::estimateSizeFactors(dds, type = "poscounts")
   dds <- DESeq2::DESeq(dds, fitType = 'local')
+  
+  if(plot=="Volcano"){
+ 
   res <- DESeq2::results(dds, contrast = group)
   res <- as.data.frame(res[order(res$padj),])
 
@@ -1599,7 +1709,40 @@ plotVolcano <- function(x,
                                                   "Over-expression"="red",
                                                   "Down-expression"="#6495ED"))+
             theme_RepSeq()
-
+  } else {
+    if (is.null(label_colors)) {
+      label_colors = plotColors(x, samplenames = FALSE)
+    }
+    
+    rsd <- DESeq2::rlog(dds)
+    datapca <- DESeq2::plotPCA(rsd, intgroup = group[1], returnData = TRUE)
+    percentVar <- round(100 * attr(datapca, "percentVar"))
+    
+    mnmx <- list()
+    for (i in unique(datapca$group)) {
+      outi <- car::dataEllipse(datapca$PC1[datapca$group == 
+                                             i], datapca$PC2[datapca$group == i], levels = c(0.95, 
+                                                                                             0.95), draw = FALSE)
+      rng <- do.call(rbind, lapply(outi, function(mtx) apply(mtx, 
+                                                             2, range)))
+      mnmx[[i]] <- apply(rng, 2, range)
+    }
+    mnmx <- plyr::ldply(mnmx, data.frame)
+    ref = mnmx %>% select(x, y) %>% abs(.) %>% max()
+    p <- ggpubr::ggscatter(datapca, x = "PC1", y = "PC2", 
+                           color = "black", fill = group[1], palette = unique(label_colors[[group[1]]]), 
+                           shape = 21, conf.int = TRUE, size = 1.5, ellipse = TRUE, 
+                           repel = TRUE, ggtheme = theme_RepSeq()) + 
+      ggplot2::xlab(paste0("PC1: ",percentVar[1], "% variance")) + 
+      ggplot2::ylab(paste0("PC2: ", percentVar[2], "% variance")) +
+      ggplot2::geom_hline(yintercept = 0,  color = "gray", size = 0.1, linetype = "dashed") + 
+      ggplot2::geom_vline(xintercept = 0, color = "gray", 
+                          size = 0.1, linetype = "dashed") + theme_RepSeq() + 
+      ggplot2::scale_x_continuous(limits = c(-ref - (ref/10), 
+                                             ref + (ref/10))) + ggplot2::scale_y_continuous(limits = c(-ref - 
+                                                                                                         (ref/10), ref + (ref/10)))
+    
+}
   return(p)
 }
 
@@ -1616,7 +1759,7 @@ plotVolcano <- function(x,
 #' @param x an object of class \code{\linkS4class{RepSeqExperiment}}
 #' @param level a character specifying the level of the repertoire on which the diversity should be estimated. Should be one of "clone","clonotype", "V", "J", "VJ", "CDR3nt" or "CDR3aa".
 #' @param method a character specifying the distance method to be computed. Should be specified only if the dim_method parameter is set to "MDS", and should be one of the following: "manhattan", "euclidean", "canberra", "clark", "bray", "kulczynski", "jaccard", "gower", "altGower", "morisita", "horn", "mountford", "raup", "binomial", "chao", "cao", "mahalanobis."
-#' @param colorBy a character specifying the column name in mData to be used to attribute group colors.
+#' @param groupBy a character specifying up to three column names in mData to be used to attribute group colors.
 #' @param label_colors a list of colors for each factor column in metaData. See \code{\link{plotColors}}. If NULL, default colors are used.
 #' @param dim_method a character indicating the dimensional reduction method to be performed. Should be one of "PCA" or "MDS".
 #' @details Details on the proposed dissimilarity indices can be found in the vegan package:
@@ -1631,121 +1774,130 @@ plotVolcano <- function(x,
 #' plotDimReduction(x = RepSeqData,
 #'                  level = "V",
 #'                  method = "euclidean",
-#'                  colorBy = "cell_subset",
+#'                  groupBy = "cell_subset",
 #'                  dim_method="MDS")
 #'
 #' plotDimReduction(x = RepSeqData,
 #'                 level = "J",
-#'                 colorBy = "cell_subset",
+#'                 groupBy = "cell_subset",
 #'                 dim_method="PCA")
 #'
-plotDimReduction <- function(x, level = c("clone","clonotype", "V", "J", "VJ", "CDR3nt","CDR3aa"),
-                    method = c("manhattan", "euclidean", "canberra", "clark", "bray", "kulczynski",
-                               "jaccard", "gower", "altGower", "morisita", "horn", "mountford", "raup",
-                               "binomial", "chao", "cao", "mahalanobis"), colorBy = NULL, label_colors=NULL, dim_method=c("MDS", "PCA")) {
-
-  if (missing(x)) stop("x is missing.")
-  if(missing(dim_method)) stop("dim_method is missing.")
-  if (missing(method) && dim_method=="MDS") stop("method is missing.")
-  if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected.")
-
-  sdata <- mData(x)
-  sNames <- rownames(sdata)
-
-  if (is.null(colorBy)) stop("a group column from the metadata must be specified.")
-  
-    if (length(grep(colorBy, colnames(sdata))) == 0) colorBy <- "sample_id" else colorBy <- colorBy
-    if (is.null(label_colors)) {
-      label_colors = plotColors(x, samplenames = FALSE)
-    }
-    
-
-  levelChoice <- match.arg(level)
-  if(dim_method=="MDS"){
-
-    variable <- NULL
-    methodChoice <- match.arg(method)
-    cols <- c("sample_id", levelChoice, "count")
-    tmp <- data.table::copy(assay(x))[, ..cols]
-    groups <- sdata[,unlist(lapply(sdata, is.factor)), drop = FALSE]
-    dat <- data.table::dcast(data = tmp, paste(levelChoice, "~sample_id"), value.var = "count", fun.aggregate = sum)
-    simmat <- dat[, vegan::vegdist(t(.SD), method = methodChoice, diag=TRUE, upper=TRUE), .SDcols = sNames]
-    fit <- simmat %>% stats::cmdscale( k = 2) %>%  tidyr::as_tibble()
-    colnames(fit) <- c("D1" ,"D2")
-
-    fit <- fit %>%
-      dplyr::mutate(groups=x@metaData[[colorBy]])
-
-    mnmx<- list()
-    for(i in unique(fit$groups)){
-      outi <- car::dataEllipse(fit$D1[fit$groups==i],fit$D2[fit$groups==i], levels=c(0.95,0.95), draw = FALSE)
-      rng <- do.call(rbind, lapply( outi, function(mtx) apply(mtx,2,range)))
-      mnmx[[i]] <- apply(rng, 2, range)
-    }
-    mnmx <- plyr::ldply(mnmx, data.frame)
-
-    ref= mnmx %>% 
-      select(x,y) %>%
-      abs(.) %>% max()
-
-    p<-ggpubr::ggscatter(fit, x = "D1", y = "D2",
-                      color = "black",
-                      fill = "groups",
-                      palette = unique(label_colors[[colorBy]]),
-                      shape = 21,
-                      conf.int = TRUE,
-                      #size = 1.5,
-                      conf.int.level=0.95,
-                      ellipse = TRUE, 
-                      repel = TRUE,
-                      ggtheme = theme_RepSeq())+
-        ggplot2::geom_hline(yintercept = 0, color = "gray", size = 0.1, linetype = "dashed")+
-        ggplot2::geom_vline(xintercept = 0, color = "gray", size = 0.1, linetype = "dashed")+
-        ggplot2::scale_x_continuous(limits = c(-ref-(ref/10), ref+(ref/10)))+
-        ggplot2::scale_y_continuous(limits = c(-ref-(ref/10), ref+(ref/10)))
-
-  } else if(dim_method == "PCA"){
-
-    dds <- .toDESeq2(x, colGrp = colorBy, level = levelChoice)
-    dds <- DESeq2::estimateSizeFactors(dds, type = "poscounts")
-    dds <- DESeq2::DESeq(dds, fitType = 'local')
-    rsd <- DESeq2::rlog(dds)
-    datapca <- DESeq2::plotPCA(rsd, intgroup = colorBy, returnData = TRUE)
-    percentVar <- round(100 * attr(datapca, "percentVar"))
-    
-    mnmx<- list()
-    for(i in unique(datapca$group)){
-      outi <- car::dataEllipse(datapca$PC1[datapca$group==i],datapca$PC2[datapca$group==i], levels=c(0.95,0.95), draw = FALSE)
-      rng <- do.call(rbind, lapply( outi, function(mtx) apply(mtx,2,range)))
-      mnmx[[i]] <- apply(rng, 2, range)
-    }
-    mnmx <- plyr::ldply(mnmx, data.frame)
-    
-    ref= mnmx %>% 
-      select(x,y) %>%
-      abs(.) %>% max()
-    
-
-    p <- ggpubr::ggscatter(datapca, x = "PC1", y = "PC2",
-                           color = "black",
-                           fill = colorBy,
-                           palette = unique(label_colors[[colorBy]]),
-                           shape = 21,
-                           conf.int = TRUE,
-                           size = 1.5,
-                           ellipse = TRUE,
-                           repel = TRUE,
-                           ggtheme = theme_RepSeq())+
-      ggplot2::xlab(paste0("PC1: ", percentVar[1], "% variance")) +
-      ggplot2::ylab(paste0("PC2: ", percentVar[2], "% variance")) +
-      ggplot2::geom_hline(yintercept = 0, color = "gray", size = 0.1, linetype = "dashed")+
-      ggplot2::geom_vline(xintercept = 0, color = "gray", size = 0.1, linetype = "dashed")+
-      theme_RepSeq()+
-      ggplot2::scale_x_continuous(limits = c(-ref-(ref/10), ref+(ref/10)))+
-      ggplot2::scale_y_continuous(limits = c(-ref-(ref/10), ref+(ref/10)))
-
-  }
-
-  return(p)
-
-}
+# plotDimReduction <- function(x, level = c("clone","clonotype", "V", "J", "VJ", "CDR3nt","CDR3aa"),
+#                     method = c("manhattan", "euclidean", "canberra", "clark", "bray", "kulczynski",
+#                                "jaccard", "gower", "altGower", "morisita", "horn", "mountford", "raup",
+#                                "binomial", "chao", "cao", "mahalanobis"), groupBy = NULL, label_colors=NULL, dim_method=c("MDS", "PCA")) {
+# 
+#   if (missing(x)) stop("x is missing.")
+#   if(missing(dim_method)) stop("dim_method is missing.")
+#   if (missing(method) && dim_method=="MDS") stop("method is missing.")
+#   if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected.")
+# 
+#   sdata <- mData(x)
+#   sNames <- rownames(sdata)
+# 
+#   if (is.null(groupBy)) stop("a group column from the metadata must be specified.")
+#   
+#    # if (length(grep(colorBy, colnames(sdata))) == 0) colorBy <- "sample_id" else colorBy <- colorBy
+#   
+#   levelChoice <- match.arg(level)
+#   if(dim_method=="MDS"){
+# 
+#     variable <- NULL
+#     methodChoice <- match.arg(method)
+#     cols <- c("sample_id", levelChoice, "count")
+#     tmp <- data.table::copy(assay(x))[, ..cols]
+#     groups <- sdata[,unlist(lapply(sdata, is.factor)), drop = FALSE]
+#     dat <- data.table::dcast(data = tmp, paste(levelChoice, "~sample_id"), value.var = "count", fun.aggregate = sum)
+#     simmat <- dat[, vegan::vegdist(t(.SD), method = methodChoice, diag=TRUE, upper=TRUE), .SDcols = sNames]
+#     fit <- simmat %>% stats::cmdscale( k = 2) %>%  tidyr::as_tibble(.name_repair="unique" )
+#     colnames(fit) <- c("D1" ,"D2")
+# 
+#     if(length(groupBy)==1){
+#     fit <- fit %>%
+#       dplyr::mutate(groups=x@metaData[[groupBy]])
+#     } else if (length(groupBy)==2){
+#       fit <- fit %>%
+#       dplyr::mutate(groups=paste(x@metaData[,groupBy[1]], x@metaData[,groupBy[2]]))
+#       mData(x)=mData(x) %>% mutate(groups=as.factor(fit$groups))
+#     } else if (length(groupBy)==3){
+#       fit <- fit %>%
+#         dplyr::mutate(groups=paste(x@metaData[,groupBy[1]], x@metaData[,groupBy[2]], x@metaData[,groupBy[3]]))
+#       mData(x)=mData(x) %>% mutate(groups=as.factor(fit$groups))
+#       }
+#       
+#     if (is.null(label_colors)) {
+#       label_colors = plotColors(x, samplenames = FALSE)
+#     }
+#     
+#     mnmx<- list()
+#     for(i in unique(fit$groups)){
+#       outi <- car::dataEllipse(fit$D1[fit$groups==i],fit$D2[fit$groups==i], levels=c(0.95,0.95), draw = FALSE)
+#       rng <- do.call(rbind, lapply( outi, function(mtx) apply(mtx,2,range)))
+#       mnmx[[i]] <- apply(rng, 2, range)
+#     }
+#     mnmx <- plyr::ldply(mnmx, data.frame)
+# 
+#     ref= mnmx %>% 
+#       select(x,y) %>%
+#       abs(.) %>% max()
+# 
+#     p<-ggpubr::ggscatter(fit, x = "D1", y = "D2",
+#                       color = "black",
+#                       fill = "groups",
+#                       palette = if(length(groupBy)==1) label_colors[[groupBy]] else unique(label_colors$groups),
+#                       shape = 21,
+#                       conf.int = TRUE,
+#                       #size = 1.5,
+#                       conf.int.level=0.95,
+#                       ellipse = TRUE, 
+#                       repel = TRUE,
+#                       ggtheme = theme_RepSeq())+
+#         ggplot2::geom_hline(yintercept = 0, color = "gray", size = 0.1, linetype = "dashed")+
+#         ggplot2::geom_vline(xintercept = 0, color = "gray", size = 0.1, linetype = "dashed")+
+#         ggplot2::scale_x_continuous(limits = c(-ref-(ref/10), ref+(ref/10)))+
+#         ggplot2::scale_y_continuous(limits = c(-ref-(ref/10), ref+(ref/10)))
+#   } else if(dim_method == "PCA"){
+# 
+#     dds <- .toDESeq2(x, colGrp = groupBy, level = levelChoice)
+#     dds <- DESeq2::estimateSizeFactors(dds, type = "poscounts")
+#     dds <- DESeq2::DESeq(dds, fitType = 'local')
+#     rsd <- DESeq2::rlog(dds)
+#     datapca <- DESeq2::plotPCA(rsd, intgroup = groupBy, returnData = TRUE)
+#     percentVar <- round(100 * attr(datapca, "percentVar"))
+#     
+#     mnmx<- list()
+#     for(i in unique(datapca$group)){
+#       outi <- car::dataEllipse(datapca$PC1[datapca$group==i],datapca$PC2[datapca$group==i], levels=c(0.95,0.95), draw = FALSE)
+#       rng <- do.call(rbind, lapply( outi, function(mtx) apply(mtx,2,range)))
+#       mnmx[[i]] <- apply(rng, 2, range)
+#     }
+#     mnmx <- plyr::ldply(mnmx, data.frame)
+#     
+#     ref= mnmx %>% 
+#       select(x,y) %>%
+#       abs(.) %>% max()
+#     
+# 
+#     p <- ggpubr::ggscatter(datapca, x = "PC1", y = "PC2",
+#                            color = "black",
+#                            fill = groupBy,
+#                            palette = unique(label_colors[[groupBy]]),
+#                            shape = 21,
+#                            conf.int = TRUE,
+#                            size = 1.5,
+#                            ellipse = TRUE,
+#                            repel = TRUE,
+#                            ggtheme = theme_RepSeq())+
+#       ggplot2::xlab(paste0("PC1: ", percentVar[1], "% variance")) +
+#       ggplot2::ylab(paste0("PC2: ", percentVar[2], "% variance")) +
+#       ggplot2::geom_hline(yintercept = 0, color = "gray", size = 0.1, linetype = "dashed")+
+#       ggplot2::geom_vline(xintercept = 0, color = "gray", size = 0.1, linetype = "dashed")+
+#       theme_RepSeq()+
+#       ggplot2::scale_x_continuous(limits = c(-ref-(ref/10), ref+(ref/10)))+
+#       ggplot2::scale_y_continuous(limits = c(-ref-(ref/10), ref+(ref/10)))
+# 
+#   }
+# 
+#   return(p)
+# 
+# }

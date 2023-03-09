@@ -100,24 +100,26 @@ An S4 class object enclosing the adaptive immune repertoire data, and which is u
 \item{\code{assayData}}{a data.table binding all clonotype tables and containing the following columns:
 
  - sample_id: sample names
+ 
+ - CDR3nt: CDR3 nucleotide sequence
 
+ - CDR3aa: CDR3 amino acid sequence
+ 
  - V: Variable gene name
 
  - J: Joining gene name
-
- - CDR3aa: CDR3 amino acid sequence
-
- - CDR3nt: CDR3 nucleotide sequence
-
- - clone: Full clonotype sequence including the V gene, the amino acid CDR3 sequence and the J gene
-
+ 
  - VJ: V-J gene combination
+
+ - clone: Full sequence including the V gene, the CDR3 amino acid sequence and the J gene
+ 
+ - clonotype: Full sequence including the CDR3 nucleotide sequence, the V gene, the CDR3 amino acid sequence and the J gene
 
  - count: the occurrence of the clonotype, i.e the clone sequence}
 
 \item{\code{metaData}}{a data frame containing sample information specified during the building of the \code{\linkS4class{RepSeqExperiment}} object. Each row represents a sample, and columns the possible information or group that can be attributed to the samples such as the cell population, the donor's age, sex, etc...}
 
-\item{\code{otherData}}{a list of meta data containing any other information than the user does not wish to include in the analysis.}
+\item{\code{otherData}}{a list of data frames containing sequences that were filtered out from the RepSeqExperiment object in case filtering functions were applied.}
 
 \item{\code{History}}{a data frame registering all operations performed on \code{\linkS4class{RepSeqExperiment}} object, such as the filtering functions and the normalization.}
 }}

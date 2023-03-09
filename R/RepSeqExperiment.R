@@ -12,23 +12,25 @@ utils::globalVariables(c("J", ".", "clone", "sample_id", "V", "J", "VJ","clonoty
 #' @slot assayData a data.table binding all clonotype tables and containing the following columns:
 #'
 #'  - sample_id: sample names
+#'  
+#'  - CDR3nt: CDR3 nucleotide sequence
 #'
+#'  - CDR3aa: CDR3 amino acid sequence
+#'  
 #'  - V: Variable gene name
 #'
 #'  - J: Joining gene name
-#'
-#'  - CDR3aa: CDR3 amino acid sequence
-#'
-#'  - CDR3nt: CDR3 nucleotide sequence
-#'
-#'  - clone: Full clonotype sequence including the V gene, the amino acid CDR3 sequence and the J gene
-#'
+#'  
 #'  - VJ: V-J gene combination
+#'
+#'  - clone: Full sequence including the V gene, the CDR3 amino acid sequence and the J gene
+#'  
+#'  - clonotype: Full sequence including the CDR3 nucleotide sequence, the V gene, the CDR3 amino acid sequence and the J gene
 #'
 #'  - count: the occurrence of the clonotype, i.e the clone sequence
 #'
 #' @slot metaData a data frame containing sample information specified during the building of the \code{\linkS4class{RepSeqExperiment}} object. Each row represents a sample, and columns the possible information or group that can be attributed to the samples such as the cell population, the donor's age, sex, etc...
-#' @slot otherData a list of meta data containing any other information than the user does not wish to include in the analysis.
+#' @slot otherData a list of data frames containing sequences that were filtered out from the RepSeqExperiment object in case filtering functions were applied.
 #' @slot History a data frame registering all operations performed on \code{\linkS4class{RepSeqExperiment}} object, such as the filtering functions and the normalization.
 #' @rdname RepSeqExperiment-class
 #' @name RepSeqExperiment-class
@@ -254,12 +256,8 @@ function(object) {
     J <- sort(unique(cts, by = "J")$J)
     m <- cts[, .(n = uniqueN(sample_id), V = uniqueN(V), J = uniqueN(J), s = uniqueN(clonotype), VJ = uniqueN(VJ))]
 	cat("An object of class \"", class(object), "\"\n", sep="")
-	if (m$n < 4) {
-	    cat("Sample_ids              :", sNames[seq_len(m$n)], "\n")
-	} else {
-	    cat("Sample_ids              :", sNames[seq_len(3)], "...", sNames[m$n],"\n")
-	}
-	cat("Number of sequences :", m$s, "\n")
+	    cat("Sample_ids              :", m$n,"\n")
+	cat("Number of unique clonotypes :", m$s, "\n")
     cat("Number of V genes           :", m$V,  "\n")
 	cat("Number of J genes           :", m$J, "\n")
 })
