@@ -327,16 +327,16 @@ sampleRepSeqExp <- function(x, sample.size = min(mData(x)$nSequences), rngseed =
     if (as(rngseed, "logical")) {
         set.seed(rngseed)
         if (verbose) {
-            cat("`set.seed(", rngseed, ")` was applied for reproducibility of the random subsampling. Please record this number for future purpose.\n")
+            cat("`set.seed(", rngseed, ")` was applied for reproducibility of the random subsampling. Please save this seed for data reproduction \n")
             cat("You can try `set.seed(", rngseed, "); .Random.seed` for the full vector.\n")
         }
     } else if (verbose) {
-        cat("You set `rngseed` to FALSE. Make sure you've set & recorded\n",
+        cat("You set `rngseed` to FALSE. Make sure you've set & saved\n",
             " the random seed of your session for reproducibility.\n",
             "See `?set.seed`\n")
     }
     if (length(sample.size) > 1) {
-        warning("`sample.size` had more than one value. ", "Using only the first. \n ... \n")
+        warning("`sample.size` had more than one value. ", "Using only the first value. \n ... \n")
         sample.size <- sample.size[1]
     }
     if (sample.size <= 0) {
@@ -346,13 +346,13 @@ sampleRepSeqExp <- function(x, sample.size = min(mData(x)$nSequences), rngseed =
         stop("sample.size = ", sample.size, " is larger than the largest library size.")
     }
     if (verbose) {
-        message("Down sampling to ", sample.size, " sequences...")
+        message("Down-sampling to ", sample.size, " sequences...")
     }
     if (min(sampleinfo$nSequences) < sample.size) {
         lib.drop <- rownames(sampleinfo)[which(sampleinfo$nSequences < sample.size)]
         if (verbose) {
-            message(length(lib.drop), " samples removed", "because they contained fewer reads than `sample.size`.")
-            message("Up to first five removed samples are: \n")
+            message(length(lib.drop), " samples were removed because they contained fewer sequences than the fixed sample.size.")
+            message("The first 5 removed samples are: \n")
             message(lib.drop[seq_len(min(5, length(lib.drop)))])
             message("...")
         }

@@ -12,11 +12,11 @@
 #' @author 
 #' \itemize{
 #' \item Vanessa Mhanna
-#' \item Hang-Phuong Pham
 #' \item Gabriel Pires
 #' \item Nicolas Tchitchek
 #' \item David Klatzmann
 #' \item Adrien Six
+#' \item Hang-Phuong Pham
 #' \item Encarnita Mariotti-Ferrandiz 
 #' }
 #
@@ -26,7 +26,7 @@
 #' \itemize{
 #'  \item \href{https://github.com/vanessajmh/AnalyzAIRR}{https://github.com/vanessajmh/AnalyzAIRR}
 #'  \item \href{https://github.com/vanessajmh/Shiny-AnalyzAIRR}{https://github.com/vanessajmh/Shiny-AnalyzAIRR}
-#'  \item \href{https://vanessajmh.github.io/AnalyzAIRR.github.io}{vignette}
+#'  \item \href{https://vanessajmh.github.io/AnalyzAIRR.github.io}{Vignette}
 #' }
 #
 #
