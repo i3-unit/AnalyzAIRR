@@ -197,8 +197,8 @@ plotRenyiIndex <- function(x, alpha = c(0, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, In
   if(is.null(colorBy)) stop("need to specify a group column from mData")
  
   Group <- NULL
-  Group2 <- NULL
-  Group3 <- NULL 
+  GroupA <- NULL
+  GroupB <- NULL 
   variable=value <- NULL
   sdata <- mData(x)
   sNames <- rownames(sdata)
@@ -212,11 +212,11 @@ plotRenyiIndex <- function(x, alpha = c(0, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, In
     data2plot[, Group := lapply(.SD, function(x) sdata[x, colorBy]), .SDcols = "sample_id"]
   } else if(length(colorBy)==2){
     data2plot[, Group := lapply(.SD, function(x) sdata[x, colorBy[[1]]]), .SDcols = "sample_id"]
-    data2plot[, Group2 := lapply(.SD, function(x) sdata[x, colorBy[[2]]]), .SDcols = "sample_id"]
+    data2plot[, GroupA := lapply(.SD, function(x) sdata[x, colorBy[[2]]]), .SDcols = "sample_id"]
   } else if(length(colorBy)==3){
     data2plot[, Group := lapply(.SD, function(x) sdata[x, colorBy[[1]]]), .SDcols = "sample_id"]
-    data2plot[, Group2 := lapply(.SD, function(x) sdata[x, colorBy[[2]]]), .SDcols = "sample_id"]
-    data2plot[, Group3 := lapply(.SD, function(x) sdata[x, colorBy[[3]]]), .SDcols = "sample_id"]
+    data2plot[, GroupA := lapply(.SD, function(x) sdata[x, colorBy[[2]]]), .SDcols = "sample_id"]
+    data2plot[, GroupB := lapply(.SD, function(x) sdata[x, colorBy[[3]]]), .SDcols = "sample_id"]
   } 
   
   colnames(data2plot)[1]<-"variable2"
@@ -240,16 +240,20 @@ plotRenyiIndex <- function(x, alpha = c(0, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, In
         
         if(length(colorBy)==2) {
         auc_test <- data.frame(aucs) %>%
-                    dplyr::group_by(Group2) %>%
+                    dplyr::group_by(GroupA) %>%
                     rstatix::wilcox_test(formula = AUC ~ Group) %>%
                     rstatix::adjust_pvalue(method="holm") %>%
-                    dplyr::mutate(stats=paste("Wilcoxon test, p.adj =", p.adj))
+                    dplyr::mutate(stats=paste("Wilcoxon test, p.adj =", p.adj)) %>%
+                    dplyr::mutate(Facet=paste(GroupA))
+        
         } else if (length(colorBy)==3){
           auc_test <- data.frame(aucs) %>%
-                      dplyr::group_by(Group2,Group3) %>%
+                      dplyr::group_by(GroupA,GroupB) %>%
                       rstatix::wilcox_test(formula = AUC ~ Group) %>%
                       rstatix::adjust_pvalue(method="holm") %>%
-                      dplyr::mutate(stats=paste("Wilcoxon test, p.adj =", p.adj))
+                      dplyr::mutate(stats=paste("Wilcoxon test, p.adj =", p.adj)) %>%
+                      dplyr::mutate(Facet=paste(GroupA, GroupB))
+          
         } else if (length(colorBy)==1){
           auc_test <- data.frame(aucs) %>%
                       rstatix::wilcox_test(formula = AUC ~ Group) %>%
@@ -258,7 +262,7 @@ plotRenyiIndex <- function(x, alpha = c(0, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, In
         }
         
       
-        p <- ggplot2::ggplot(data = data2plot, ggplot2::aes(x = as.numeric(as.character(variable2)), y = mean)) +
+        pl <- ggplot2::ggplot(data = data2plot, ggplot2::aes(x = as.numeric(as.character(variable2)), y = mean)) +
             ggplot2::geom_line(ggplot2::aes(group = Group, color=Group), size = .8) +
             ggplot2::geom_point(ggplot2::aes( color=Group),  shape=21, size=2)+
             ggplot2::geom_ribbon(
@@ -266,12 +270,23 @@ plotRenyiIndex <- function(x, alpha = c(0, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, In
             alpha = 0.3,colour=NA )+
             ggplot2::xlab("alpha")  +
             ggplot2::ylab("Renyi's Entropy") +
-            {if(length(colorBy)==2)list(ggplot2::facet_grid(~Group2))} +
-            {if(length(colorBy)==3)list(ggplot2::facet_grid(Group2~Group3))} +
+            {if(length(colorBy)==2)list(ggplot2::facet_grid(~GroupA))} +
+            {if(length(colorBy)==3)list(ggplot2::facet_grid(GroupA~GroupB))} +
             ggplot2::scale_color_manual(values=label_colors[[colorBy[[1]]]])+
             ggplot2::scale_fill_manual(values=label_colors[[colorBy[[1]]]])+
-            theme_RepSeq()+
-            geom_text(data=auc_test, aes(label=stats), x=40, y=floor(max(data2plot$mean)))
+            theme_RepSeq()
+       
+      stats_table<- auc_test %>%
+                    dplyr::select(if("Facet" %in% colnames(.)) "Facet",group1,group2,tidyr::starts_with("p") ) %>%
+                    dplyr::select(-tidyr::ends_with("signif") ) %>%
+                    dplyr::rename(Group1=group1) %>%
+                    dplyr::rename(Group2=group2) 
+      
+       stable.p <- ggpubr::ggtexttable(stats_table, rows=NULL,
+                               theme = ttheme("blank", base_size = 8)) %>%
+                   ggpubr::tab_add_hline(at.row = 1:2, row.side = "top", linewidth = 2)
+       
+       p<- ggpubr::ggarrange(pl, stable.p, ncol = 1, nrow = 2,heights = c(1, 0.5))
             
         } else if (colorBy != "sample_id") {
       if (is.null(label_colors)) {
@@ -407,7 +422,7 @@ plotGeneUsage <- function(x, level = c("V", "J"), scale = c("count", "frequency"
   } else if(length(groupBy)==3){
     data2plot[, Group := lapply(.SD, function(x) sdata[x, groupBy[[1]]]), .SDcols = "sample_id"]
     data2plot[, Group2 := lapply(.SD, function(x) sdata[x, groupBy[[2]]]), .SDcols = "sample_id"]
-    data2plot[, Group3 := lapply(.SD, function(x) sdata[x, groupBy[[3]]]), .SDcols = "sample_id"]
+    data2plot[, GroupB := lapply(.SD, function(x) sdata[x, groupBy[[3]]]), .SDcols = "sample_id"]
   }
   
     stat.test <- data2plot %>%

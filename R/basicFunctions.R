@@ -107,13 +107,16 @@ filterCount <- function(x, level=c("clone","clonotype","CDR3aa","CDR3nt"), n=1, 
       sampleNames <- rownames(metaData[grp %in% grp.name, ])
       keep <- cts[, sum(count) <= n, by =  c(levelChoice,"sample_id")]
       keep <- keep[ V1==FALSE | !sample_id %in% sampleNames,]
+      res <- cts[keep, on = c(levelChoice,"sample_id")][, V1:=NULL]
+      setkey(res, sample_id)
+      filterout<- cts[, sum(count) <= n, by =  c(levelChoice,"sample_id")][V1 == TRUE & sample_id %in% sampleNames, ]
     }  else {
     keep <- cts[, sum(count) <= n, by =  c(levelChoice,"sample_id")][V1 == FALSE, ]
-    }
-
     res <- cts[keep, on = c(levelChoice,"sample_id")][, V1:=NULL]
     setkey(res, sample_id)
     filterout<- cts[, sum(count) <= n, by =  c(levelChoice,"sample_id")][V1 == TRUE, ]
+    }
+
     nfilter <- nrow(cts) - nrow(res)
 
     stats <- data.frame(res[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols = c("CDR3nt", "CDR3aa", "V", "J", "VJ","clone","clonotype"), by = "sample_id"], row.names = 1)
@@ -452,6 +455,77 @@ dropSamples <- function(x, sampleNames) {
             History = x.history)
     return(out)
 }
+
+
+#' @title Exclude a sequence from a RepSeqExperiment object.
+#'
+#' @description This function allows the dropping of one or several sequences from a RepSeqExperiment object in all samples or a specified group of samples.
+#'
+#' @param x an object of class \code{\linkS4class{RepSeqExperiment}}
+#' @param level a character specifying the level of the repertoire to be taken into account. Should be one of "clone","clonotype", "CDR3nt" or "CDR3aa".
+#' @param name a vector of character specifying the name(s) of the sequence(s) to filter out from the RepSeqExperiment object.
+#' @param group a vector of character indicating the group column name in the mData slot and one experimental group within this column.
+#' @return a RepSeqExperiment object.
+#' @export
+#' @examples
+#'
+#' data(RepSeqData)
+#'
+#' RepSeqData<- filterSequence(x = RepSeqData,
+#'                             level="clone",
+#'                             name="TRAV11 CVVGDRGSALGRLHF TRAJ18",
+#'                             group=c("cell_subset","Teff"))
+#'
+filterSequence <- function(x, level=c("clone","clonotype","CDR3aa","CDR3nt"), name, group=NULL) {
+  V1 <- NULL
+  if (missing(x)) stop("x is missing.")
+  if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected.")
+  
+  levelChoice <- match.arg(level)
+  cts <- data.table::copy(assay(x))
+  metaData <- mData(x)
+  
+  if(! name %in% cts[, get(levelChoice)]) stop("a valid sequence must be specified.")
+  
+  if (!is.null(group)) {
+    grp <- metaData[, group[1]]
+    grp.name <- group[2]
+    sampleNames <- rownames(metaData[grp %in% grp.name, ])
+    keep <- cts[, get(levelChoice) == name, by =  c(levelChoice,"sample_id")]
+    keep <- keep[ V1==FALSE | !sample_id %in% sampleNames,]
+    res <- cts[keep, on = c(levelChoice,"sample_id")][, V1:=NULL]
+    setkey(res, sample_id)
+    filterout<- cts[, get(levelChoice) == name, by =  c(levelChoice,"sample_id")][V1 == TRUE & sample_id %in% sampleNames, ]
+  }  else {
+    keep <- cts[, get(levelChoice) == name, by =  c(levelChoice,"sample_id")][V1 == FALSE, ]
+    res <- cts[keep, on = c(levelChoice,"sample_id")][, V1:=NULL]
+    setkey(res, sample_id)
+    filterout<- cts[, get(levelChoice) == name, by =  c(levelChoice,"sample_id")][V1 == TRUE, ]
+  }
+  
+  nfilter <- nrow(cts) - nrow(res)
+  
+  stats <- data.frame(res[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols = c("CDR3nt", "CDR3aa", "V", "J", "VJ","clone","clonotype"), by = "sample_id"], row.names = 1)
+  metaData<- metaData %>%
+    dplyr::select(-c(nSequences,CDR3nt,CDR3aa,V,J,VJ,clone,clonotype))
+  sdata <- data.frame(base::merge(metaData, stats, by = 0, sort = FALSE),
+                      row.names=1,  stringsAsFactors = TRUE)
+  sdata <- sdata[order(match(rownames(sdata), rownames(stats))), ]
+  
+  out <- new("RepSeqExperiment",
+             assayData = res,
+             metaData = sdata,
+             otherData = oData(x),
+             History = data.frame(rbind(History(x),
+                                        data.frame(history = paste(nfilter,levelChoice,"were filtered using filterSequence: name=",name, "group1=",group[1],"and group2=",group[2]))),
+                                        stringsAsFactors=FALSE))
+  oData(out) <- c(oData(out), filterSequence=list(  cts[filterout, on = c(levelChoice,"sample_id")][, V1:=NULL]))
+  
+  rm(cts, keep)
+  
+  return(out)
+}
+
 
 
 #' @title Extract productive sequences

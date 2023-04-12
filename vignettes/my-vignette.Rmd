@@ -396,7 +396,7 @@ Different functions were developed to manipulate, filter, and normalize samples 
 
 ## Filtering
 
-+ **Filter sequences based on their count in each sample**
++ **Filter out sequences based on their count in each sample**
 
   `filterCount()` filters out sequences having a count below the chosen threshold. The function returns a RepSeqExperiment object that can be used to perform in-depth analyses on the remaining dataset
 
@@ -419,7 +419,11 @@ getPublic(x=RepSeqData, level="clone", group=c("cell_subset", "amTreg"))
 
 **Note**: All the above-mentioned functions can be applied at any of the following repertoire level: **clone**, **clonotype**, **CDR3aa** and **CDR3nt**.
 
-+ **Extract most frequent sequences **
++ **Filter out one or multiple sequence(s)**
+
+  `filterSequence()` filters out specified sequences in all samples or a specified group of samples.
+
++ **Extract most frequent sequences**
   
   `getTopSequences()` allows the extraction of the top most expressed repertoire levels.
    Users can choose the proportion of the top sequences to extract using the `prop` parameter as well as the group of samples to analyze.
@@ -430,7 +434,7 @@ getPublic(x=RepSeqData, level="clone", group=c("cell_subset", "amTreg"))
 
 + **Exclude one or multiple samples from a RepSeqExperiment object**
 
-  `dropSample()` offers the possibility to filter out one or multiple repertoires by specifying their corresponding sample_id. 
+  `dropSamples()` offers the possibility to filter out one or multiple repertoires by specifying their corresponding sample_id. 
  These repertoires can be ones identified as outliers during the exploratory analysis routine described further below.
  
 ## Normalization
