@@ -818,19 +818,31 @@ plotRankDistrib <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3aa")
       rstatix::wilcox_test(formula = AUC ~ group) %>%
       rstatix::adjust_pvalue(method="holm")
     
-    p <- ggplot2::ggplot(counts, ggplot2::aes(x = rank, y = count, colour = group)) +
+    pl <- ggplot2::ggplot(counts, ggplot2::aes(x = rank, y = count, colour = group)) +
       ggplot2::geom_point(shape=21) +
       ggplot2::geom_ribbon(
         ggplot2::aes(ymin = count-ste, ymax = count+ste,  fill=group),
         alpha = 0.3, colour = NA)+
       ggplot2::geom_line()+
-      ggplot2::labs(subtitle=gsub('p', 'p.adj', get_test_label(auc_test, detailed=FALSE, p.col = "p.adj", type="text")))+
       ggplot2::scale_color_manual(values=label_colors[[colorBy]])+
       ggplot2::scale_fill_manual(values=label_colors[[colorBy]])+
       ggplot2::scale_x_log10()+
       ggplot2::ylab(paste0("mean ", scl))+
       theme_RepSeq()+
       ggplot2::theme(legend.position = "right", plot.subtitle = element_text(hjust=0.90, vjust=-10))
+    
+      stats_table <- auc_test %>% 
+                    dplyr::select( group1, group2, tidyr::starts_with("p")) %>% 
+                    dplyr::select(-tidyr::ends_with("signif")) %>%
+                    dplyr::rename(Group1 = group1) %>% 
+                    dplyr::rename(Group2 = group2)
+      stable.p <- ggpubr::ggtexttable(stats_table, rows = NULL, 
+                                    theme = ttheme("blank", base_size = 8)) %>% 
+                                            ggpubr::tab_add_hline(at.row = 1:2,
+                                                                  row.side = "top", 
+                                                                  linewidth = 2)
+    p <- ggpubr::ggarrange(pl, stable.p, ncol = 1, nrow = 2, 
+                           heights = c(1, 0.5))
     
   } else if(colorBy!="sample_id") {
     
@@ -1310,7 +1322,7 @@ plotCountIntervals <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3a
         rstatix::wilcox_test(value  ~ grp) %>%
         rstatix::adjust_pvalue() %>%
         rstatix::add_significance() %>%
-        rstatix::add_y_position()
+        rstatix::add_xy_position(x="interval")
       
       stat.test2 <- data2plot %>%
         dplyr::filter(variable== "freq") %>%
@@ -1318,7 +1330,7 @@ plotCountIntervals <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3a
         rstatix::wilcox_test(value  ~ grp) %>%
         rstatix::adjust_pvalue() %>%
         rstatix::add_significance() %>%
-        rstatix::add_y_position()
+        rstatix::add_xy_position(x="interval")
       
     } else if(length(groupBy)==2){
       stat.test1 <- data2plot %>%
@@ -1327,7 +1339,7 @@ plotCountIntervals <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3a
         rstatix::wilcox_test(value  ~ grp) %>%
         rstatix::adjust_pvalue() %>%
         rstatix::add_significance() %>%
-        rstatix::add_y_position()
+        rstatix::add_xy_position(x="interval")
       
       stat.test2 <- data2plot %>%
         dplyr::filter(variable== "freq") %>%
@@ -1335,7 +1347,7 @@ plotCountIntervals <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3a
         rstatix::wilcox_test(value  ~ grp) %>%
         rstatix::adjust_pvalue() %>%
         rstatix::add_significance() %>%
-        rstatix::add_y_position()
+        rstatix::add_xy_position(x="interval")
       
     } else if(length(groupBy)==3){
       stat.test1 <- data2plot %>%
@@ -1344,7 +1356,7 @@ plotCountIntervals <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3a
         rstatix::wilcox_test(value  ~ grp) %>%
         rstatix::adjust_pvalue() %>%
         rstatix::add_significance() %>%
-        rstatix::add_y_position()
+        rstatix::add_xy_position(x="interval")
       
       stat.test2 <- data2plot %>%
         dplyr::filter(variable== "freq") %>%
@@ -1352,28 +1364,30 @@ plotCountIntervals <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3a
         rstatix::wilcox_test(value  ~ grp) %>%
         rstatix::adjust_pvalue() %>%
         rstatix::add_significance() %>%
-        rstatix::add_y_position()
+        rstatix::add_xy_position(x="interval")
     }
     
 
-    p1 <- ggplot2::ggplot(data = data2plot[data2plot$variable == "percent",],
+    p1 <-  ggplot2::ggplot(data = data2plot[data2plot$variable == "percent",],
                          ggplot2::aes(x = factor(interval, levels=plotBreaks),
                                       y = .data[["value"]]), alpha=.7) +
-      ggplot2::geom_boxplot(ggplot2::aes(fill=.data[["grp"]]),outlier.shape = NA) +
+      ggplot2::geom_boxplot(ggplot2::aes(fill=.data[["grp"]]),outlier.shape = NA, position=ggplot2::position_dodge(width=.8)) +
       ggplot2::geom_point(ggplot2::aes(fill=.data[["grp"]]),shape = 21, position=ggplot2::position_dodge(width=.8)) +
       {if(length(groupBy)==2)list(ggplot2::facet_grid(~grp2))} +
       {if(length(groupBy)==3)list(ggplot2::facet_grid(grp2~grp3))} +
-      ggplot2::labs(subtitle = "Cumulative frequency")+
+      ggplot2::labs(subtitle = "Cumulative frequency", x=NULL)+
       ggplot2::xlab("")+ggplot2::ylab("")+
       ggplot2::scale_color_manual(values = label_colors[[groupBy[[1]]]]) +
       ggplot2::scale_fill_manual(values = label_colors[[groupBy[[1]]]]) +
       theme_RepSeq() +
-      ggplot2::theme(legend.position = "none",
-                     axis.text.x = ggplot2::element_text(angle = 45, hjust = 1, size=8),
+      ggplot2::theme(plot.margin=unit(c(-0.1,.5,.1,.5),"cm"),
+                      legend.position = "none",
+                      plot.subtitle=element_text(size=10),
+                     axis.text.x = ggplot2::element_text( vjust = 1, size=8),
                      axis.text.y = ggplot2::element_text(size=8))+
         ggpubr::stat_pvalue_manual(stat.test1, label = "p.adj.signif",
-                            tip.length = 0,x="interval")
-
+                            tip.length = 0, size=3)
+  
     p2 <- ggplot2::ggplot(data = data2plot[data2plot$variable == "freq",],
                           ggplot2::aes(x = factor(interval, levels=plotBreaks),
                                        y = .data[["value"]]), alpha=.7) +
@@ -1386,21 +1400,23 @@ plotCountIntervals <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3a
       ggplot2::scale_color_manual(values = label_colors[[groupBy[[1]]]]) +
       ggplot2::scale_fill_manual(values = label_colors[[groupBy[[1]]]]) +
       theme_RepSeq() +
-      ggplot2::theme(legend.position = "right",
+      ggplot2::theme(plot.margin=unit(c(.1,.5,-0.1,.5),"cm"),
+                     legend.position = "right",
                      legend.direction = "vertical",
-                     axis.text.x = ggplot2::element_text(angle = 45, hjust = 1, size=8),
+                     plot.subtitle=element_text(size=10),
+                     axis.text.x = ggplot2::element_text( vjust = 1, size=8),
                      axis.text.y = ggplot2::element_text(size=8),
                      legend.background = ggplot2::element_blank(),
                      legend.text = ggplot2::element_text(size=8),
                      legend.justification = "center" )+
       ggpubr::stat_pvalue_manual(stat.test2, label = "p.adj.signif",
-                                 tip.length = 0,x="interval")
+                                 tip.length = 0,size = 3)
 
     legend<-lemon::g_legend(p2)
     g <- gridExtra::grid.arrange(gridExtra::arrangeGrob(p2 + ggplot2::theme(legend.position="none"),
                                                         p1 + ggplot2::theme(legend.position="none"),
-                                                        nrow=1),
-                                 legend, nrow=1,widths=c(8, 1.3))
+                                                        nrow=2),
+                                 legend, nrow=1,widths=c(8, 1))
 
      } else{
    data2plot<- reshape2::melt(data2plot, id.vars=c("interval","sample_id"))
