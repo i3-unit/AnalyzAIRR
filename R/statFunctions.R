@@ -28,6 +28,7 @@ utils::globalVariables(c("Log2FC", "sdata"))
 diffExpGroup <- function(x, colGrp,
                          level = c("clone","clonotype", "V", "J", "VJ", "CDR3nt","CDR3aa"),
                          group) {
+    if (any(grepl(paste(c("\\+","\\-"), collapse="|"),group[-1]))) stop("Subgroups should not contain (-) or (+).")
 
     dds <- .toDESeq2(x, colGrp = colGrp, level = level)
     dds <- DESeq2::estimateSizeFactors(dds, type="poscounts")
@@ -64,8 +65,7 @@ diffExpGroup <- function(x, colGrp,
   coldat <- apply(coldat, 2, function(x) gsub("\\-", "m", x))
   levelChoice <- match.arg(level)
   cts <- countFeatures(x, level=levelChoice)
-  if (length(colGrp) > 1)
-    colGrp <- paste(colGrp, collapse="+")
+  if (length(colGrp) > 1) colGrp <- paste(colGrp, collapse="+")
   rownames(coldat) <- gsub("-", ".", rownames(coldat))
   cts <- data.frame(cts, row.names=1, check.names = FALSE)
   colnames(cts) <- gsub("-", ".", colnames(cts))

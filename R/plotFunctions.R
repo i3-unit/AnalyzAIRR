@@ -796,11 +796,11 @@ plotRankDistrib <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3aa")
       label_colors = plotColors(x, samplenames = FALSE)
     }
     
-    aucs <- counts %>%
-      dplyr::group_by(sample_id) %>%
-      dplyr::mutate(AUC=MESS::auc(x=rank, y=count))
-    
-    se<- function(x) sqrt(var(x)/length(x))
+    # aucs <- counts %>%
+    #   dplyr::group_by(sample_id) %>%
+    #   dplyr::mutate(AUC=MESS::auc(x=rank, y=count))
+    # 
+    # se<- function(x) sqrt(var(x)/length(x))
     
     if (scl == "count"){
       counts[, ste := lapply(.SD, se), by = .( group, rank), .SDcols = "count"]
@@ -814,11 +814,11 @@ plotRankDistrib <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3aa")
       
     }
     
-    auc_test <- data.frame(aucs) %>%
-      rstatix::wilcox_test(formula = AUC ~ group) %>%
-      rstatix::adjust_pvalue(method="holm")
+    # auc_test <- data.frame(aucs) %>%
+    #   rstatix::wilcox_test(formula = AUC ~ group) %>%
+    #   rstatix::adjust_pvalue(method="holm")
     
-    pl <- ggplot2::ggplot(counts, ggplot2::aes(x = rank, y = count, colour = group)) +
+    p <- ggplot2::ggplot(counts, ggplot2::aes(x = rank, y = count, colour = group)) +
       ggplot2::geom_point(shape=21) +
       ggplot2::geom_ribbon(
         ggplot2::aes(ymin = count-ste, ymax = count+ste,  fill=group),
@@ -831,18 +831,18 @@ plotRankDistrib <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3aa")
       theme_RepSeq()+
       ggplot2::theme(legend.position = "right", plot.subtitle = element_text(hjust=0.90, vjust=-10))
     
-      stats_table <- auc_test %>% 
-                    dplyr::select( group1, group2, tidyr::starts_with("p")) %>% 
-                    dplyr::select(-tidyr::ends_with("signif")) %>%
-                    dplyr::rename(Group1 = group1) %>% 
-                    dplyr::rename(Group2 = group2)
-      stable.p <- ggpubr::ggtexttable(stats_table, rows = NULL, 
-                                    theme = ttheme("blank", base_size = 8)) %>% 
-                                            ggpubr::tab_add_hline(at.row = 1:2,
-                                                                  row.side = "top", 
-                                                                  linewidth = 2)
-    p <- ggpubr::ggarrange(pl, stable.p, ncol = 1, nrow = 2, 
-                           heights = c(1, 0.5))
+    #   stats_table <- auc_test %>% 
+    #                 dplyr::select( group1, group2, tidyr::starts_with("p")) %>% 
+    #                 dplyr::select(-tidyr::ends_with("signif")) %>%
+    #                 dplyr::rename(Group1 = group1) %>% 
+    #                 dplyr::rename(Group2 = group2)
+    #   stable.p <- ggpubr::ggtexttable(stats_table, rows = NULL, 
+    #                                 theme = ttheme("blank", base_size = 8)) %>% 
+    #                                         ggpubr::tab_add_hline(at.row = 1:2,
+    #                                                               row.side = "top", 
+    #                                                               linewidth = 2)
+    # p <- ggpubr::ggarrange(pl, stable.p, ncol = 1, nrow = 2, 
+    #                        heights = c(1, 0.5))
     
   } else if(colorBy!="sample_id") {
     
@@ -1716,16 +1716,19 @@ plotDiffExp <- function(x,
   x_legend <- list(title = paste0("log2(",paste(group[2]),"/",paste(group[3]), ")"))
   y_legend <- list(title = "-log10(padj)")
 
-  fc_limits <- round(max(abs(degTab$log2FoldChange)), 0)
+  fc_limits <- ceiling(max(abs(degTab$log2FoldChange)))
 
   p <- ggplot2::ggplot()+
-            ggplot2::geom_point(data = degTab, ggplot2::aes(x = log2FoldChange, y = BHpvalue, fill = group, group=rn), shape = 21, size = 2)+
+            ggplot2::geom_point(data = degTab, 
+                                ggplot2::aes(x = log2FoldChange,
+                                             y = BHpvalue, 
+                                             fill = group, group=rn), shape = 21, size = 2)+
             ggplot2::labs(x = x_legend,
                           y = y_legend)+
             ggrepel::geom_text_repel(data = degTab[seq_len(top)], ggplot2::aes(x = log2FoldChange,
                                                                y = BHpvalue,
                                                                label = labels), size = 3,
-                                     size=5, max.overlaps = 9999999999)+
+                                                               max.overlaps = 9999999999)+
             ggplot2::geom_hline(yintercept = -log10(PV.TH), linetype = "dashed")+
             ggplot2::geom_vline(xintercept = c(-FC.TH, FC.TH), linetype = "dashed")+
             ggplot2::scale_x_continuous(limits = c(-fc_limits, fc_limits),
@@ -1746,14 +1749,18 @@ plotDiffExp <- function(x,
     mnmx <- list()
     for (i in unique(datapca$group)) {
       outi <- car::dataEllipse(datapca$PC1[datapca$group == 
-                                             i], datapca$PC2[datapca$group == i], levels = c(0.95, 
-                                                                                             0.95), draw = FALSE)
-      rng <- do.call(rbind, lapply(outi, function(mtx) apply(mtx, 
-                                                             2, range)))
+                                             i], datapca$PC2[datapca$group == i],
+                               levels = c(0.95, 0.95), draw = FALSE)
+      rng <- do.call(rbind, lapply(outi, function(mtx) apply(mtx, 2, range)))
       mnmx[[i]] <- apply(rng, 2, range)
     }
     mnmx <- plyr::ldply(mnmx, data.frame)
     ref = mnmx %>% select(x, y) %>% abs(.) %>% max()
+    
+    ref_b<- abs(max(datapca[,1:2]))
+    
+    ref_f<- ifelse(ref>ref_b, ref, ref_b)
+    
     p <- ggpubr::ggscatter(datapca, x = "PC1", y = "PC2", 
                            color = "black", fill = group[1], palette = unique(label_colors[[group[1]]]), 
                            shape = 21, conf.int = TRUE, size = 1.5, ellipse = TRUE, 
@@ -1762,10 +1769,11 @@ plotDiffExp <- function(x,
       ggplot2::ylab(paste0("PC2: ", percentVar[2], "% variance")) +
       ggplot2::geom_hline(yintercept = 0,  color = "gray", size = 0.1, linetype = "dashed") + 
       ggplot2::geom_vline(xintercept = 0, color = "gray", 
-                          size = 0.1, linetype = "dashed") + theme_RepSeq() + 
-      ggplot2::scale_x_continuous(limits = c(-ref - (ref/10), 
-                                             ref + (ref/10))) + ggplot2::scale_y_continuous(limits = c(-ref - 
-                                                                                                         (ref/10), ref + (ref/10)))
+                          size = 0.1, linetype = "dashed") +
+      theme_RepSeq() + 
+      ggplot2::scale_x_continuous(limits = c(-ref_f - (ref_f/10), 
+                                             ref_f + (ref_f/10))) +
+      ggplot2::scale_y_continuous(limits = c(-ref_f - (ref_f/10), ref_f + (ref_f/10)))
     
 }
   return(p)

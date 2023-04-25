@@ -648,11 +648,23 @@ plotColors<- function(x, samplenames=TRUE){
   names=as.vector(mData(x)[, unlist(lapply(mData(x), is.factor)), drop = FALSE]) %>% names()
   
   if(samplenames){
-  ann_colors<-vector("list")
-      l<- length(unique(mData(x)[,names[1]]))
-      mycolors_b<- mycolors[seq_len(l)]
-      names(mycolors_b) <-levels(mData(x)[[1]])
-      ann_colors[["sample_id"]]<- mycolors_b
+    ann_colors<-vector("list")
+    l<- length(unique(mData(x)[,names[1]]))
+  
+    if(l<74){
+    mycolors_b<- mycolors[seq_len(l)]
+    names(mycolors_b) <-levels(mData(x)[[1]])
+    ann_colors[["sample_id"]]<- mycolors_b
+    }else{
+    new_l<- ceiling(l/length(mycolors))
+    colors_b=  rep(mycolors,new_l) 
+    mycolors_b<- colors_b[seq_len(l)]
+    
+    names(mycolors_b) <-levels(mData(x)[[1]])
+    ann_colors[["sample_id"]]<- mycolors_b
+      
+    }
+  
   } else {
     ann_colors<-vector("list")
     for (i in unique(names)[-1]) {
