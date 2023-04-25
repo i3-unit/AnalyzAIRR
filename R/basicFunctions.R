@@ -642,8 +642,8 @@ plotColors<- function(x, samplenames=TRUE){
   # mycolors <- colorRampPalette(RColorBrewer::brewer.pal(12, "Set3"))(as.vector(as.matrix(mData(x)[, unlist(lapply(mData(x), is.factor)), drop = FALSE])) %>% unique() %>% length())
   # mycolors = as.vector(unlist(mapply(RColorBrewer::brewer.pal, qual_col_pals$maxcolors, rownames(qual_col_pals))))
 
-  qual_col_pals = RColorBrewer::brewer.pal.info[RColorBrewer::brewer.pal.info$category  == "qual",]
-  mycolors = as.vector(unlist(mapply(RColorBrewer::brewer.pal, qual_col_pals$maxcolors, rownames(qual_col_pals))))
+  col_pals = RColorBrewer::brewer.pal.info[RColorBrewer::brewer.pal.info$category  == "qual" ,]
+  mycolors = as.vector(unlist(mapply(RColorBrewer::brewer.pal, col_pals$maxcolors, rownames(col_pals))))
   
   names=as.vector(mData(x)[, unlist(lapply(mData(x), is.factor)), drop = FALSE]) %>% names()
   
@@ -666,8 +666,10 @@ plotColors<- function(x, samplenames=TRUE){
     }
   
   } else {
+    len<- sum(apply(mData(x)[,names[-1]], 2, dplyr::n_distinct))
+    if(len>74) stop ("A maximum of 74 colors can be assigned. The number of different subgroups is higher than 74.")
+      
     ann_colors<-vector("list")
-
     for (i in unique(names)[-1]) {
       l <- length(unique(mData(x)[, i]))
       mycolors_b <- mycolors[seq_len(l)]
