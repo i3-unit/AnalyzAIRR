@@ -667,6 +667,7 @@ plotColors<- function(x, samplenames=TRUE){
   
   } else {
     ann_colors<-vector("list")
+
     for (i in unique(names)[-1]) {
       l <- length(unique(mData(x)[, i]))
       mycolors_b <- mycolors[seq_len(l)]

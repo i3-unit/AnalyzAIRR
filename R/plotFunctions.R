@@ -800,7 +800,7 @@ plotRankDistrib <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3aa")
     #   dplyr::group_by(sample_id) %>%
     #   dplyr::mutate(AUC=MESS::auc(x=rank, y=count))
     # 
-    # se<- function(x) sqrt(var(x)/length(x))
+    se<- function(x) sqrt(var(x)/length(x))
     
     if (scl == "count"){
       counts[, ste := lapply(.SD, se), by = .( group, rank), .SDcols = "count"]
@@ -1692,6 +1692,9 @@ plotDiffExp <- function(x,
     stop("x is missing, an object of class RepSeqExperiment is expected.")
   if (!is.RepSeqExperiment(x))
     stop("an object of class RepSeqExperiment is expected.")
+  if (any(grepl(paste(c("\\+","\\-"), collapse="|"),group[-1]))) 
+    stop("Subgroups should not contain (-) or (+).")
+  
   
   dds <- .toDESeq2(x, colGrp = group[1], level = level)
   dds <- DESeq2::estimateSizeFactors(dds, type = "poscounts")
