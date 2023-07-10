@@ -626,10 +626,10 @@ plotRenyiIndex(x=RepSeqData, level="J", grouped=FALSE, colorBy = "sample_id")
   - The proportion that a defined repertoire level within each count interval represents in the total repertoire, thus giving a global evaluation of the count distribution.
   - The cumulative frequency of a defined repertoire level within each count interval thus giving the proportion that each interval occupies in the repertoire.
 
-```{r intervals, fig.height=4, fig.width=8,fig.align="center"}
+```{r intervals, fig.height=6, fig.width=7,fig.align="center"}
 plotCountIntervals(x=RepSeqData, level="clone")
 ```
-<figcaption align = "center"><em class="special">Figure 7: Stacked bars showing the proportion (left plot) and the cumulative frequency (right plot) of clones within each count interval in each sample.</em></figcaption>
+<figcaption align = "center"><em class="special">Figure 7: Stacked bars showing the proportion (upper plot) and the cumulative frequency (lower plot) of clones within each count interval in each sample.</em></figcaption>
 <br>
 
 + **Clonal Distribution per decreasing rank**
@@ -656,7 +656,7 @@ In all the following functions, the **sample_id** of interest needs to be specif
 ```{r plotIndCountIntervals, echo=TRUE,message=FALSE, warning=FALSE,fig.width=7, fig.height = 4,fig.align="center", cache.comments=FALSE}
 plotIndCountIntervals(RepSeqData,level = "clone", sampleName="tripod-30-813")
 ```
-<figcaption align = "center"><em class="special">Figure 9: Barplots showing the proportion (upper plot) and the cumulative frequency (bottom plot) of clones within each count interval for a selected sample.</em></figcaption>
+<figcaption align = "center"><em class="special">Figure 9: Barplots showing the proportion (upper plot) and the cumulative frequency (lower plot) of clones within each count interval for a selected sample.</em></figcaption>
 <br>
 
 + **Analyze V and J gene usages**
@@ -732,7 +732,7 @@ plotStatistics(x = RepSeqData,
 ```{r J usage , echo = TRUE, fig.width=12, fig.height=3.5, message=F,warning=F,fig.align="center"}
 plotGeneUsage(x=RepSeqData, level="J", scale="frequency", groupBy="cell_subset")
 ```
-<figcaption align = "center"><em class="special">Figure 16: Boxplots showing the frequency of each J gene within each group of samples. A Wilcoxon test is applied and adjusted p-values using the Holm method are shown. Only significant values are plotted.</em></figcaption>
+<figcaption align = "center"><em class="special">Figure 16: Boxplots showing the frequency of each J gene within each group of samples. A Wilcoxon test was performed. Only significant values are plotted.</em></figcaption>
 <br>
 
 + **Compare repertoire diversities**
@@ -761,7 +761,7 @@ plotDiversity(x = RepSeqData,
 
   For the Renyi index, the `grouped` parameter should be set to **TRUE**, and the groups to be analysed should be specified in the `colorBy` parameter.
 
-```{r plot plotRenyiIndexG, fig.height = 3.5, fig.width=8, fig.align='center'}
+```{r plot plotRenyiIndexG, fig.height = 5, fig.width=7, fig.align='center'}
 plotRenyiIndex(x = RepSeqData,
                   level = "clone",
                   grouped = "TRUE",
@@ -776,7 +776,7 @@ plotRenyiIndex(x = RepSeqData,
 
    Similarly to the analysis applied at the single-sample level, `plotCountIntervals()` allows to plot and compare clonal distributions within defined count intervals between experimental groups.
 
-```{r plotDistribVpJall,fig.height = 4, fig.width=8, fig.align='center'}
+```{r plotDistribVpJall,fig.height = 5, fig.width=7, fig.align='center'}
 plotCountIntervals(x=RepSeqData, level="clone", groupBy = c("cell_subset","sex"))
 ```
 <figcaption align = "center"><em class="special">Figure 20: The proportion (left plot) and the cumulative frequency (right plot) of clones within each count interval was compared between amTreg and nTreg samples within each sex. A Wilcoxon test is applied and adjusted p-values using the Holm method are shown.</em></figcaption>
@@ -889,37 +889,18 @@ knitr::kable(DS) %>%
 
 <br>
 
-The results can be visualized using the `plotDiffExp` function:
-
-   - into a volcano plot, by setting `plot` to **Volcano**.
+The results can be visualized using the `plotDiffExp` function into a volcano plot.
 
    Users can specify the number of top differentially expressed genes/sequences to be identified on the plot using the `top` parameter.
    It is also possible to choose a log2FoldChange and an adjusted pvalue threshold, based on which the over- and down-expression will be defined. By default, these parameters are fixed to 2 and 0.05 respectively.
 
-  - by performing a principal component analysis by setting `plot` to **PCA**. In this case, only the `group` parameter should be specified. 
-
-<div class="column-left">
-```{r volcano, echo = TRUE, warning=FALSE, message=FALSE,fig.cap="Figure 26: A volcano plot showing differentially expressed VJ combinations between amTreg and nTreg samples. Over-expressed combinations in the amTreg population are shown in red."}
+```{r volcano, echo = TRUE, warning=FALSE, message=FALSE,fig.width=7, fig.height=4,fig.cap="Figure 26: A volcano plot showing differentially expressed VJ combinations between amTreg and nTreg samples. Over-expressed combinations in the amTreg population are shown in red."}
 plotDiffExp(x = RepSeqData,
             top = 10,
             level = "VJ",
-            group = c("cell_subset", "amTreg", "nTreg"),
-            plot="Volcano")
+            group = c("cell_subset", "amTreg", "nTreg"))
 ```
-</div>
 
-<div class="column-right">
-
-```{r pca1, echo = TRUE,warning=FALSE, message=FALSE,fig.cap="Figure 27: A principal component analysis performed on the differential expression analysis between amTreg and nTreg samples on VJ combinations. Samples are colored based on the cell subset." }
-plotDiffExp(x = RepSeqData,
-            level = "VJ",
-            group = c("cell_subset", "amTreg", "nTreg"),
-            plot = "PCA"
-            )
-```
-</div>
-
-<br><br><br>
 
 ## Spectratyping comparison
 

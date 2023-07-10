@@ -425,28 +425,27 @@ plotGeneUsage <- function(x, level = c("V", "J"), scale = c("count", "frequency"
     data2plot[, GroupB := lapply(.SD, function(x) sdata[x, groupBy[[3]]]), .SDcols = "sample_id"]
   }
   
-    stat.test <- data2plot %>%
-      dplyr::select(all_of(levelChoice), sample_id, all_of(scaleChoice), tidyr::starts_with("Gr")) %>%
-      dplyr::group_by(get(levelChoice)) %>%
-      rstatix::wilcox_test(formula=as.formula(paste(paste(scaleChoice),"Group",sep="~"))) %>%
-      rstatix::adjust_pvalue() %>%
-      rstatix::add_significance() %>%
-      rstatix::add_y_position() 
+    # stat.test <- data2plot %>%
+    #   dplyr::select(all_of(levelChoice), sample_id, all_of(scaleChoice), tidyr::starts_with("Gr")) %>%
+    #   dplyr::group_by(get(levelChoice)) %>%
+    #   rstatix::wilcox_test(formula=as.formula(paste(paste(scaleChoice),"Group",sep="~"))) %>%
+    #   rstatix::adjust_pvalue() %>%
+    #   rstatix::add_significance() %>%
+    #   rstatix::add_y_position() 
   
   data2plot.summary<- data2plot %>%
-         dplyr::group_by_at(vars(tidyr::starts_with("Gr"), paste(levelChoice))) %>%
+         dplyr::group_by_at(dplyr::vars(tidyr::starts_with("Gr"), paste(levelChoice))) %>%
           dplyr::summarise(
             sd = sd(get(scaleChoice), na.rm = TRUE),
             mean = mean(get(scaleChoice)),
-            n = n(),
-            se = sd / sqrt(n)
-          ) %>%
+            n = dplyr::n(),
+            se = sd / sqrt(n)) %>%
     dplyr::rename(levelChoice=paste(levelChoice))
   
   p <-ggplot2::ggplot(data2plot.summary, 
-                      aes(x = levelChoice, y = mean ))+
-       ggplot2::geom_bar(aes(fill=Group), stat="identity", position = position_dodge()) +
-      ggplot2::geom_errorbar(aes(ymin=mean-se, ymax=mean+se, group=Group), width=.2,position=position_dodge(.9))+
+                      ggplot2::aes(x = levelChoice, y = mean ))+
+       ggplot2::geom_bar(ggplot2::aes(fill=Group), stat="identity", position = ggplot2::position_dodge()) +
+      ggplot2::geom_errorbar(ggplot2::aes(ymin=mean-se, ymax=mean+se, group=Group), width=.2,position=ggplot2::position_dodge(.9))+
     {if(length(groupBy)==2)list(ggplot2::facet_grid(Group2~.))} +
     {if(length(groupBy)==3)list(ggplot2::facet_grid(Group2~Group3))} +
     ggplot2::scale_fill_manual(values=label_colors[[groupBy[[1]]]])+
@@ -456,8 +455,7 @@ plotGeneUsage <- function(x, level = c("V", "J"), scale = c("count", "frequency"
     ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, hjust = 1,size=8),
                    axis.text.y = ggplot2::element_text(size=8),
                    legend.position = "top")+
-    ggpubr::stat_pvalue_manual(stat.test, label = "p.adj.signif", 
-                               tip.length = 0,x="get(levelChoice)", hide.ns = TRUE)
+    ggpubr::stat_compare_means(ggplot2::aes(group=Group, label = ..p.signif..),method="wilcox.test", hide.ns = TRUE)
   
   return(p)
 }
@@ -483,7 +481,8 @@ plotGeneUsage <- function(x, level = c("V", "J"), scale = c("count", "frequency"
 #'
 #' plotIndCountIntervals(x = RepSeqData, level="clone", sampleName = NULL)
 #'
-plotIndCountIntervals <- function(x, sampleName = NULL, level = c("clone","clonotype", "CDR3nt","CDR3aa")){
+plotIndCountIntervals <- function(x, sampleName = NULL, 
+                                  level = c("clone","clonotype", "CDR3nt","CDR3aa")){
   interval=percent <- NULL
   levelChoice<- match.arg(level)
   if (missing(x)) stop("x is missing.")
@@ -516,8 +515,8 @@ plotIndCountIntervals <- function(x, sampleName = NULL, level = c("clone","clono
   plotBreaks <- breaks[order(nchar(breaks), breaks)]
   data2plot<- reshape2::melt(data2plot, id.vars="interval")
 
-  p1 <- ggplot2::ggplot(data = data2plot[data2plot$variable == "percent",], ggplot2::aes(x = interval, y =value) , fill = "gray", alpha=.7) +
-    ggplot2::geom_bar(stat = "identity", position = ggplot2::position_dodge(), alpha=.8) +
+  p1 <- ggplot2::ggplot(data = data2plot[data2plot$variable == "percent",], ggplot2::aes(x = interval, y =value) ) +
+    ggplot2::geom_bar(stat = "identity", position = ggplot2::position_dodge(), color="black",fill = "lightgray") +
     ggplot2::scale_x_discrete(limits=plotBreaks) +
     ggplot2::ylim(0, 1) +
     ggplot2::geom_text(ggplot2::aes(y = value, label = paste(100*round(value,3), "%")),  size=3, position = ggplot2::position_dodge(.8), vjust=-1) +
@@ -527,8 +526,8 @@ plotIndCountIntervals <- function(x, sampleName = NULL, level = c("clone","clono
                     axis.text.x=ggplot2::element_text( size=8))+
     ggplot2::ggtitle("Cumulative frequency")
 
-  p2 <- ggplot2::ggplot(data = data2plot[data2plot$variable == "freq",], ggplot2::aes(x = interval, y =value ) , fill = "gray", alpha=.7) +
-    ggplot2::geom_bar(stat = "identity", position = ggplot2::position_dodge(), alpha=.8) +
+  p2 <- ggplot2::ggplot(data = data2plot[data2plot$variable == "freq",], ggplot2::aes(x = interval, y =value ) ) +
+    ggplot2::geom_bar(stat = "identity", position = ggplot2::position_dodge(), color="black",fill = "lightgray") +
     ggplot2::scale_x_discrete(limits=plotBreaks) +
     ggplot2::ylim(0, 1) +
     ggplot2::geom_text(ggplot2::aes(y = value, label = paste(100*round(value,3), "%")),  size=3, position = ggplot2::position_dodge(.8), vjust=-1) +
@@ -610,7 +609,7 @@ plotSpectratypingV <- function(x, sampleName = NULL, scale = c("count", "frequen
     p <- ggplot2::ggplot(data = data2plot, ggplot2::aes(x = CDR3length, y = percent))
   }
 
-  p <- p + ggplot2::geom_bar(stat = "identity") +
+  p <- p + ggplot2::geom_bar(stat = "identity", fill="lightgray", color="black") +
     ggplot2::scale_x_continuous(breaks = data2plot[, unique(CDR3length)]) +
     # ggplot2::labs(subtitle = paste("CDR3 length distribution per V gene in",paste(index))) +
     ggplot2::xlab("CDR3 length (aa)")+
@@ -1178,12 +1177,18 @@ plotRarefaction <- function(x, colorBy=NULL, label_colors=NULL){
       y = "Number of clonotypes") +
     ggplot2::scale_color_manual(values=label_colors[[colorBy]])+
     ggplot2::scale_fill_manual(values=label_colors[[colorBy]])+
-    ggrepel::geom_text_repel(data=raretab %>% dplyr::group_by(sample_id) %>% dplyr::slice_max(x),
-      nudge_x = -0.2, direction = "y", hjust = "left", ggplot2::aes(label = sample_id)
-    ) +
-    theme_RepSeq()+
+    theme_RepSeq()
+  
+    if(length(sdata$sample_id)<10) 
+   p <- p + 
+    ggplot2::scale_x_continuous(expand = ggplot2::expansion(mult = .1))+
     ggplot2::theme(legend.position = "none")+
-    ggplot2::scale_x_continuous(expand = ggplot2::expansion(mult = .1))
+    ggrepel::geom_text_repel(data=raretab %>% dplyr::group_by(sample_id) %>% dplyr::slice_max(x),
+                             nudge_x = -0.1, direction = "y", hjust = "left", size=3 ,ggplot2::aes(label = sample_id)) 
+  
+  # if(length(sdata$sample_id)>10) 
+  #  p <- p+ ggrepel::geom_text_repel(data=raretab %>% dplyr::group_by(sample_id) %>% dplyr::slice_max(x),
+  #               nudge_x = -0.1, direction = "y", hjust = "left", size=3 ,ggplot2::aes(label = sample_id)) 
   } else {
     
     if (is.null(label_colors)) {
@@ -1198,13 +1203,9 @@ plotRarefaction <- function(x, colorBy=NULL, label_colors=NULL){
         y = "Number of clonotypes") +
       ggplot2::scale_color_manual(values=label_colors[[colorBy]])+
       ggplot2::scale_fill_manual(values=label_colors[[colorBy]])+
-      ggrepel::geom_text_repel(data=raretab %>% dplyr::group_by(sample_id) %>% dplyr::slice_max(x),
-                               nudge_x = -0.2, direction = "y", hjust = "left", ggplot2::aes(label = sample_id)
-      ) +
       theme_RepSeq()+
-      ggplot2::theme(legend.position = "none")+
+      ggplot2::theme(legend.position = "right")+
       ggplot2::scale_x_continuous(expand = ggplot2::expansion(mult = .1))
-    
     
   }
 
@@ -1420,41 +1421,49 @@ plotCountIntervals <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3a
 
      } else{
    data2plot<- reshape2::melt(data2plot, id.vars=c("interval","sample_id"))
-   colorBreaks <-  c("1"="#FFD92F","]1, 10]"="#A6D854","]10, 100]"= "#E78AC3" , "]100, 1000]"="#8DA0CB" ,"]1000, 10000]"="#FC8D62","]10000, Inf]"="#66C2A5")
+   colorBreaks <-  c("1"="#1F77B4B2","]1, 10]"="#FF7F0EB2","]10, 100]"=  "#2CA02CB2", "]100, 1000]"="#D62728B2" ,"]1000, 10000]"="#9467BDB2","]10000, Inf]"="#8C564BB2")
    plotBreaks <- c("1","]1, 10]","]10, 100]", "]100, 1000]" ,"]1000, 10000]","]10000, Inf]")
 
 
     p1 <- ggplot2::ggplot(data = data2plot[data2plot$variable == "percent",], ggplot2::aes(x = sample_id, y =value, fill=factor(interval, levels=rev(plotBreaks))) ,  alpha=.7) +
       ggplot2::geom_bar(stat = "identity",  alpha=.8) +
-      ggplot2::ylim(0, 1) +
       ggplot2::scale_fill_manual(values=colorBreaks)+
       theme_RepSeq()+
-      ggplot2::theme( axis.text.x = ggplot2::element_text(angle = 45, hjust = 1, size=8),
-                      axis.text.y = ggplot2::element_text(size=8),
-                      legend.position = "none")+
+      ggplot2::theme( axis.text.x = ggplot2::element_text( size=5,angle = 45, hjust=1),
+                      axis.text.y = ggplot2::element_text(size=6),
+                      legend.position = "none",
+                      plot.subtitle=ggplot2::element_text(size=7),
+                      plot.margin = margin(t=-1))+
       ggplot2::labs(subtitle = "Cumulative frequency")+
       ggplot2::xlab("")+ggplot2::ylab("")
 
     p2 <- ggplot2::ggplot(data = data2plot[data2plot$variable == "freq",], ggplot2::aes(x = sample_id, y =value, fill=factor(interval, levels=rev(plotBreaks))) ,  alpha=.7) +
       ggplot2::geom_bar(stat = "identity",  alpha=.8) +
-      ggplot2::ylim(0, 1) +
       ggplot2::scale_fill_manual(values=colorBreaks)+
       theme_RepSeq()+
-      ggplot2::theme( axis.text.x = ggplot2::element_text(angle = 45, hjust = 1,size=8),
-                      axis.text.y = ggplot2::element_text(size=8),
+      ggplot2::theme( axis.text.x = ggplot2::element_text(size=5, angle = 45, hjust=1),
+                      axis.text.y = ggplot2::element_text(size=6),
                       legend.position = "right",
                       legend.direction = "vertical",
                       legend.background = ggplot2::element_blank(),
-                      legend.text = ggplot2::element_text(size=8),
-                      legend.justification = "center")+
+                      legend.text = ggplot2::element_text(size=6),
+                      legend.justification = "center",
+                      plot.margin = margin(b=0,t=1),
+                      plot.subtitle=ggplot2::element_text(size=7))+
       ggplot2::labs(subtitle = "Distribution")+
       ggplot2::xlab("")+ggplot2::ylab("")
 
     legend<-lemon::g_legend(p2)
+    # g <- gridExtra::grid.arrange(gridExtra::arrangeGrob(p2 + ggplot2::theme(legend.position="none"),
+    #                                p1 + ggplot2::theme(legend.position="none"),
+    #                                nrow=1, ncol=2),
+    #                    legend, nrow=1,widths=c(8, 1.3), newpage =FALSE)
+    
     g <- gridExtra::grid.arrange(gridExtra::arrangeGrob(p2 + ggplot2::theme(legend.position="none"),
-                                   p1 + ggplot2::theme(legend.position="none"),
-                                   nrow=1),
-                       legend, nrow=1,widths=c(8, 1.3))
+                                                        p1 + ggplot2::theme(legend.position="none"),
+                                                        nrow=2),
+                                 legend, nrow=1,widths=c(8, 1.3), newpage =FALSE)
+
      }
 
 }
@@ -1656,11 +1665,9 @@ plotPerturbationScore <- function(x, ctrl.names=NULL,
 #' @param x an object of class  \code{\linkS4class{RepSeqExperiment}}
 #' @param level a character specifying the level of the repertoire on which the diversity should be estimated. Should be one of "clone","clonotype", "V", "J", "VJ", "CDR3nt" or "CDR3aa".
 #' @param group a vector of character indicating the column name in the mData slot, as well as the two groups to be compared.
-#' @param plot a character indicating the type of visualization in which the results will be represented, either a volcano plot or a PCA.
-#' @param top an integer indicating the top n significant labels to be shown on the volcano plot. Default is 10. Only required when plot is set to "Volcano".
-#' @param FC.TH an integer indicating the log2FoldChange threshold. Default is 2. Only required when plot is set to "Volcano".
-#' @param PV.TH an integer indicating the adjusted pvalue threshold. Default is 0.05. Only required when plot is set to "Volcano".
-#' @param label_colors a list of colors for each factor column in metaData. See \code{\link{plotColors}}. If NULL, default colors are used. Only used when plot is set to "PCA".
+#' @param top an integer indicating the top n significant labels to be shown on the volcano plot. Default is 10. 
+#' @param FC.TH an integer indicating the log2FoldChange threshold. Default is 2. 
+#' @param PV.TH an integer indicating the adjusted pvalue threshold. Default is 0.05. 
 #' @export
 #' @examples
 #'
@@ -1668,22 +1675,17 @@ plotPerturbationScore <- function(x, ctrl.names=NULL,
 #' plotDiffExp(x = RepSeqData,
 #'             level = "V",
 #'             group = c("cell_subset", "amTreg", "nTreg"),
-#'             plot="Volcano",
 #'             top = 10,
 #'             FC.TH = 1,
 #'             PV.TH = 0.05)
 #'
 #' plotDiffExp(x = RepSeqData,
 #'             level = "V",
-#'             group = c("cell_subset", "amTreg", "nTreg"),
-#'             plot="PCA",
-#'             label_colors=NULL)
+#'             group = c("cell_subset", "amTreg", "nTreg"))
 #'             
 plotDiffExp <- function(x,
                         level = c("clone","clonotype", "V", "J", "VJ", "CDR3nt","CDR3aa"),
                         group = c("cell_subset", "amTreg", "nTreg"),
-                        plot=c("Volcano", "PCA"),
-                        label_colors=NULL,
                         FC.TH=2, 
                         PV.TH=0.05, 
                         top=10){
@@ -1699,9 +1701,6 @@ plotDiffExp <- function(x,
   dds <- .toDESeq2(x, colGrp = group[1], level = level)
   dds <- DESeq2::estimateSizeFactors(dds, type = "poscounts")
   dds <- DESeq2::DESeq(dds, fitType = 'local')
-  
-  if(plot=="Volcano"){
- 
   res <- DESeq2::results(dds, contrast = group)
   res <- as.data.frame(res[order(res$padj),])
 
@@ -1728,57 +1727,19 @@ plotDiffExp <- function(x,
                                              fill = group, group=rn), shape = 21, size = 2)+
             ggplot2::labs(x = x_legend,
                           y = y_legend)+
-            ggrepel::geom_text_repel(data = degTab[seq_len(top)], ggplot2::aes(x = log2FoldChange,
+            ggrepel::geom_text_repel(data = degTab[degTab$group!="Other",][seq_len(top)], ggplot2::aes(x = log2FoldChange,
                                                                y = BHpvalue,
                                                                label = labels), size = 3,
                                                                max.overlaps = 9999999999)+
             ggplot2::geom_hline(yintercept = -log10(PV.TH), linetype = "dashed")+
             ggplot2::geom_vline(xintercept = c(-FC.TH, FC.TH), linetype = "dashed")+
-            ggplot2::scale_x_continuous(limits = c(-fc_limits, fc_limits),
-                                        breaks = seq(-fc_limits, fc_limits))+
+            ggplot2::scale_x_continuous(limits = c(-fc_limits, fc_limits))+
+                   
             ggplot2::scale_fill_manual(values = c("Other"="gray",
                                                   "Over-expression"="red",
                                                   "Down-expression"="#6495ED"))+
             theme_RepSeq()
-  } else {
-    if (is.null(label_colors)) {
-      label_colors = plotColors(x, samplenames = FALSE)
-    }
-    
-    rsd <- DESeq2::rlog(dds)
-    datapca <- DESeq2::plotPCA(rsd, intgroup = group[1], returnData = TRUE)
-    percentVar <- round(100 * attr(datapca, "percentVar"))
-    
-    mnmx <- list()
-    for (i in unique(datapca$group)) {
-      outi <- car::dataEllipse(datapca$PC1[datapca$group == 
-                                             i], datapca$PC2[datapca$group == i],
-                               levels = c(0.95, 0.95), draw = FALSE)
-      rng <- do.call(rbind, lapply(outi, function(mtx) apply(mtx, 2, range)))
-      mnmx[[i]] <- apply(rng, 2, range)
-    }
-    mnmx <- plyr::ldply(mnmx, data.frame)
-    ref = mnmx %>% select(x, y) %>% abs(.) %>% max()
-    
-    ref_b<- abs(max(datapca[,1:2]))
-    
-    ref_f<- ifelse(ref>ref_b, ref, ref_b)
-    
-    p <- ggpubr::ggscatter(datapca, x = "PC1", y = "PC2", 
-                           color = "black", fill = group[1], palette = unique(label_colors[[group[1]]]), 
-                           shape = 21, conf.int = TRUE, size = 1.5, ellipse = TRUE, 
-                           repel = TRUE, ggtheme = theme_RepSeq()) + 
-      ggplot2::xlab(paste0("PC1: ",percentVar[1], "% variance")) + 
-      ggplot2::ylab(paste0("PC2: ", percentVar[2], "% variance")) +
-      ggplot2::geom_hline(yintercept = 0,  color = "gray", size = 0.1, linetype = "dashed") + 
-      ggplot2::geom_vline(xintercept = 0, color = "gray", 
-                          size = 0.1, linetype = "dashed") +
-      theme_RepSeq() + 
-      ggplot2::scale_x_continuous(limits = c(-ref_f - (ref_f/10), 
-                                             ref_f + (ref_f/10))) +
-      ggplot2::scale_y_continuous(limits = c(-ref_f - (ref_f/10), ref_f + (ref_f/10)))
-    
-}
+ 
   return(p)
 }
 

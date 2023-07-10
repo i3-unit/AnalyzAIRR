@@ -717,9 +717,9 @@ theme_RepSeq<- function(){
                    axis.text = ggplot2::element_text(size=10),
                    legend.title = ggplot2::element_blank(),
                    legend.key.size = ggplot2::unit(.2, 'cm'),
-                   strip.background = element_rect(fill="white", color="gray"),
-                   strip.text.x = element_text(size = 10, color = "black"),
-                   strip.text.y = element_text(size = 10, color = "black"),
+                   strip.background = ggplot2::element_rect(fill="white", color="gray"),
+                   strip.text.x = ggplot2::element_text(size = 10, color = "black"),
+                   strip.text.y = ggplot2::element_text(size = 10, color = "black"),
                    panel.grid.minor = ggplot2::element_blank(),
                    panel.grid.major = ggplot2::element_line(colour = "gray89",linetype="dashed",size=0.1))
 }

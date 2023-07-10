@@ -377,6 +377,7 @@ sampleRepSeqExp <- function(x, sample.size = min(mData(x)$nSequences), rngseed =
     stats <- data.frame(cts[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols = c("CDR3nt", "CDR3aa", "V", "J", "VJ","clone","clonotype"), by = "sample_id"], row.names = 1)
     sampleinfo <- data.frame(merge(sampleinfo[, setdiff(colnames(sampleinfo), colnames(stats))], stats, by = 0), row.names = 1)
 
+    
 	x.hist <- paste("A down-sampling to", sample.size , "with replacement set to", replace, "was performed")
 		if (verbose) message("Creating a RepSeqExperiment object...\n")
 	out <- methods::new("RepSeqExperiment",

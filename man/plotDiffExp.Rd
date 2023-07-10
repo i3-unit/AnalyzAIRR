@@ -8,8 +8,6 @@ plotDiffExp(
   x,
   level = c("clone", "clonotype", "V", "J", "VJ", "CDR3nt", "CDR3aa"),
   group = c("cell_subset", "amTreg", "nTreg"),
-  plot = c("Volcano", "PCA"),
-  label_colors = NULL,
   FC.TH = 2,
   PV.TH = 0.05,
   top = 10
@@ -22,15 +20,11 @@ plotDiffExp(
 
 \item{group}{a vector of character indicating the column name in the mData slot, as well as the two groups to be compared.}
 
-\item{plot}{a character indicating the type of visualization in which the results will be represented, either a volcano plot or a PCA.}
+\item{FC.TH}{an integer indicating the log2FoldChange threshold. Default is 2.}
 
-\item{label_colors}{a list of colors for each factor column in metaData. See \code{\link{plotColors}}. If NULL, default colors are used. Only used when plot is set to "PCA".}
+\item{PV.TH}{an integer indicating the adjusted pvalue threshold. Default is 0.05.}
 
-\item{FC.TH}{an integer indicating the log2FoldChange threshold. Default is 2. Only required when plot is set to "Volcano".}
-
-\item{PV.TH}{an integer indicating the adjusted pvalue threshold. Default is 0.05. Only required when plot is set to "Volcano".}
-
-\item{top}{an integer indicating the top n significant labels to be shown on the volcano plot. Default is 10. Only required when plot is set to "Volcano".}
+\item{top}{an integer indicating the top n significant labels to be shown on the volcano plot. Default is 10.}
 }
 \description{
 This function plots differentially expressed repertoire levels calculated using the \code{\link{diffExpGroup}} in a volcano plot.
@@ -41,15 +35,12 @@ data(RepSeqData)
 plotDiffExp(x = RepSeqData,
             level = "V",
             group = c("cell_subset", "amTreg", "nTreg"),
-            plot="Volcano",
             top = 10,
             FC.TH = 1,
             PV.TH = 0.05)
 
 plotDiffExp(x = RepSeqData,
             level = "V",
-            group = c("cell_subset", "amTreg", "nTreg"),
-            plot="PCA",
-            label_colors=NULL)
+            group = c("cell_subset", "amTreg", "nTreg"))
             
 }
