@@ -818,7 +818,7 @@ plotRankDistrib <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3aa")
     #   rstatix::adjust_pvalue(method="holm")
     
     p <- ggplot2::ggplot(counts, ggplot2::aes(x = rank, y = count, colour = group)) +
-      ggplot2::geom_point(shape=21) +
+      ggplot2::geom_point(data=counts[counts$rank==1,],shape=21) +
       ggplot2::geom_ribbon(
         ggplot2::aes(ymin = count-ste, ymax = count+ste,  fill=group),
         alpha = 0.3, colour = NA)+
@@ -857,7 +857,7 @@ plotRankDistrib <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3aa")
     }
     
     p <-  ggplot2::ggplot(counts, ggplot2::aes(x = rank, y = count, colour = group)) +
-      ggplot2::geom_point(shape=21) +
+      ggplot2::geom_point(data=counts[counts$rank==1,], shape=21) +
       ggplot2::geom_line(ggplot2::aes(group=sample_id))+
       ggplot2::scale_color_manual(values=label_colors[[colorBy]])+
       ggplot2::scale_fill_manual(values=label_colors[[colorBy]])+
@@ -879,7 +879,7 @@ plotRankDistrib <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3aa")
     }
     
     p <-  ggplot2::ggplot(counts, ggplot2::aes(x = rank, y = count, colour = group)) +
-      ggplot2::geom_point(shape=21) +
+      ggplot2::geom_point(data=counts[counts$rank==1,],shape=21) +
       ggplot2::geom_line(ggplot2::aes(group=sample_id))+
       ggplot2::scale_color_manual(values=label_colors[[colorBy]])+
       ggplot2::scale_fill_manual(values=label_colors[[colorBy]])+
