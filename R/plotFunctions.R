@@ -587,13 +587,14 @@ plotSpectratypingV <- function(x, sampleName = NULL, scale = c("count", "frequen
   cts <- data.table::copy(assay(x))
 
   legend_v<- cts[sample_id == index,][, .(.N), by = .(V) ]
+   
   if (prop == 0){
     legend_v<- legend_v
 
   } else {
-    legend_v<- legend_v %>%
+    legend_v <- legend_v %>%
       dplyr::arrange(desc(N) ) %>%
-      dplyr::slice(seq_len(ceiling(prop*length(unique(cts$V)))))
+      dplyr::slice(seq_len(floor(prop*length(unique(cts$V)))))
   }
 
   if (scl == "count"){
@@ -1377,7 +1378,7 @@ plotCountIntervals <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3a
       {if(length(groupBy)==2)list(ggplot2::facet_grid(~grp2))} +
       {if(length(groupBy)==3)list(ggplot2::facet_grid(grp2~grp3))} +
       ggplot2::labs(subtitle = "Cumulative frequency", x=NULL)+
-      ggplot2::xlab("")+ggplot2::ylab("")+
+      ggplot2::xlab("")+ggplot2::ylab("proportion")+
       ggplot2::scale_color_manual(values = label_colors[[groupBy[[1]]]]) +
       ggplot2::scale_fill_manual(values = label_colors[[groupBy[[1]]]]) +
       theme_RepSeq() +
@@ -1397,7 +1398,7 @@ plotCountIntervals <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3a
       {if(length(groupBy)==2)list(ggplot2::facet_grid(~grp2))} +
       {if(length(groupBy)==3)list(ggplot2::facet_grid(grp2~grp3))} +
       ggplot2::labs(subtitle = "Distribution")+
-      ggplot2::xlab("")+ggplot2::ylab("")+
+      ggplot2::xlab("")+ggplot2::ylab("proportion")+
       ggplot2::scale_color_manual(values = label_colors[[groupBy[[1]]]]) +
       ggplot2::scale_fill_manual(values = label_colors[[groupBy[[1]]]]) +
       theme_RepSeq() +
@@ -1435,7 +1436,7 @@ plotCountIntervals <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3a
                       plot.subtitle=ggplot2::element_text(size=7),
                       plot.margin = margin(t=-1))+
       ggplot2::labs(subtitle = "Cumulative frequency")+
-      ggplot2::xlab("")+ggplot2::ylab("")
+      ggplot2::xlab("")+ggplot2::ylab("proportion")
 
     p2 <- ggplot2::ggplot(data = data2plot[data2plot$variable == "freq",], ggplot2::aes(x = sample_id, y =value, fill=factor(interval, levels=rev(plotBreaks))) ,  alpha=.7) +
       ggplot2::geom_bar(stat = "identity",  alpha=.8) +
@@ -1451,7 +1452,7 @@ plotCountIntervals <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3a
                       plot.margin = margin(b=0,t=1),
                       plot.subtitle=ggplot2::element_text(size=7))+
       ggplot2::labs(subtitle = "Distribution")+
-      ggplot2::xlab("")+ggplot2::ylab("")
+      ggplot2::xlab("")+ggplot2::ylab("proportion")
 
     legend<-lemon::g_legend(p2)
     # g <- gridExtra::grid.arrange(gridExtra::arrangeGrob(p2 + ggplot2::theme(legend.position="none"),
