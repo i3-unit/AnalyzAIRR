@@ -635,6 +635,9 @@ readAIRRSet <- function(fileList, fileFormat = c("MiXCR", "immunoseq",  "MiAIRR"
     cat ("Removing singleton sequences...")
     out <- filterCount(out,level="clonotype", n = 1)
   }
+  
+  oData(out) <- c(oData(out), label_colors=list(plotColors(out)))
+  
   cat("Done.\n")
   return(out)
 }
@@ -719,7 +722,7 @@ RepSeqExp <- function(clonotypetab, sampleinfo = NULL){
                       metaData = sampleinfo,
                       otherData = list(),
                       History = x.hist)
-
+  oData(out) <- c(oData(out), label_colors=list(plotColors(out)))
   return(out)
 }
 
@@ -903,6 +906,7 @@ readFormatSet <- function(fileList,
     out <- filterCount(out, level = "clonotype", n = 1)
   }
 
+  oData(out) <- c(oData(out), label_colors=list(plotColors(out)))
   return(out)
 }
 

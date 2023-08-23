@@ -521,7 +521,7 @@ knitr::kable(countFeatures(RepSeqData, level="J", scale="frequency")) %>%
 ```{r plot rarefaction, echo=T, fig.width=8,fig.height=4, fig.align="center"}
 plotRarefaction(x=RepSeqData, colorBy="sample_id")
 ```
-<figcaption align = "center"><em class="special">Figure 3: Rarefaction curves plotting the number of clonotypes against the number of sequences in a sample.</em></figcaption>
+<figcaption align = "center"><em class="special">Figure 3: Rarefaction curves plotting the number of clonotypes against the number of sequences in each sample.</em></figcaption>
 <br>
 
 +  **Calculation of diversity indices**
@@ -613,7 +613,7 @@ knitr::kable(rn) %>%
 ```{r plot renyi, echo = TRUE, fig.width=8, fig.height = 4,fig.align="center"}
 plotRenyiIndex(x=RepSeqData, level="J", grouped=FALSE, colorBy = "sample_id")
 ```
-<figcaption align = "center"><em class="special">Figure 6: The Renyi values were calculated at the J gene level for each of the pre-defined alpha values and plotted for each sample.</em></figcaption>
+<figcaption align = "center"><em class="special">Figure 6: The Renyi values were calculated at the J gene level at each pre-defined alpha value and plotted for each sample.</em></figcaption>
 
 ## Clonal distribution
 
@@ -629,7 +629,7 @@ plotRenyiIndex(x=RepSeqData, level="J", grouped=FALSE, colorBy = "sample_id")
 ```{r intervals, fig.height=6, fig.width=7,fig.align="center"}
 plotCountIntervals(x=RepSeqData, level="clone")
 ```
-<figcaption align = "center"><em class="special">Figure 7: Stacked bars showing the proportion (upper plot) and the cumulative frequency (lower plot) of clones within each count interval in each sample.</em></figcaption>
+<figcaption align = "center"><em class="special">Figure 7: Stacked bars showing the distribution (upper plot) and the cumulative frequency (lower plot) of clones within each count interval in each sample.</em></figcaption>
 <br>
 
 + **Clonal Distribution per decreasing rank**
@@ -640,7 +640,7 @@ plotCountIntervals(x=RepSeqData, level="clone")
 ```{r plot clone distri, echo = TRUE, warning=FALSE,fig.width=8, fig.height =4,fig.align="center"}
 plotRankDistrib(x=RepSeqData,level="clone", colorBy="sample_id", grouped=F, scale="frequency")
 ```
-<figcaption align = "center"><em class="special">Figure 8: Plotted is the distribution of the clones as a function of their occurrence rank within each sample.</em></figcaption>
+<figcaption align = "center"><em class="special">Figure 8: Clonal distribution as a function of the occurrence rank for each sample.</em></figcaption>
 <div>
 
 # One-sample analysis 
@@ -656,7 +656,7 @@ In all the following functions, the **sample_id** of interest needs to be specif
 ```{r plotIndCountIntervals, echo=TRUE,message=FALSE, warning=FALSE,fig.width=7, fig.height = 4,fig.align="center", cache.comments=FALSE}
 plotIndCountIntervals(RepSeqData,level = "clone", sampleName="tripod-30-813")
 ```
-<figcaption align = "center"><em class="special">Figure 9: Barplots showing the proportion (upper plot) and the cumulative frequency (lower plot) of clones within each count interval for a selected sample.</em></figcaption>
+<figcaption align = "center"><em class="special">Figure 9: Barplots showing the distribution (upper plot) and the cumulative frequency (lower plot) of clones within each count interval for one selected sample.</em></figcaption>
 <br>
 
 + **Analyze V and J gene usages**
@@ -675,7 +675,7 @@ plotIndGeneUsage(x=RepSeqData, level="J", scale="frequency")
 #Plot the top 1% VJ combinations
 plotVJusage(x=RepSeqData, scale = "frequency", prop=0.01, plot="Circos")
 ```
-<figcaption align = "center"><em class="special">Figure 11: A circos plot showing the 1% most frequent VJ combinations in a selected sample.</em></figcaption>
+<figcaption align = "center"><em class="special">Figure 11: A circos plot showing the 1% most frequent VJ combinations in one selected sample.</em></figcaption>
 <br>
 
 + **CDR3 Spectratyping**
@@ -688,13 +688,13 @@ Using `plotSpectratyping()`, it is possible to add V gene usage information per 
 #Show the top 10%
 plotSpectratyping(x=RepSeqData, scale = "frequency", prop=0.1)
 ```
-<figcaption align = "center"><em class="special">Figure 12: Spectratyping for a selected sample. The 10% most frequent V genes are distinctively coloured.</em></figcaption>
+<figcaption align = "center"><em class="special">Figure 12: CDR3 spectratyping for one selected sample. The 10% most frequent V genes are distinctively coloured.</em></figcaption>
 <br>
 On the other hand, `plotSpectratypingV()` draws the length distribution for each V gene individually.
 ```{r spectraV, fig.height = 3.5,fig.width=8,fig.align="center"}
 plotSpectratypingV(x=RepSeqData, scale = "frequency",prop=0.1)
 ```
-<figcaption align = "center"><em class="special">Figure 13: Spectratyping per V gene for a selected sample. The 10% most frequent V genes are represented.</em></figcaption>
+<figcaption align = "center"><em class="special">Figure 13: CDR3 spectratyping for the top 10% V genes in one selected sample.</em></figcaption>
 
 # Multi-sample analysis
 
@@ -709,14 +709,14 @@ The majority of the functions described in [the Exploratory analysis section](#E
    In case multiple groups are specified, the first group will be compared and the others will be used as facets.
 
 <div class="column-left">
-```{r comp sd1,fig.cap="Figure 14: The number of clonotypes is not statistically different between the two studied cell subsets. Boxplots represent the median across all samples belonging to the same group. A Wilcoxon test is applied and adjusted p-values using the Holm method are shown."}
+```{r comp sd1,fig.cap="Figure 14: Comparison of the the number of clonotypes between amTreg and nTreg samples. Boxplots represent the median across all samples belonging to the same group. A Wilcoxon test is applied and adjusted p-values using the Holm method are shown."}
 plotStatistics(x = RepSeqData,
                stat = "clonotype",
                groupBy = "cell_subset")
 ```
 </div>
 <div class="column-right">
-```{r comp sd2,fig.cap="Figure 15: The number of clonotypes is not statistically different between the two studied cell subsets within each sex. Boxplots represent the median across all samples belonging to the same specified group. A Wilcoxon test is applied and adjusted p-values using the Holm method are shown."}
+```{r comp sd2,fig.cap="Figure 15: Comparison of the the number of clonotypes between amTreg and nTreg samples within each sex. Boxplots represent the median across all samples belonging to the same specified group. A Wilcoxon test is applied and adjusted p-values using the Holm method are shown."}
 plotStatistics(x = RepSeqData,
                stat = "clonotype",
                groupBy = c("cell_subset", "sex"))
@@ -732,7 +732,7 @@ plotStatistics(x = RepSeqData,
 ```{r J usage , echo = TRUE, fig.width=12, fig.height=3.5, message=F,warning=F,fig.align="center"}
 plotGeneUsage(x=RepSeqData, level="J", scale="frequency", groupBy="cell_subset")
 ```
-<figcaption align = "center"><em class="special">Figure 16: Boxplots showing the frequency of each J gene within each group of samples. A Wilcoxon test was performed. Only significant values are plotted.</em></figcaption>
+<figcaption align = "center"><em class="special">Figure 16: Comparison of the J gene usage between amTreg and nTreg samples. A Wilcoxon test was performed. Only significant values are plotted.</em></figcaption>
 <br>
 
 + **Compare repertoire diversities**
@@ -768,7 +768,7 @@ plotRenyiIndex(x = RepSeqData,
                   colorBy = c("cell_subset","sex"))
 
 ```
-<figcaption align = "center"><em class="special">Figure 19: The Renyi values were calculated at the clone level for each of the pre-defined alpha values. For each specified group, the mean (circles) and stantard error (shade) are plotted. The area under the curve (AUC) is calculated for each sample and compared between chosen groups using a Wilcoxon test with Holm's correction.</em></figcaption>
+<figcaption align = "center"><em class="special">Figure 19: The Renyi values were calculated at the clone level at each pre-defined alpha value. For each specified group, the mean (circles) and stantard error (shade) are plotted. The area under the curve (AUC) is calculated for each sample and compared between chosen groups using a Wilcoxon test with Holm's correction.</em></figcaption>
 
 <br><br>
 
@@ -779,7 +779,7 @@ plotRenyiIndex(x = RepSeqData,
 ```{r plotDistribVpJall,fig.height = 5, fig.width=7, fig.align='center'}
 plotCountIntervals(x=RepSeqData, level="clone", groupBy = c("cell_subset","sex"))
 ```
-<figcaption align = "center"><em class="special">Figure 20: The proportion (left plot) and the cumulative frequency (right plot) of clones within each count interval was compared between amTreg and nTreg samples within each sex. A Wilcoxon test is applied and adjusted p-values using the Holm method are shown.</em></figcaption>
+<figcaption align = "center"><em class="special">Figure 20: The distribution (upper plot) and the cumulative frequency (bottom plot) of clones within each count interval was compared between amTreg and nTreg samples within each sex. A Wilcoxon test is applied and adjusted p-values using the Holm method are shown.</em></figcaption>
 
 
 ## Similarity analysis
@@ -798,7 +798,7 @@ plotVenn(x = RepSeqData,
            level = "clone",
            sampleNames = ctrnames)
 ```
-<figcaption align = "center"><em class="special">Figure 21: Euler diagram representing the number of shared clones between the nTreg samples.</em></figcaption>
+<figcaption align = "center"><em class="special">Figure 21: Venn diagram representing the number of shared clones between the nTreg samples.</em></figcaption>
 <br>
 
 + **Assess the correlation between a pair of samples**
@@ -840,7 +840,7 @@ plotScatter(x = RepSeqData,
     - Used to perform a multidimensional scaling analysis by setting `plot` to **MDS**. In this case, no clustering method is needed.
 
 <div class="column-left">
-```{r dissimilarity, echo = TRUE, fig.cap="Figure 24: A heatmap showing the Morisita distance calculated at the clone level between all pairwise samples. The ward.D method was used to perform the hierarchical clustering."}
+```{r dissimilarity, echo = TRUE, fig.cap="Figure 24: A heatmap showing the Morisita distances calculated at the clone level between all pairwise samples. The ward D method was used to perform the hierarchical clustering."}
 plotDissimilarity(x = RepSeqData,
                   level = "clone",
                   method = "morisita",
@@ -851,7 +851,7 @@ plotDissimilarity(x = RepSeqData,
 </div>
 
 <div class="column-right">
-```{r mds1, echo = TRUE,warning=FALSE, message=FALSE, fig.cap="Figure 25: The Morisita distance were calculated at the clone level between all pairwise samples within the dataset and used to perform a multidimensional scaling analysis."}
+```{r mds1, echo = TRUE,warning=FALSE, message=FALSE, fig.cap="Figure 25: Morisita distances were calculated at the clone level between all pairwise samples within the dataset and used to perform a multidimensional scaling analysis."}
 plotDissimilarity(x = RepSeqData,
                  level = "clone",
                  method = "morisita",

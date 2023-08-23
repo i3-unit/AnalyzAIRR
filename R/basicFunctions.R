@@ -411,6 +411,8 @@ mergeRepSeq <- function(a, b) {
             otherData = metainfo,
             History = all.history)
     
+    oData(out) <- c(oData(out), label_colors=list(plotColors(out)))
+    
     return(out)
 }
 
@@ -636,52 +638,48 @@ getUnproductive <- function(x) {
 #'
 #' colors <- plotColors(x = RepSeqData)
 #'
-plotColors<- function(x, samplenames=TRUE){
+
+plotColors<- function(x){
   # qual_col_pals = RColorBrewer::brewer.pal.info[RColorBrewer::brewer.pal.info$maxcolors  == 8 & RColorBrewer::brewer.pal.info$colorblind == 'TRUE',]
   # PAIRED = RColorBrewer::brewer.pal(n = 12, name = 'Paired')[c(2,4,6,8,10,12,1,3,5,7,9,11)]
   # mycolors <- colorRampPalette(RColorBrewer::brewer.pal(12, "Set3"))(as.vector(as.matrix(mData(x)[, unlist(lapply(mData(x), is.factor)), drop = FALSE])) %>% unique() %>% length())
   # mycolors = as.vector(unlist(mapply(RColorBrewer::brewer.pal, qual_col_pals$maxcolors, rownames(qual_col_pals))))
-
+  
   col_pals = RColorBrewer::brewer.pal.info[RColorBrewer::brewer.pal.info$category  == "qual" ,]
   mycolors = as.vector(unlist(mapply(RColorBrewer::brewer.pal, col_pals$maxcolors, rownames(col_pals))))
   
   names=as.vector(mData(x)[, unlist(lapply(mData(x), is.factor)), drop = FALSE]) %>% names()
+ 
+  ann_colors<-vector("list")
+  l<- length(unique(mData(x)[,names[1]]))
   
-  if(samplenames){
-    ann_colors<-vector("list")
-    l<- length(unique(mData(x)[,names[1]]))
-  
-    if(l<74){
+  if(l<74){
     mycolors_b<- mycolors[seq_len(l)]
     names(mycolors_b) <-levels(mData(x)[[1]])
     ann_colors[["sample_id"]]<- mycolors_b
-    }else{
+  }else{
     new_l<- ceiling(l/length(mycolors))
     colors_b=  rep(mycolors,new_l) 
     mycolors_b<- colors_b[seq_len(l)]
     
     names(mycolors_b) <-levels(mData(x)[[1]])
     ann_colors[["sample_id"]]<- mycolors_b
-      
-    }
-  
-  } else {
-    len<- sum(apply(mData(x)[,names[-1]], 2, dplyr::n_distinct))
-    if(len>74) stop ("A maximum of 74 colors can be assigned. The number of different subgroups is higher than 74.")
-      
-    ann_colors<-vector("list")
-    for (i in unique(names)[-1]) {
-      l <- length(unique(mData(x)[, i]))
-      mycolors_b <- mycolors[seq_len(l)]
-      names(mycolors_b) <- levels(mData(x)[i][[i]])
-      ann_colors[[i]] <- mycolors_b
-      mycolors <- mycolors[!mycolors %in% mycolors_b]
-    }
   }
+
+  len<- sum(apply(mData(x)[,names[-1]], 2, dplyr::n_distinct))
+  if(len>74) stop ("A maximum of 74 colors can be assigned. The number of different subgroups is higher than 74.")
+  
+  for (i in unique(names)[-1]) {
+    l <- length(unique(mData(x)[, i]))
+    mycolors_b <- mycolors[seq_len(l)]
+    names(mycolors_b) <- levels(mData(x)[i][[i]])
+    ann_colors[[i]] <- mycolors_b
+    mycolors <- mycolors[!mycolors %in% mycolors_b]
+  }
+  
   return(ann_colors)
-
+  
 }
-
 
 # ggName -> changes a string so it is enclosed in back-ticks.
 #   This can be used to make column names that have spaces (blanks)
