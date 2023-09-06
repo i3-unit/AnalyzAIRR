@@ -1,12 +1,12 @@
 ## code to prepare `RepSeqData` dataset goes here
 library(AnalyzAIRR)
 # load sample information
-setwd("/mnt/mukkuri/RepSeq/RS_Analysis/GPI/AnalyzAIRR/package")
-sampleData <- read.table("/mnt/mukkuri/RepSeq/RS_Analysis/GPI/AnalyzAIRR/extdata/sampledata.txt", sep = "\t", header = TRUE, row.names=1)
+setwd("/Users/vanessamhanna/Github/generate-AnalyzAIRR/package")
+sampleData <- read.table("/Users/vanessamhanna/Github/generate-AnalyzAIRR/extdata/sampledata.txt", sep = "\t", header = TRUE, row.names=1)
 sampleData$sex<- factor(sampleData$sex)
 sampleData$cell_subset<- factor(sampleData$cell_subset)
 # load aligner outputs
-l <- list.files("/mnt/mukkuri/RepSeq/RS_Analysis/GPI/AnalyzAIRR/extdata/mixcr",pattern = ".txt", full.names=TRUE)
+l <- list.files("/Users/vanessamhanna/Github/generate-AnalyzAIRR/extdata/mixcr",pattern = ".txt", full.names=TRUE)
 # create RepSeqExperiment
 RepSeqData <- AnalyzAIRR::readAIRRSet(l,
                                  cores = 2L,
