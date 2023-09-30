@@ -375,7 +375,7 @@ sampleRepSeqExp <- function(x, sample.size = min(mData(x)$nSequences), rngseed =
     }
     cts <- cts[count>0]
     stats <- data.frame(cts[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols = c("CDR3nt", "CDR3aa", "V", "J", "VJ","clone","clonotype"), by = "sample_id"], row.names = 1)
-    sampleinfo <- data.frame(merge(sampleinfo[, setdiff(colnames(sampleinfo), colnames(stats))], stats, by = 0), row.names = 1)
+    sampleinfo <- data.frame(merge(sampleinfo[, setdiff(colnames(sampleinfo), colnames(stats))], stats, by = 0, sort=F), row.names = 1)
 
     
 	x.hist <- paste("A down-sampling to", sample.size , "with replacement set to", replace, "was performed")
@@ -420,7 +420,7 @@ ShannonNorm <- function(x) {
   res <- copy(assay(x))[keep, on = c("clonotype", "sample_id")][, c("exp_shannon", "ranks","i.count") := NULL]
 
   stats <- data.frame(res[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols = c("CDR3nt", "CDR3aa", "V", "J", "VJ","clone","clonotype"), by = "sample_id"], row.names = 1)
-  sampleinfo <- data.frame(merge(sampleinfo[, setdiff(colnames(sampleinfo), colnames(stats))], stats, by = 0), row.names = 1)
+  sampleinfo <- data.frame(merge(sampleinfo[, setdiff(colnames(sampleinfo), colnames(stats))], stats, by = 0, sort=F), row.names = 1)
 
   x.hist <- "A Shannon-based normalization was performed"
   filtered=  out2[out2[, .I[!ranks %in% seq_len(exp_shannon)], by = "sample_id" ]$V1]
