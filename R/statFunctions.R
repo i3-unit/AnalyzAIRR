@@ -227,11 +227,11 @@ perturbationScore <- function(x, ctrl.names, distance = c("manhattan", "euclidea
     cts[, CDR3aa.length:=nchar(CDR3aa)]
     spectratype <- cts[, .(count=sum(count)), by=.(sample_id, V, CDR3aa.length)]
     spectratype[,pct:=prop.table(count), by=.(sample_id, V)]
-    spectratypew <- dcast(spectratype, V+CDR3aa.length~sample_id, value.var="pct", fill=0)
+    spectratypew <- data.table::dcast(spectratype, V+CDR3aa.length~sample_id, value.var="pct", fill=0)
     setkey(spectratypew, V, CDR3aa.length)
     spectratypew[, ctrl.mean:=rowMeans(.SD), .SDcols=ctrl.names]
     spectratypew[, ID:=paste0(V, "_", CDR3aa.length)]
-    spectratypem <- melt(spectratypew, id.vars=c("ID", "V", "CDR3aa.length", "ctrl.mean"), variable.name = "sample_id", value.name = "pct")
+    spectratypem <- data.table::melt(spectratypew, id.vars=c("ID", "V", "CDR3aa.length", "ctrl.mean"), variable.name = "sample_id", value.name = "pct")
 
     d <- tolower(match.arg(distance))
     ctrl.dist <- switch(d,

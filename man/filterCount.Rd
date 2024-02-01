@@ -16,7 +16,7 @@ filterCount(
 
 \item{level}{a character specifying the type of sequences on which the filtering will be applied. Should be one of "clone","clonotype","CDR3aa" or "CDR3nt". For instance, for level="CDR3aa", counts will first be recalculated based on this column. Then, CDR3aa sequences with counts equal or below the n threshold will be excluded.}
 
-\item{n}{an integer specifying the count threshold below which  sequences will be filtered out. For instance, for n=2, sequences with a count of 1 and 2 will be filtered out.}
+\item{n}{an integer specifying the count threshold below which sequences will be filtered out. For instance, for n=2, sequences with a count of 1 and 2 will be filtered out.}
 
 \item{group}{a vector of character indicating the group column name in mData and one experimental group within this column. Samples belonging to the chosen experimental group will be analyzed. The column must be of class factor. Default is NULL, values are calculated in all the samples within the dataset.}
 }

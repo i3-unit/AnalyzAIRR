@@ -6,7 +6,7 @@
 \usage{
 readAIRR(
   path,
-  fileFormat = c("MiXCR", "immunoseq", "MiAIRR"),
+  fileFormat = c("MiXCR", "immunoseq", "AIRR-C"),
   chain = c("TRA", "TRB", "TRG", "TRD", "IGH", "IGK", "IGL"),
   keep.ambiguous = FALSE,
   keep.unproductive = FALSE,

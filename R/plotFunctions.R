@@ -195,7 +195,8 @@ if (missing(x)) stop("x is missing.")
 if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected.")
 if (length(alpha) < 2) stop("At least 2 alpha values are needed.")
 if(is.null(colorBy)) stop("need to specify a group column from mData")
-  if (is.null(label_colors)) {
+
+    if (is.null(label_colors)) {
     label_colors= oData(x)$label_colors 
   }
   
@@ -210,6 +211,7 @@ levelChoice <- match.arg(level)
 tmp <- renyiIndex(x, alpha = alpha, level=levelChoice)
 
 data2plot <- data.table::melt(data = tmp, id.vars = "variable", measure.vars = sNames, variable.name = "sample_id")
+data2plot<- setDT(data2plot)
 
 if(length(colorBy)==1){
   data2plot[, Group := lapply(.SD, function(x) sdata[x, colorBy]), .SDcols = "sample_id"]
@@ -231,8 +233,8 @@ if (grouped) {
     #         dplyr::mutate(AUC=MESS::auc(x=as.numeric(variable2), y=value))
     
     se<- function(x) sqrt(var(x)/length(x))
-    data2plot <-  data2plot %>% dplyr::group_by_at(vars(tidyr::starts_with("Gr"), variable2)) %>% dplyr::mutate(ste=se(value))
-    data2plot <-  data2plot %>% dplyr::group_by_at(vars(tidyr::starts_with("Gr"), variable2, ste)) %>% dplyr::summarize(mean=mean(value))
+    data2plot <-  data2plot %>% dplyr::group_by_at(dplyr::vars(tidyr::starts_with("Gr"), variable2)) %>% dplyr::mutate(ste=se(value))
+    data2plot <-  data2plot %>% dplyr::group_by_at(dplyr::vars(tidyr::starts_with("Gr"), variable2, ste)) %>% dplyr::summarize(mean=mean(value))
 
     data2plot<- setDT(data2plot)
     data2plot[, `:=`(alpha, as.numeric(as.character(variable2)))]
@@ -303,7 +305,7 @@ if (grouped) {
 } else {
  
   p<- ggplot2::ggplot(data = data2plot, ggplot2::aes(x = variable2, y = value, color=Group)) +
-    ggplot2::geom_line(ggplot2::aes(group = sample_id), size = .8) +
+    ggplot2::geom_line(ggplot2::aes(group = sample_id), linewidth = .8) +
     ggplot2::geom_point( shape=21, size=1)+
     ggplot2::xlab("alpha")+
     ggplot2::ylab("Renyi's Entropy") +
@@ -664,6 +666,10 @@ plotDissimilarity <- function(x, level = c("clone","clonotype", "V", "J", "VJ", 
   if (missing(x)) stop("x is missing.")
   if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected.")
   if (is.null(colorBy)) stop("at least one group column name is expected.")
+  if (is.null(method)) stop("a distance method is expected.")
+  if (is.null(clustering)) stop("a clustering method is expected.")
+  
+  
   
   variable <- NULL
   levelChoice <- match.arg(level)
@@ -716,8 +722,8 @@ plotDissimilarity <- function(x, level = c("clone","clonotype", "V", "J", "VJ", 
     mnmx <- plyr::ldply(mnmx, data.frame)
     
     ref= mnmx %>% 
-      select(x,y) %>%
-      abs(.) %>% max()
+          dplyr::select(x,y) %>%
+          abs(.) %>% max()
     
     p<-ggpubr::ggscatter(fit, x = "D1", y = "D2",
                          color = "black",
@@ -818,7 +824,7 @@ plotRankDistrib <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3aa")
       ggplot2::scale_x_log10()+
       ggplot2::ylab(paste0("mean ", scl))+
       theme_RepSeq()+
-      ggplot2::theme(legend.position = "right", plot.subtitle = element_text(hjust=0.90, vjust=-10))
+      ggplot2::theme(legend.position = "right", plot.subtitle = ggplot2::element_text(hjust=0.90, vjust=-10))
     
     #   stats_table <- auc_test %>% 
     #                 dplyr::select( group1, group2, tidyr::starts_with("p")) %>% 
@@ -855,6 +861,7 @@ plotRankDistrib <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3aa")
   } else {
    
     if (scl == "frequency"){
+      
       counts <- counts %>% dplyr::group_by(sample_id) %>% dplyr::mutate(count = count/sum(count))
       counts <- data.table::setDT(counts)
     } else {
@@ -913,7 +920,7 @@ plotVenn <- function(x, level = c("clone","clonotype", "V", "J", "VJ", "CDR3nt",
   counts <- data.table::copy(assay(x))[sample_id %in% sampleNames]
   list<-list()
   for ( i in unique(counts$sample_id)){
-    counts_i<- counts %>% filter(sample_id==i)
+    counts_i<- counts %>% dplyr::filter(sample_id==i)
     list[[i]]<- unique(counts_i[[levelChoice]])
   }
 
@@ -1048,6 +1055,8 @@ plotDiversity <- function(x, index=c("chao1","shannon","simpson", "invsimpson","
   levelChoice <- match.arg(level)
   if (missing(x)) stop("x is missing.")
   if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected.")
+  if (is.null(index)) stop("a diversity index is expected.")
+  
   if (is.null(label_colors)) {
     label_colors= oData(x)$label_colors 
   }
@@ -1358,9 +1367,9 @@ plotCountIntervals <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3a
       ggplot2::scale_color_manual(values = label_colors[[groupBy[[1]]]]) +
       ggplot2::scale_fill_manual(values = label_colors[[groupBy[[1]]]]) +
       theme_RepSeq() +
-      ggplot2::theme(plot.margin=unit(c(-0.1,.5,.1,.5),"cm"),
+      ggplot2::theme(plot.margin=ggplot2::unit(c(-0.1,.5,.1,.5),"cm"),
                       legend.position = "none",
-                      plot.subtitle=element_text(size=10),
+                      plot.subtitle=ggplot2::element_text(size=10),
                      axis.text.x = ggplot2::element_text( vjust = 1, size=8),
                      axis.text.y = ggplot2::element_text(size=8))+
         ggpubr::stat_pvalue_manual(stat.test1, label = "p.adj.signif",
@@ -1378,10 +1387,10 @@ plotCountIntervals <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3a
       ggplot2::scale_color_manual(values = label_colors[[groupBy[[1]]]]) +
       ggplot2::scale_fill_manual(values = label_colors[[groupBy[[1]]]]) +
       theme_RepSeq() +
-      ggplot2::theme(plot.margin=unit(c(.1,.5,-0.1,.5),"cm"),
+      ggplot2::theme(plot.margin=ggplot2::unit(c(.1,.5,-0.1,.5),"cm"),
                      legend.position = "right",
                      legend.direction = "vertical",
-                     plot.subtitle=element_text(size=10),
+                     plot.subtitle=ggplot2::element_text(size=10),
                      axis.text.x = ggplot2::element_text( vjust = 1, size=8),
                      axis.text = ggplot2::element_text(size=8),
                      legend.background = ggplot2::element_blank(),
@@ -1410,7 +1419,7 @@ plotCountIntervals <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3a
                       axis.text = ggplot2::element_text(size=6),
                       legend.position = "none",
                       plot.subtitle=ggplot2::element_text(size=7),
-                      plot.margin = margin(t=-1))+
+                      plot.margin = ggplot2::margin(t=-1))+
       ggplot2::labs(subtitle = "Cumulative frequency")+
       ggplot2::xlab("")+ggplot2::ylab("proportion")
 
@@ -1425,7 +1434,7 @@ plotCountIntervals <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3a
                       legend.background = ggplot2::element_blank(),
                       legend.text = ggplot2::element_text(size=6),
                       legend.justification = "center",
-                      plot.margin = margin(b=0,t=1),
+                      plot.margin = ggplot2::margin(b=0,t=1),
                       plot.subtitle=ggplot2::element_text(size=7))+
       ggplot2::labs(subtitle = "Distribution")+
       ggplot2::xlab("")+ggplot2::ylab("proportion")
@@ -1491,6 +1500,8 @@ plotStatistics <- function(x, stat = c("nSequences", "clone", "clonotype","V", "
   sdata<-mData(x)
   if (missing(x)) stop("x is missing.")
   if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected.")
+  if (is.null(stat)) stop("a statistic to plot is expected.")
+  
   if (is.null(label_colors)) {
     label_colors= oData(x)$label_colors 
   }
@@ -1605,6 +1616,7 @@ plotPerturbationScore <- function(x, ctrl.names=NULL,
   if (!is.RepSeqExperiment(x))
     stop("an object of class RepSeqExperiment is expected.")
   snames <- rownames(mData(x))
+  if(is.null(distance)) stop(" a distance method is expected.")
   if (missing(ctrl.names))
     stop("ctrl.names is missing. A vector of characters containing the names of control samples is expected.")
 

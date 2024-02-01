@@ -1,14 +1,14 @@
 Package: AnalyzAIRR
-Title: MiAIRR compliant R package for the analysis of bulk Ig/TCR repertoire datasets
+Title: AIRR-compliant R package developed to analyze bulk Ig/TCR repertoire datasets
 Version: 1.0.0
 Description: AnalyzAIRR allows a general data exploration to evaluate the homogeneity 
  within defined groups, identify outliers and filter them out. AnalyzAIRR also proposes
  a set of diversity measures and statistical metrics applicable at any level of granularity. Thus, single-sample repertoire explorations or in-depth cross-comparisons of AIRR datasets 
  can be conducted leading to ready-to-publish visualization graphics. 
  AnalyzAIRR is complemented with a guided workflow to help users in their analytical strategy, and a Shiny web application making it user-friendly for biologists with little or no background in bioinformatics.
-Author: Vanessa Mhanna, Gabriel Pires, Nicolas Tchitchek, David Klatzmann, Adrien Six, Hang-Phuong Pham, Encarnita Mariotti-Ferrandiz
-Authors@R: c(person("Vanessa", "Mhanna", email = "vanessajmhanna@gmail.com", role = c("aut")), person("Hang-Phuong", "Pham", email = "ph.phuong@gmail.com", role = c("aut", "cre")),
- person("Gabriel", "Pires", email = "gabriel.pires@gmail.com", role = c("aut")), person("Nicolas", "Tchitchek", email = "nicolas.tchitchek@sorbonne-universite.fr", role = c("aut")), person("Adrien", "Six", email = "adrien.six@sorbonne-universite.fr", role = c("aut")), person("Encarnita", "Mariotti-Ferrandiz", email = "encarnita.mariotti@sorbonne-universite.fr", role = c("aut")))
+Author: Vanessa Mhanna, Gabriel Pires, Grégoire Bohl, Karim El Soufi, Nicolas Tchitchek, David Klatzmann, Adrien Six, Hang-Phuong Pham, Encarnita Mariotti-Ferrandiz
+Authors@R: c(person("Vanessa", "Mhanna", email = "vanessajmhanna@gmail.com", role = c("aut")), person("Gabriel","Pires", email="gabriel.pires081196@gmail.com", role= c("aut")), person("Grégoire","Bohl", email="gregoire.bohl@gmail.com", role= c("aut")), person("Karim","El Soufi", email="karim.soufi@live.com", role= c("aut")), 
+ person("Nicolas", "Tchitchek", email = "nicolas.tchitchek@sorbonne-universite.fr", role = c("aut")), person("David", "Klatzmann", email = "david.klatzmann@sorbonne-universite.fr", role = c("aut")) ,person("Adrien", "Six", email = "adrien.six@sorbonne-universite.fr", role = c("aut")), person("Hang-Phuong", "Pham", email = "ph.phuong@gmail.com", role = c("aut", "cre")), person("Encarnita", "Mariotti-Ferrandiz", email = "encarnita.mariotti@sorbonne-universite.fr", role = c("aut")))
 Maintainer: Vanessa Mhanna <vanessajmhanna@gmail.com> and Encarnita Mariotti-Ferrandiz <encarnita.mariotti@sorbonne-universite.fr>
 Depends: R (>= 4.2.0), data.table
 Imports: pbapply, parallel, utils, stats, methods, graphics, ggplot2, 
@@ -16,7 +16,11 @@ Imports: pbapply, parallel, utils, stats, methods, graphics, ggplot2,
 	 vegan, naturalsort, RColorBrewer, dplyr, ggVennDiagram, gridExtra,
 	 plyr, grDevices,reshape2, ggprism, rstatix, ggpubr, stringr,
 	 ggpmisc, tidyr, ggrepel, car, circlize, ComplexHeatmap, MESS
-Suggests: BiocStyle, knitr, rmarkdown
+Suggests: 
+    BiocStyle,
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0)
 License: GPL-3 + file LICENSE
 URL: https://github.com/vanessajmh/AnalyzAIRR
 BugReports: https://github.com/vanessajmh/AnalyzAIRR/issues
@@ -27,3 +31,4 @@ RoxygenNote: 7.2.3
 NeedsCompilation: yes
 biocViews: SystemsBiology, Sequencing, DifferentialExpression, QualityControl
 Packaged: 2021-03-02 09:01:16 UTC;
+Config/testthat/edition: 3

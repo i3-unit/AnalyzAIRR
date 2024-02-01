@@ -159,7 +159,8 @@ renyiIndex <- function(x, alpha = c(0, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, Inf), 
     levelChoice <- match.arg(level)
     out <- copy(assay(x))[, .(count=sum(count)), by=c("sample_id", levelChoice)][, lapply(alpha, function(y) .renyiCal(count, y)), by="sample_id"]
     data.table::setnames(out, c("sample_id", alpha))
-    out <- data.table::dcast(melt(out, id.vars = "sample_id"), variable ~ sample_id)
+    out<-  data.table::melt(out, id.vars = "sample_id")
+    out <- data.table::dcast(out, variable ~ sample_id)
     return(out)
 }
 

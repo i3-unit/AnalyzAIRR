@@ -80,7 +80,7 @@ countFeatures <- function(x,
 #'
 #' @param x an object of class \code{\linkS4class{RepSeqExperiment}}
 #' @param level a character specifying the type of sequences on which the filtering will be applied. Should be one of "clone","clonotype","CDR3aa" or "CDR3nt". For instance, for level="CDR3aa", counts will first be recalculated based on this column. Then, CDR3aa sequences with counts equal or below the n threshold will be excluded.
-#' @param n an integer specifying the count threshold below which  sequences will be filtered out. For instance, for n=2, sequences with a count of 1 and 2 will be filtered out.
+#' @param n an integer specifying the count threshold below which sequences will be filtered out. For instance, for n=2, sequences with a count of 1 and 2 will be filtered out.
 #' @param group a vector of character indicating the group column name in mData and one experimental group within this column. Samples belonging to the chosen experimental group will be analyzed. The column must be of class factor. Default is NULL, values are calculated in all the samples within the dataset.
 
 #' @return an object of class \code{RepSeqExperiment}
@@ -97,6 +97,7 @@ filterCount <- function(x, level=c("clone","clonotype","CDR3aa","CDR3nt"), n=1, 
     V1 <- NULL
     if (missing(x)) stop("x is missing.")
     if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected.")
+    if (class(n)!= "numeric") stop("n should be an integer")
     levelChoice <- match.arg(level)
     cts <- data.table::copy(assay(x))
     metaData <- mData(x)
@@ -284,6 +285,7 @@ getTopSequences <- function(x, level=c("clone","clonotype","CDR3aa","CDR3nt"),
   V1 <- NULL
   if (missing(x)) stop("x is missing.")
   if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected.")
+  if (prop>1) stop("prop should be a proportion between 0 and 1")
   cts <- data.table::copy(assay(x))
   sdata <- mData(x)
   levelChoice <- match.arg(level)

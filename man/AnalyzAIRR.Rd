@@ -2,9 +2,9 @@
 % Please edit documentation in R/AnalyzAIRR.R
 \name{AnalyzAIRR}
 \alias{AnalyzAIRR}
-\title{AnalyzAIRR - MiAIRR compliant R package for the analysis of bulk Ig/TCR repertoire datasets}
+\title{AnalyzAIRR - AIRR-compliant R package for the analysis of bulk Ig/TCR repertoire datasets}
 \description{
-AnalyzAIRR is a MiAIRR compliant R package developed to analyze bulk Ig/TCR repertoire datasets.
+AnalyzAIRR is a AIRR-compliant R package developed to analyze bulk Ig/TCR repertoire datasets.
 }
 \details{
 AnalyzAIRR allows a general data exploration to evaluate the homogeneity 
@@ -25,6 +25,8 @@ Useful links:
 \itemize{
 \item Vanessa Mhanna
 \item Gabriel Pires
+\item Grégoire Bohl
+\item Karim El Soufi
 \item Nicolas Tchitchek
 \item David Klatzmann
 \item Adrien Six

@@ -30,7 +30,7 @@ parseRTCR <- function(path) {
 
 #' @title parse MiXCR output
 #'
-#' @description parse output tables from MiXCR
+#' @description parse clonotype tables from MiXCR
 #'
 #' @details function imports clonotype tables produced by the MiXCR aligner.
 #'
@@ -57,7 +57,14 @@ parseMiXCR <- function(path, chain = c("TRA", "TRB","TRG","TRD","IGH","IGK","IGL
   namelist <- colnames(tab)
   aacdr3 <- ifelse(length(grep("aaSeqShortCDR3", namelist)) > 0, "aaSeqShortCDR3", "aaSeqCDR3")
   ntcdr3 <- ifelse(length(grep("nSeqShortCDR3", namelist)) > 0, "nSeqShortCDR3", "nSeqCDR3")
-
+  if("readCount" %in% namelist){
+    count <- "readCount"
+  } else if("cloneCount" %in% namelist){
+    count <- "cloneCount"
+  } else {
+    stop("Can't find a column with clonotype counts")
+  }
+    
   if(length(grep("allVHitsWithScore", namelist)) > 0){
     vHits <- "allVHitsWithScore"
   } else if(length(grep("vHitsWithScore", namelist)) > 0){
@@ -70,6 +77,14 @@ parseMiXCR <- function(path, chain = c("TRA", "TRB","TRG","TRD","IGH","IGK","IGL
     vHits <- "vhits"
   } else if(length(grep("bestvgene", namelist)) > 0){
     vHits <- "bestvgene"
+  } else if(length(grep("vHit", namelist)) > 0){
+    vHits <- "vHit"
+  } else if(length(grep("vGene", namelist)) > 0){
+    vHits <- "vGene"
+  } else if(length(grep("vHitScore", namelist)) > 0){
+    vHits <- "vHitScore"
+  } else if(length(grep("vGenes", namelist)) > 0){
+    vHits <- "vGenes"
   } else {
     stop("Can't find a column with V genes")
   }
@@ -90,7 +105,7 @@ parseMiXCR <- function(path, chain = c("TRA", "TRB","TRG","TRD","IGH","IGK","IGL
     stop("Can't find a column with J genes")
   }
 
-  keep.cols <- c(ntcdr3, aacdr3, vHits, jHits, "cloneCount")
+  keep.cols <- c(ntcdr3, aacdr3, vHits, jHits, count)
 
   tab <- tab[, ..keep.cols]
   data.table::setnames(tab, c("CDR3nt", "CDR3aa", "V", "J", "count"))
@@ -183,18 +198,18 @@ parseImmunoseq <- function(path, chain = c("TRA", "TRB","TRG","TRD","IGH","IGK",
   return(out)
 }
 
-#' @title parse MiAIRR output
+#' @title parse AIRR-C format
 #'
-#' @description parse output tables from AIRR
+#' @description parse AIRR-C format
 #'
-#' @details function imports clonotype tables produced by AIRR
+#' @details function imports the AIRR-C Rearrangement format which is a tab-delimited file format (.tsv) that defines the required and optional annotations for rearranged adaptive immune receptor sequences
 #'
 #' @param path full path to the aligned file. Files can be loaded as gzipped.
 #' @param chain character, the TCR chain to be analyzed. One of \code{A} or \code{B}. Default value is \code{A}.
 #' @return a data.table of 9 columns: \code{sample_id} name, \code{V} V gene, \code{J} J gene, \code{CDR3aa} amino acid CDR3 sequence, \code{CDR3nt} nucleotide CDR3 sequence, \code{clone} full clonotype sequence, \code{VJ} V-J gene combinations, \code{score} mapq quality score, \code{count} clonotype count. Clonotypes are eliminated if a STOP codon (*) is detected in CDR3aa chain, if the CDR3nt length is not divisible by 3 or if the CDR3nt sequence is ambiguous (contains a "N" base).
 #' @keywords internal
 #' @export
-parseMiAIRR <- function(path, chain = c("TRA", "TRB","TRG","TRD","IGH","IGK","IGL")) {
+parseAIRRC <- function(path, chain = c("TRA", "TRB","TRG","TRD","IGH","IGK","IGL")) {
   if (path == "" | missing(path))  stop("Empty file name.")
   tab=V=CDR3nt=CDR3aa=J=sample_id <- NULL
   if (filetype(path)=="gzfile") {
@@ -440,7 +455,7 @@ filterClonotypes <- function(raw,
 #'                          outFiltered = FALSE,
 #'                           aa.th = NULL)
 #'
-readAIRR <- function(path, fileFormat=c("MiXCR", "immunoseq", "MiAIRR"),
+readAIRR <- function(path, fileFormat=c("MiXCR", "immunoseq", "AIRR-C"),
                            chain=c("TRA", "TRB","TRG","TRD","IGH","IGK","IGL"),
                            keep.ambiguous=FALSE, keep.unproductive=FALSE, aa.th=NULL,
                            outFiltered=FALSE) {
@@ -455,8 +470,8 @@ readAIRR <- function(path, fileFormat=c("MiXCR", "immunoseq", "MiAIRR"),
                 immunoseq = {
                   parseImmunoseq(path, chain = ch)
                 },
-                MiAIRR = {
-                  parseMiAIRR(path, chain = ch)
+                `AIRR-C` = {
+                  parseAIRRC(path, chain = ch)
                 })
   out <- filterClonotypes(raw,
                           keep.ambiguous = keep.ambiguous,
@@ -483,7 +498,7 @@ readAIRR <- function(path, fileFormat=c("MiXCR", "immunoseq", "MiAIRR"),
 #'  - filtering out short or extensively long amino acid CDR3 sequences
 #'
 #' @param fileList a list of paths to the alignment files. File format can be one of the following: .tsv, txt.gz, .zip, or .tar
-#' @param fileFormat a character vector specifying the format of the input files, i.e. the tool that was used to generate/align the files. Should be one of "MiXCR", "immunoseq", or "MiAIRR".
+#' @param fileFormat a character vector specifying the format of the input files, i.e. the tool that was used to generate/align the files. Should be one of "MiXCR", "immunoseq", or "AIRR-C".
 #' @param chain a character vector indicating a single TCR or Ig chain to analyze. The vector can be one of the following:
 #'
 #' - "TRA", "TRB","TRG" or "TRD" for the TCR repertoires
@@ -536,7 +551,7 @@ readAIRR <- function(path, fileFormat=c("MiXCR", "immunoseq", "MiAIRR"),
 #'                        raretab = FALSE,
 #'                        cores=1L)
 #'
-readAIRRSet <- function(fileList, fileFormat = c("MiXCR", "immunoseq",  "MiAIRR"),
+readAIRRSet <- function(fileList, fileFormat = c("MiXCR", "immunoseq",  "AIRR-C"),
                              chain = c("TRA", "TRB","TRG","TRD","IGH","IGK","IGL"),
                              sampleinfo = NULL,
                              keep.ambiguous = FALSE,
@@ -560,7 +575,7 @@ readAIRRSet <- function(fileList, fileFormat = c("MiXCR", "immunoseq",  "MiAIRR"
     cat("Loading and filtering sequences")
     cl <- parallel::makeCluster(cores, type = "SOCK", rscript_args = "--vanilla", useXDR = TRUE)
     parallel::clusterExport(cl = cl, varlist = c("filetype", "readAIRR",
-                                                 "parseMiXCR", "parseImmunoseq", "parseMiAIRR", "filterClonotypes", "setnames"))
+                                                 "parseMiXCR", "parseImmunoseq", "parseAIRRC", "filterClonotypes", "setnames"))
     repList <- pbapply::pblapply(cl = cl,
                                  fileList,
                                  readAIRR,

@@ -4,4 +4,7 @@ RUN apt-get install -y libssl-dev libxml2-dev libcurl4-openssl-dev libfontconfig
 RUN apt-get install -y cmake
 RUN Rscript -e 'install.packages("remotes")'
 RUN Rscript -e 'remotes::install_github("vanessajmh/AnalyzAIRR")'
-RUN Rscript -e 'testthat::test_package("AnalyzAIRR")'
+RUN Rscript -e 'install.packages('devtools',repos = 'http://cran.us.r-project.org')'
+RUN Rscript -e 'devtools::test()'
+
+#RUN Rscript -e 'testthat::test_package("AnalyzAIRR")'

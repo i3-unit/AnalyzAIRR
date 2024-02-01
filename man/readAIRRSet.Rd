@@ -6,7 +6,7 @@
 \usage{
 readAIRRSet(
   fileList,
-  fileFormat = c("MiXCR", "immunoseq", "MiAIRR"),
+  fileFormat = c("MiXCR", "immunoseq", "AIRR-C"),
   chain = c("TRA", "TRB", "TRG", "TRD", "IGH", "IGK", "IGL"),
   sampleinfo = NULL,
   keep.ambiguous = FALSE,
@@ -21,7 +21,7 @@ readAIRRSet(
 \arguments{
 \item{fileList}{a list of paths to the alignment files. File format can be one of the following: .tsv, txt.gz, .zip, or .tar}
 
-\item{fileFormat}{a character vector specifying the format of the input files, i.e. the tool that was used to generate/align the files. Should be one of "MiXCR", "immunoseq", or "MiAIRR".}
+\item{fileFormat}{a character vector specifying the format of the input files, i.e. the tool that was used to generate/align the files. Should be one of "MiXCR", "immunoseq", or "AIRR-C".}
 
 \item{chain}{a character vector indicating a single TCR or Ig chain to analyze. The vector can be one of the following:
 
