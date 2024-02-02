@@ -924,18 +924,13 @@ plotVenn <- function(x, level = c("clone","clonotype", "V", "J", "VJ", "CDR3nt",
     list[[i]]<- unique(counts_i[[levelChoice]])
   }
 
- plot <- ggVennDiagram::ggVennDiagram(
-   list,  label_alpha = 0,
-   label_percent_digit = 1 )+
-   ggplot2::scale_fill_distiller(palette = "RdBu")+
-   ggplot2::scale_color_manual(values=label_colors$sample_id)
  
- plot <- ggVennDiagram::plot_venn(list, label_alpha = 0,edge_lty="solid",
+ plot <- ggVennDiagram::plot_venn(list, label_alpha = 0, edge_lty="solid", 
                                   show_intersect=F,label="both",label_percent_digit = 1,
                                   set_size=3,edge_size=.5 ,set_color="black",
                                   label_geom="label", label_color="black",
                                   label_size=2.5)+
-         ggplot2::scale_color_manual(values=label_colors$sample_id[sampleNames])+
+         ggplot2::scale_color_manual(values=rep("gray",length(sampleNames)))+
          ggplot2::scale_fill_distiller(palette = "RdBu")+
          ggplot2::scale_x_continuous(expand = ggplot2::expansion(mult = .2))
  

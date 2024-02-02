@@ -1,15 +1,12 @@
 test_that("multiplication works", {
-  l <-   list.files(system.file(file.path('extdata/mixcr'),
-                                 package = 'AnalyzAIRR'),
-                                 full.names = TRUE)
-
+  l <- list.files(file.path('../../inst/extdata/mixcr'),
+                  full.names = TRUE)
   
-  metaData <- read.table(system.file(file.path('extdata/sampledata.txt'),
-                                     package = 'AnalyzAIRR'),sep = "\t",row.names = 1, header = TRUE)
+  metaData <- read.table(file.path('../../inst/extdata/sampledata.txt'),sep = "\t",row.names = 1, header = TRUE)
   metaData$cell_subset <- factor(metaData$cell_subset)
   metaData$sex <- factor(metaData$sex)
   
-  dataset <- AnalyzAIRR::readAIRRSet(fileList = l,
+  dataset <- readAIRRSet(fileList = l,
                          fileFormat = "MiXCR",
                          chain = "TRA",
                          sampleinfo = metaData,
