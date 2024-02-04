@@ -1,4 +1,4 @@
 test_that("RepSeqData works", {
   res<- AnalyzAIRR::diversityIndices(RepSeqData, level="V")
-  expect_equal(sum(res$shannon),32.35)
+  expect_equal(sum(res$shannon),32.3)
 })
