@@ -100,7 +100,7 @@ knitr::opts_chunk$set(
 ```
 # Introduction
 
-**AnalyzAIRR** is a MiAIRR compliant R package developed to analyze bulk Ig/TCR repertoire datasets.
+**AnalyzAIRR** is an R package developed to analyze bulk Ig/TCR repertoire datasets.
 
 * It can be used by both biologists and bioinformaticians.
 
@@ -129,7 +129,7 @@ library(AnalyzAIRR)
 
 **AnalyzAIRR** proposes two different data loading processes depending on the alignment files format. 
 
-### Use input files in AnalyzAIRR-compliant formats
+### Use input files in AnalyzAIRR-supported formats
 
 **1. Specify the paths to input files**
 

@@ -1,6 +1,6 @@
 # AnalyzAIRR
 
-AnalyzAIRR is a AIRR-compliant R package developed to analyze bulk Ig/TCR repertoire datasets.
+AnalyzAIRR is an R package developed to analyze bulk Ig/TCR repertoire datasets.
 
 - It proposes an analytical routine starting with data exploration, leading to in-depth statistical comparisons with the aim of answering defined biological questions.
 - It allows the calculation of a set of diversity measures and statistical metrics applicable at any level of granularity.

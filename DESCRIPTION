@@ -1,5 +1,5 @@
 Package: AnalyzAIRR
-Title: AIRR-compliant R package developed to analyze bulk Ig/TCR repertoire datasets
+Title: R package developed to analyze bulk Ig/TCR repertoire datasets
 Version: 1.0.0
 Description: AnalyzAIRR allows a general data exploration to evaluate the homogeneity 
  within defined groups, identify outliers and filter them out. AnalyzAIRR also proposes
