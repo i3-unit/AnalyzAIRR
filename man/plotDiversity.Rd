@@ -23,6 +23,8 @@ plotDiversity(
 \item{groupBy}{a character indicating one or multiple groups to be compared. A Wilcoxon test is thus performed and adjusted p-values using the Holm method are shown. Colors are attributed to the different groups within the first column, and a facet is applied on the second column. If not specified, no statistical tests will be performed, and calculated values for each sample_id will be represented.}
 
 \item{label_colors}{a list of colors for each variable in ColorBy. See \code{\link{plotColors}}. If NULL, default colors are used.}
+
+\item{show_stats}{whether to statistically compare groups}
 }
 \description{
 This function plots and compares a chosen diversity index calculated on a selected repertoire level between groups of samples.

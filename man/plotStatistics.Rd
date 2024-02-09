@@ -20,6 +20,8 @@ plotStatistics(
 \item{groupBy}{a character indicating one or multiple groups to be compared. A Wilcoxon test is thus performed and adjusted p-values using the Holm method are shown. Colors are attributed to the different groups within the first column, and a facet is applied on the second column. If not specified, no statistical tests will be performed, and calculated values for each sample_id will be represented.}
 
 \item{label_colors}{a list of colors for each variable in groupBy See \code{\link{plotColors}}. If NULL, default colors are used.}
+
+\item{show_stats}{whether to statistically compare groups}
 }
 \description{
 This function plots the statistics in the mData slot, calculated for each sample during the building of the RepSeqExperiment object.
