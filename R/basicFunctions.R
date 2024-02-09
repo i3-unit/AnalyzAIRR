@@ -657,14 +657,15 @@ plotColors<- function(x){
   
   if(l<74){
     mycolors_b<- mycolors[seq_len(l)]
-    names(mycolors_b) <-levels(mData(x)[[1]])
+    names(mycolors_b) <- unique(mData(x)[,names[1]])
     ann_colors[["sample_id"]]<- mycolors_b
+    
   }else{
     new_l<- ceiling(l/length(mycolors))
     colors_b=  rep(mycolors,new_l) 
     mycolors_b<- colors_b[seq_len(l)]
     
-    names(mycolors_b) <-levels(mData(x)[[1]])
+    names(mycolors_b) <-unique(mData(x)[,names[1]])
     ann_colors[["sample_id"]]<- mycolors_b
   }
 
@@ -674,7 +675,7 @@ plotColors<- function(x){
   for (i in unique(names)[-1]) {
     l <- length(unique(mData(x)[, i]))
     mycolors_b <- mycolors[seq_len(l)]
-    names(mycolors_b) <- levels(mData(x)[i][[i]])
+    names(mycolors_b) <- unique(mData(x)[i][[i]])
     ann_colors[[i]] <- mycolors_b
     mycolors <- mycolors[!mycolors %in% mycolors_b]
   }

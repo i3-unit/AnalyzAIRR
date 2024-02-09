@@ -8,7 +8,8 @@ plotCountIntervals(
   x,
   level = c("clone", "clonotype", "CDR3nt", "CDR3aa"),
   groupBy = NULL,
-  label_colors = NULL
+  label_colors = NULL,
+  show_stats = TRUE
 )
 }
 \arguments{

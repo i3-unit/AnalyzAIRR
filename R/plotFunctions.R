@@ -1221,7 +1221,7 @@ plotRarefaction <- function(x, colorBy=NULL, label_colors=NULL){
 #' plotCountIntervals(x = RepSeqData, level="CDR3nt",  groupBy=c("cell_subset", "sex"))
 #'
 plotCountIntervals <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3aa"),
-                               groupBy=NULL, label_colors=NULL){
+                               groupBy=NULL, label_colors=NULL, show_stats=TRUE){
   interval=percent <- NULL
   levelChoice<- match.arg(level)
   if (missing(x)) stop("x is missing.")
@@ -1298,10 +1298,10 @@ plotCountIntervals <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3a
     
     data2plot<- plyr::ldply(df, data.frame, .id = NULL)
     data2plot<- setDT(data2plot)
-    
+
     if(length(groupBy)==1){
       stat.test1 <- data2plot %>%
-        dplyr::filter(variable == "percent") %>%
+        dplyr::filter(variable == "percent" & value!=0) %>%
         dplyr::group_by(interval) %>%
         rstatix::wilcox_test(value  ~ grp) %>%
         rstatix::adjust_pvalue() %>%
@@ -1309,7 +1309,7 @@ plotCountIntervals <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3a
         rstatix::add_xy_position(x="interval")
       
       stat.test2 <- data2plot %>%
-        dplyr::filter(variable== "freq") %>%
+        dplyr::filter(variable== "freq" & value!=0) %>%
         dplyr::group_by(interval) %>%
         rstatix::wilcox_test(value  ~ grp) %>%
         rstatix::adjust_pvalue() %>%
@@ -1318,7 +1318,7 @@ plotCountIntervals <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3a
       
     } else if(length(groupBy)==2){
       stat.test1 <- data2plot %>%
-        dplyr::filter(variable == "percent") %>%
+        dplyr::filter(variable == "percent" & value!=0) %>%
         dplyr::group_by(interval, grp2) %>%
         rstatix::wilcox_test(value  ~ grp) %>%
         rstatix::adjust_pvalue() %>%
@@ -1326,7 +1326,7 @@ plotCountIntervals <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3a
         rstatix::add_xy_position(x="interval")
       
       stat.test2 <- data2plot %>%
-        dplyr::filter(variable== "freq") %>%
+        dplyr::filter(variable== "freq" & value!=0) %>%
         dplyr::group_by(interval, grp2) %>%
         rstatix::wilcox_test(value  ~ grp) %>%
         rstatix::adjust_pvalue() %>%
@@ -1335,7 +1335,7 @@ plotCountIntervals <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3a
       
     } else if(length(groupBy)==3){
       stat.test1 <- data2plot %>%
-        dplyr::filter(variable == "percent") %>%
+        dplyr::filter(variable == "percent" & value!=0) %>%
         dplyr::group_by(interval, grp2, grp3) %>%
         rstatix::wilcox_test(value  ~ grp) %>%
         rstatix::adjust_pvalue() %>%
@@ -1343,7 +1343,7 @@ plotCountIntervals <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3a
         rstatix::add_xy_position(x="interval")
       
       stat.test2 <- data2plot %>%
-        dplyr::filter(variable== "freq") %>%
+        dplyr::filter(variable== "freq" & value!=0) %>%
         dplyr::group_by(interval, grp2, grp3) %>%
         rstatix::wilcox_test(value  ~ grp) %>%
         rstatix::adjust_pvalue() %>%
@@ -1369,8 +1369,8 @@ plotCountIntervals <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3a
                       plot.subtitle=ggplot2::element_text(size=10),
                      axis.text.x = ggplot2::element_text( vjust = 1, size=8),
                      axis.text.y = ggplot2::element_text(size=8))+
-        ggpubr::stat_pvalue_manual(stat.test1, label = "p.adj.signif",
-                            tip.length = 0, size=3)
+      {if(show_stats==TRUE) ggpubr::stat_pvalue_manual(stat.test1, label = "p.adj.signif",
+                            tip.length = 0, size=3)}
   
     p2 <- ggplot2::ggplot(data = data2plot[data2plot$variable == "freq",],
                           ggplot2::aes(x = factor(interval, levels=plotBreaks),
@@ -1393,8 +1393,8 @@ plotCountIntervals <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3a
                      legend.background = ggplot2::element_blank(),
                      legend.text = ggplot2::element_text(size=8),
                      legend.justification = "center" )+
-      ggpubr::stat_pvalue_manual(stat.test2, label = "p.adj.signif",
-                                 tip.length = 0,size = 3)
+      {if(show_stats==TRUE) ggpubr::stat_pvalue_manual(stat.test2, label = "p.adj.signif",
+                                 tip.length = 0,size = 3)}
 
     legend<-lemon::g_legend(p2)
     g <- gridExtra::grid.arrange(gridExtra::arrangeGrob(p2 + ggplot2::theme(legend.position="none"),
