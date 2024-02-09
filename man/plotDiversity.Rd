@@ -9,7 +9,8 @@ plotDiversity(
   index = c("chao1", "shannon", "simpson", "invsimpson", "bergerparker", "gini", "iChao"),
   level = c("clone", "clonotype", "V", "J", "VJ", "CDR3nt", "CDR3aa"),
   groupBy = NULL,
-  label_colors = NULL
+  label_colors = NULL,
+  show_stats = TRUE
 )
 }
 \arguments{

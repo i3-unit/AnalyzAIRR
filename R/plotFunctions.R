@@ -1042,7 +1042,9 @@ plotScatter <- function(x, sampleNames = NULL,
 #'
 plotDiversity <- function(x, index=c("chao1","shannon","simpson", "invsimpson","bergerparker", "gini","iChao"),
                           level = c("clone","clonotype", "V", "J", "VJ", "CDR3nt","CDR3aa"),
-                          groupBy = NULL, label_colors=NULL){
+                          groupBy = NULL, 
+                          label_colors=NULL,
+                          show_stats=TRUE){
   group <- NULL
   groupB <- NULL
   groupC <- NULL
@@ -1102,7 +1104,7 @@ plotDiversity <- function(x, index=c("chao1","shannon","simpson", "invsimpson","
       ggplot2::scale_fill_manual(values=label_colors[[groupBy[[1]]]])+
       theme_RepSeq()+
       ggplot2::theme( legend.position = "none")+
-      ggprism::add_pvalue(stat.test,  label = "p.adj.signif", bracket.nudge.y = .01,tip.length = 0, step.increase = 0.1)
+      {if(show_stats==TRUE) ggprism::add_pvalue(stat.test,  label = "p.adj.signif", bracket.nudge.y = .01,tip.length = 0, step.increase = 0.1)}
     
 }  else {
 
@@ -1488,7 +1490,9 @@ plotCountIntervals <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3a
 #' plotStatistics(x = RepSeqData, groupBy = c("cell_subset", "sex"), stat = "V")
 #'
 plotStatistics <- function(x, stat = c("nSequences", "clone", "clonotype","V", "J","VJ", "CDR3aa", "CDR3nt"),
-                           groupBy = NULL, label_colors = NULL){
+                           groupBy = NULL, 
+                           label_colors = NULL,
+                           show_stats=TRUE){
   group <- NULL
   groupB <- NULL
   groupC <- NULL
@@ -1549,7 +1553,7 @@ plotStatistics <- function(x, stat = c("nSequences", "clone", "clonotype","V", "
         ggplot2::scale_fill_manual(values=label_colors[[groupBy[[1]]]])+
         theme_RepSeq()+
         ggplot2::theme(legend.position = "none")+
-        ggprism::add_pvalue(stat.test,  label = "p.adj.signif",bracket.nudge.y = .01,tip.length = 0, step.increase = 0.1)
+        {if(show_stats==TRUE) ggprism::add_pvalue(stat.test,  label = "p.adj.signif",bracket.nudge.y = .01,tip.length = 0, step.increase = 0.1)}
       
     } else {
       p <- ggplot2::ggplot(sdata_m,ggplot2::aes(x = group, y = stats, fill = group)) +

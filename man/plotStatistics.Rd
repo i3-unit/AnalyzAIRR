@@ -8,7 +8,8 @@ plotStatistics(
   x,
   stat = c("nSequences", "clone", "clonotype", "V", "J", "VJ", "CDR3aa", "CDR3nt"),
   groupBy = NULL,
-  label_colors = NULL
+  label_colors = NULL,
+  show_stats = TRUE
 )
 }
 \arguments{
