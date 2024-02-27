@@ -9,7 +9,8 @@ plotCountIntervals(
   level = c("clone", "clonotype", "CDR3nt", "CDR3aa"),
   groupBy = NULL,
   label_colors = NULL,
-  show_stats = TRUE
+  show_stats = TRUE,
+  fractions = c("count", "frequency")
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ plotCountIntervals(
 \item{label_colors}{a list of colors for each variable in groupBy See \code{\link{plotColors}}. If NULL, default colors are used.}
 
 \item{show_stats}{whether to statistically compare groups}
+
+\item{fractions}{whether fractions should be determined in count or frequency}
 }
 \description{
 This function plots two histograms of the clonal distribution per a set of count intervals in all the samples within the dataset. Intervals are: 1, ]1, 10], ]10, 100], ]100, 1000], ]1000, 10000] and ]10000, Inf].

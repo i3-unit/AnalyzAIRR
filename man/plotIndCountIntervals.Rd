@@ -7,7 +7,8 @@
 plotIndCountIntervals(
   x,
   sampleName = NULL,
-  level = c("clone", "clonotype", "CDR3nt", "CDR3aa")
+  level = c("clone", "clonotype", "CDR3nt", "CDR3aa"),
+  fractions = c("count", "frequency", )
 )
 }
 \arguments{
@@ -16,6 +17,8 @@ plotIndCountIntervals(
 \item{sampleName}{a character specifying the sample_id to analyze. Default is NULL, which plots the first sample in the dataset.}
 
 \item{level}{a character specifying the level of the repertoire to be taken into account when calculating the clonal distribution. Should be one of clone","clonotype", "CDR3nt" or "CDR3aa".}
+
+\item{fractions}{whether fractions should be determined in count or frequency}
 }
 \description{
 This function plots two histograms of the clonal distribution per a set of fixed count intervals in a given sample. Intervals are: 1, ]1, 10], ]10, 100], ]100, 1000], ]1000, 10000] and ]10000, Inf].

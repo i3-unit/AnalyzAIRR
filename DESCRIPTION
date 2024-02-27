@@ -16,11 +16,7 @@ Imports: pbapply, parallel, utils, stats, methods, graphics, ggplot2,
 	 vegan, naturalsort, RColorBrewer, dplyr, ggVennDiagram, gridExtra,
 	 plyr, grDevices,reshape2, ggprism, rstatix, ggpubr, stringr,
 	 ggpmisc, tidyr, ggrepel, car, circlize, ComplexHeatmap, MESS
-Suggests: 
-    BiocStyle,
-    knitr,
-    rmarkdown,
-    testthat (>= 3.0.0)
+Suggests: BiocStyle, knitr, rmarkdown
 License: GPL-3 + file LICENSE
 URL: https://github.com/vanessajmh/AnalyzAIRR
 BugReports: https://github.com/vanessajmh/AnalyzAIRR/issues
@@ -31,4 +27,3 @@ RoxygenNote: 7.2.3
 NeedsCompilation: yes
 biocViews: SystemsBiology, Sequencing, DifferentialExpression, QualityControl
 Packaged: 2021-03-02 09:01:16 UTC;
-Config/testthat/edition: 3

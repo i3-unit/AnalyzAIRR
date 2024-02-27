@@ -467,6 +467,7 @@ plotGeneUsage <- function(x, level = c("V", "J"), scale = c("count", "frequency"
 #' @param x an object of class  \code{\linkS4class{RepSeqExperiment}}
 #' @param sampleName a character specifying the sample_id to analyze. Default is NULL, which plots the first sample in the dataset.
 #' @param level a character specifying the level of the repertoire to be taken into account when calculating the clonal distribution. Should be one of clone","clonotype", "CDR3nt" or "CDR3aa".
+#' @param fractions whether fractions should be determined in count or frequency
 #' @export
 #' @examples
 #'
@@ -478,7 +479,9 @@ plotGeneUsage <- function(x, level = c("V", "J"), scale = c("count", "frequency"
 #' plotIndCountIntervals(x = RepSeqData, level="clone", sampleName = NULL)
 #'
 plotIndCountIntervals <- function(x, sampleName = NULL, 
-                                  level = c("clone","clonotype", "CDR3nt","CDR3aa")){
+                                  level = c("clone","clonotype", "CDR3nt","CDR3aa"),
+                                  fractions=c("count", "frequency",
+                                    )){
   interval=percent <- NULL
   levelChoice<- match.arg(level)
   if (missing(x)) stop("x is missing.")
@@ -487,7 +490,12 @@ plotIndCountIntervals <- function(x, sampleName = NULL,
     sName <- rownames(mData(x))[1]
     cat("Plot the first sample in the dataset:", sName)
   } else sName <- sampleName
+  
   data2plot <- data.table::copy(assay(x))
+  data2plot<- data2plot[, lapply(.SD, sum), by = c(levelChoice,"sample_id"), .SDcols = "count"][,frequency := prop.table(count), by="sample_id"]
+  
+  if(fractions=="count"){
+  ff<- data.frame(interval=c("1","]1, 10]","]10, 100]", "]100, 1000]","]1000, 10000]","]10000, Inf]"))
   f <- function(x){
     if(x == 1) "1"
     else if(x <= 10) "]1, 10]"
@@ -496,19 +504,37 @@ plotIndCountIntervals <- function(x, sampleName = NULL,
     else if(x <= 10000) "]1000, 10000]"
     else "]10000, Inf]"
   }
-  ff<- data.frame(interval=c("1","]1, 10]","]10, 100]", "]100, 1000]","]1000, 10000]","]10000, Inf]"))
-  data2plot <- data2plot[sample_id == sName, lapply(.SD, sum), by = levelChoice, .SDcols = "count"][,interval := unlist(lapply(count, f))]
+  } else if (fractions=="frequency"){
+    ff<- data.frame(interval=c("0","]0, 0.000001]","]0.000001, 0.00001]","]0.00001, 0.0001]",
+                               "]0.0001, 0.001]","]0.001, 0.01]","]0.01, 1]"))
+    f <- function(x){
+      if(x == 0) "0"
+      else if(x <= 0.000001) "]0, 0.000001]"
+      else if(x <= 0.00001) "]0.000001, 0.00001]"
+      else if(x <= 0.0001) "]0.00001, 0.0001]"
+      else if(x <= 0.001) "]0.0001, 0.001]"
+      else if(x <= 0.01) "]0.001, 0.01]"
+      else "]0.01, 1]"
+    }
+  }
+  
+  data2plot <- data2plot[sample_id == sName, lapply(.SD, sum), by = levelChoice, .SDcols = fractions][,interval := unlist(lapply(get(fractions), f))]
 
   data2plot_b <- data2plot %>% dplyr::group_by(interval) %>% dplyr::summarize(sum=dplyr::n()) %>% dplyr::mutate(freq=sum/sum(sum))
-  data2plot<- data2plot[, lapply(.SD, sum), by = interval, .SDcols = "count"][,percent := prop.table(count)]
+  
+  data2plot<- data2plot[, lapply(.SD, sum), by = interval, .SDcols = fractions][,percent := prop.table(get(fractions))]
+
   data2plot<- merge(data2plot[,c(1,3)], data2plot_b[,c(1,3)], by="interval")
-  if(nrow(data2plot)<6){
+  
+  if(length(unique(data2plot))!=length(ff$interval)){
     rown= which(!ff$interval %in% data2plot$interval)
     add<- data.frame(interval=ff[rown,], percent=0, freq=0)
     data2plot<- rbind(data2plot, add)
   }
-  breaks <- unique(data2plot[, interval])
-  plotBreaks <- breaks[order(nchar(breaks), breaks)]
+  
+  # breaks <- unique(data2plot[, interval])
+  # plotBreaks <- breaks[order(nchar(breaks), breaks)]
+  plotBreaks <- ff$interval
   data2plot<- reshape2::melt(data2plot, id.vars="interval")
 
   p1 <- ggplot2::ggplot(data = data2plot[data2plot$variable == "percent",], ggplot2::aes(x = interval, y =value) ) +
@@ -668,7 +694,6 @@ plotDissimilarity <- function(x, level = c("clone","clonotype", "V", "J", "VJ", 
   if (is.null(colorBy)) stop("at least one group column name is expected.")
   if (is.null(method)) stop("a distance method is expected.")
   if (is.null(clustering)) stop("a clustering method is expected.")
-  
   
   
   variable <- NULL
@@ -1210,6 +1235,7 @@ plotRarefaction <- function(x, colorBy=NULL, label_colors=NULL){
 #' @param level a character specifying the level of the repertoire to be taken into account when calculating the clonal distribution. Should be one of clone","clonotype", "CDR3nt" or "CDR3aa".
 #' @param groupBy a character indicating one or multiple column names in mData. Colors are thus attributed to the different groups within the first column, and a facet is applied on the second column. Statistical tests are performed between the chosen groups. The chosen column must be of class factor.
 #' @param label_colors a list of colors for each variable in groupBy See \code{\link{plotColors}}. If NULL, default colors are used.
+#' @param fractions whether fractions should be determined in count or frequency
 #' @param show_stats whether to statistically compare groups
 #' @export
 #' @examples
@@ -1223,136 +1249,223 @@ plotRarefaction <- function(x, colorBy=NULL, label_colors=NULL){
 #' plotCountIntervals(x = RepSeqData, level="CDR3nt",  groupBy=c("cell_subset", "sex"))
 #'
 plotCountIntervals <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3aa"),
-                               groupBy=NULL, label_colors=NULL, show_stats=TRUE){
+                               groupBy=NULL, label_colors=NULL, 
+                               show_stats=TRUE, 
+                               fractions=c("count", "frequency")){
   interval=percent <- NULL
   levelChoice<- match.arg(level)
   if (missing(x)) stop("x is missing.")
   if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected.")
 
   data2plot <- data.table::copy(assay(x))
-  f <- function(x){
-    if(x == 1) "1"
-    else if(x <= 10) "]1, 10]"
-    else if(x <= 100) "]10, 100]"
-    else if(x <= 1000) "]100, 1000]"
-    else if(x <= 10000) "]1000, 10000]"
-    else "]10000, Inf]"
+  data2plot<- data2plot[, lapply(.SD, sum), by = c(levelChoice, "sample_id"), .SDcols = "count"][,frequency := prop.table(count),by="sample_id"]
+  
+  if(fractions=="count"){
+    ff<- data.frame(interval=c("1","]1, 10]","]10, 100]", "]100, 1000]","]1000, 10000]","]10000, Inf]"))
+    colorBreaks <-  c("1"="#1F77B4B2","]1, 10]"="#FF7F0EB2","]10, 100]"="#2CA02CB2", 
+                      "]100, 1000]"="#D62728B2" ,"]1000, 10000]"="#9467BDB2",
+                      "]10000, Inf]"="#8C564BB2")
+    f <- function(x){
+      if(x == 1) "1"
+      else if(x <= 10) "]1, 10]"
+      else if(x <= 100) "]10, 100]"
+      else if(x <= 1000) "]100, 1000]"
+      else if(x <= 10000) "]1000, 10000]"
+      else "]10000, Inf]"
+    }
+  } else if(fractions=="frequency"){
+    ff<- data.frame(interval=c("]0, 0.000001]","]0.000001, 0.00001]","]0.00001, 0.0001]",
+                               "]0.0001, 0.001]","]0.001, 0.01]","]0.01, 1]"))
+    colorBreaks <-  c("]0, 0.000001]"="#1F77B4B2","]0.000001, 0.00001]"="#FF7F0EB2",
+                      "]0.00001, 0.0001]"="#2CA02CB2",  "]0.0001, 0.001]"="#D62728B2" , 
+                      "]0.001, 0.01]"="#9467BDB2", "]0.01, 1]" ="#8C564BB2")
+
+    f <- function(x){
+      if(x <= 0.000001) "]0, 0.000001]"
+      else if(x <= 0.00001) "]0.000001, 0.00001]"
+      else if(x <= 0.0001) "]0.00001, 0.0001]"
+      else if(x <= 0.001) "]0.0001, 0.001]"
+      else if(x <= 0.01) "]0.001, 0.01]"
+      else "]0.01, 1]"
+    }
   }
 
   if (is.null(label_colors)) {
-    label_colors= oData(x)$label_colors 
+    label_colors=oData(x)$label_colors 
   }
 
-  ff<- data.frame(interval=c("1","]1, 10]","]10, 100]", "]100, 1000]","]1000, 10000]","]10000, Inf]"))
-  data2plot <- data2plot[, lapply(.SD, sum), by = c(levelChoice, "sample_id"), .SDcols = "count"][,interval := unlist(lapply(count, f)), by="sample_id"]
+  data2plot <- data2plot[, lapply(.SD, sum), by = c(levelChoice, "sample_id"), .SDcols = fractions][,interval := unlist(lapply(get(fractions), f)), by="sample_id"]
 
   data2plot_b <- data2plot %>% dplyr::group_by(interval, sample_id) %>% dplyr::summarize(sum=dplyr::n())
   data2plot_b <- data2plot_b %>% dplyr::group_by( sample_id) %>% dplyr::mutate(freq=sum/sum(sum))
-  data2plot <- data2plot[, lapply(.SD, sum), by = c("interval","sample_id"), .SDcols = "count"][,percent := prop.table(count), by="sample_id"]
+  data2plot <- data2plot[, lapply(.SD, sum), by = c("interval",  "sample_id"), .SDcols = fractions][, `:=`(percent, prop.table(get(fractions))), by = "sample_id"]
   data2plot <- merge(data2plot[,c(1,2,4)], data2plot_b[,c(1,2,4)], by=c("interval", "sample_id"))
 
   data2plot <- setDT(data2plot)
   sdata <- mData(x)
-  breaks <- unique(as.data.frame(data2plot)[, "interval"])
+  breaks <- ff$interval
 
-  if(!is.null(groupBy)){
-    plotBreaks <- c("1","]1, 10]","]10, 100]", "]100, 1000]" ,"]1000, 10000]","]10000, Inf]")
-    
+
+if(!is.null(groupBy)){
+    plotBreaks<- breaks
     if(length(groupBy)==1){
       data2plot[, grp := lapply(.SD, function(x) sdata[x, groupBy]), .SDcols = "sample_id"]
       data2plot<- reshape2::melt(data2plot, id.vars=c("interval","sample_id","grp"))
+      
+      grps<- data2plot %>%
+        dplyr::group_by_at(dplyr::vars(tidyr::starts_with("gr"), interval)) %>% 
+        dplyr::summarize(count=dplyr::n()) %>% 
+        reshape2::dcast(., interval~grp) %>%
+        dplyr::mutate(nas=rowSums(dplyr::select_if(., is.numeric))) 
+      
       
     } else if(length(groupBy)==2){
       data2plot[, grp := lapply(.SD, function(x) sdata[x, groupBy[[1]]]), .SDcols = "sample_id"]
       data2plot[, grp2 := lapply(.SD, function(x) sdata[x, groupBy[[2]]]), .SDcols = "sample_id"]
       data2plot<- reshape2::melt(data2plot, id.vars=c("interval","sample_id","grp", "grp2"))
       
+      grps<- data2plot %>% 
+                dplyr::filter(variable=="freq") %>%
+                dplyr::group_by_at(dplyr::vars(tidyr::starts_with("gr"), interval)) %>% 
+                dplyr::summarize(count=dplyr::n()) %>% 
+                reshape2::dcast(., interval+grp2~grp) %>%
+                dplyr::mutate(nas=rowSums(dplyr::select_if(., is.numeric))) 
+      
+      
     } else if(length(groupBy)==3){
-      data2plot[, grp := lapply(.SD, function(x) sdata[x, groupBy]), .SDcols = "sample_id"]
+      data2plot[, grp := lapply(.SD, function(x) sdata[x, groupBy[[1]]]), .SDcols = "sample_id"]
       data2plot[, grp2 := lapply(.SD, function(x) sdata[x, groupBy[[2]]]), .SDcols = "sample_id"]
       data2plot[, grp3 := lapply(.SD, function(x) sdata[x, groupBy[[3]]]), .SDcols = "sample_id"]
       data2plot<- reshape2::melt(data2plot, id.vars=c("interval","sample_id","grp", "grp2", "grp3"))
+      
+      grps<- data2plot %>%
+                dplyr::group_by_at(dplyr::vars(tidyr::starts_with("gr"), interval)) %>% 
+                summarize(count=dplyr::n()) %>% 
+                reshape2::dcast(., interval+grp2+grp3~grp) %>%
+                dplyr::mutate(nas=rowSums(dplyr::select_if(., is.numeric))) 
     }
     
-    df<- vector("list")
-    for(i in unique(data2plot$sample_id)){
-        dfi<- data2plot %>% dplyr::filter(sample_id==i)
-
-        if(length(unique(dfi$interval)) != length(unique(data2plot$interval))){
-          rown= which(!unique(data2plot$interval) %in% dfi$interval)
-          if(length(groupBy)==1){
-            add<- data.frame(interval=unique(data2plot$interval)[rown], sample_id=i,grp=unique(dfi$grp),variable="percent", value=0)
-            addb<- data.frame(interval=unique(data2plot$interval)[rown], sample_id=i,grp=unique(dfi$grp),variable="freq", value=0)  
-          } else if(length(groupBy)==2){
-            add<- data.frame(interval=unique(data2plot$interval)[rown], sample_id=i,grp=unique(dfi$grp), grp2=unique(dfi$grp2), variable="percent", value=0)
-            addb<- data.frame(interval=unique(data2plot$interval)[rown], sample_id=i,grp=unique(dfi$grp), grp2=unique(dfi$grp2), variable="freq", value=0)
-          } else if(length(groupBy)==3){
-            add<- data.frame(interval=unique(data2plot$interval)[rown], sample_id=i,grp=unique(dfi$grp), grp2=unique(dfi$grp2), grp3=unique(dfi$grp3),variable="percent", value=0)
-            addb<- data.frame(interval=unique(data2plot$interval)[rown], sample_id=i,grp=unique(dfi$grp), grp2=unique(dfi$grp2), grp3=unique(dfi$grp3),variable="freq", value=0)
-          }
-          
-          
-          df[[i]]<- rbind(dfi, add,addb)
-        } else {
-          df[[i]]<- dfi
-        }
-      }
+    interv<- grps %>%
+      dplyr::filter(is.na(nas)) %>%
+      dplyr::pull(interval)
     
-    data2plot<- plyr::ldply(df, data.frame, .id = NULL)
-    data2plot<- setDT(data2plot)
+    if(length(interv)==0){
+      rown <- 0
+    } else {
+      rown <- which(ff$interval==interv)
+      
+    }
+    
+    # df<- vector("list")
+    # for(i in unique(data2plot$sample_id)){
+    #     dfi<- data2plot %>% dplyr::filter(sample_id==i)
+    # 
+    #     if(length(unique(dfi$interval)) != length(unique(data2plot$interval))){
+    #       rown= which(!unique(data2plot$interval) %in% dfi$interval)
+    #       if(length(groupBy)==1){
+    #         add<- data.frame(interval=unique(data2plot$interval)[rown], sample_id=i,grp=unique(dfi$grp),variable="percent", value=0)
+    #         addb<- data.frame(interval=unique(data2plot$interval)[rown], sample_id=i,grp=unique(dfi$grp),variable="freq", value=0)  
+    #       } else if(length(groupBy)==2){
+    #         add<- data.frame(interval=unique(data2plot$interval)[rown], sample_id=i,grp=unique(dfi$grp), grp2=unique(dfi$grp2), variable="percent", value=0)
+    #         addb<- data.frame(interval=unique(data2plot$interval)[rown], sample_id=i,grp=unique(dfi$grp), grp2=unique(dfi$grp2), variable="freq", value=0)
+    #       } else if(length(groupBy)==3){
+    #         add<- data.frame(interval=unique(data2plot$interval)[rown], sample_id=i,grp=unique(dfi$grp), grp2=unique(dfi$grp2), grp3=unique(dfi$grp3),variable="percent", value=0)
+    #         addb<- data.frame(interval=unique(data2plot$interval)[rown], sample_id=i,grp=unique(dfi$grp), grp2=unique(dfi$grp2), grp3=unique(dfi$grp3),variable="freq", value=0)
+    #       }
+    #       
+    #       
+    #       df[[i]]<- rbind(dfi, add,addb)
+    #     } else {
+    #       df[[i]]<- dfi
+    #     }
+    #   }
+    
 
+    
     if(length(groupBy)==1){
       stat.test1 <- data2plot %>%
-        dplyr::filter(variable == "percent" & value!=0) %>%
+        dplyr::filter(variable ==  "percent") %>%
+        dplyr::filter(if(length(interv)>0) interval != grps$interval[is.na(grps$keep)] else TRUE) %>%
         dplyr::group_by(interval) %>%
         rstatix::wilcox_test(value  ~ grp) %>%
         rstatix::adjust_pvalue() %>%
-        rstatix::add_significance() %>%
-        rstatix::add_xy_position(x="interval")
+        rstatix::add_significance() %>% 
+        rstatix::add_xy_position(x="interval") %>%
+        dplyr::mutate(x=x+rown) %>%
+        dplyr::mutate(xmin=xmin+rown) %>%
+        dplyr::mutate(xmax=xmax+rown)
       
       stat.test2 <- data2plot %>%
-        dplyr::filter(variable== "freq" & value!=0) %>%
+        dplyr::filter(variable ==  "freq") %>%
+        dplyr::filter(if(length(interv)>0) interval != grps$interval[is.na(grps$keep)] else TRUE) %>%
         dplyr::group_by(interval) %>%
         rstatix::wilcox_test(value  ~ grp) %>%
         rstatix::adjust_pvalue() %>%
-        rstatix::add_significance() %>%
-        rstatix::add_xy_position(x="interval")
+        rstatix::add_significance() %>% 
+        rstatix::add_xy_position(x="interval") %>%
+        dplyr::mutate(x=x+rown) %>%
+        dplyr::mutate(xmin=xmin+rown) %>%
+        dplyr::mutate(xmax=xmax+rown)
+
       
     } else if(length(groupBy)==2){
-      stat.test1 <- data2plot %>%
-        dplyr::filter(variable == "percent" & value!=0) %>%
-        dplyr::group_by(interval, grp2) %>%
-        rstatix::wilcox_test(value  ~ grp) %>%
-        rstatix::adjust_pvalue() %>%
-        rstatix::add_significance() %>%
-        rstatix::add_xy_position(x="interval")
       
-      stat.test2 <- data2plot %>%
-        dplyr::filter(variable== "freq" & value!=0) %>%
+      stat.test1 <- data2plot %>%
+        dplyr::filter(variable ==  "percent") %>%
+        dplyr::filter(if(length(interv)>0) !(interval == grps$interval[is.na(grps$nas)] & grp2 == grps$grp2[is.na(grps$nas)]) else TRUE) %>%
         dplyr::group_by(interval, grp2) %>%
         rstatix::wilcox_test(value  ~ grp) %>%
         rstatix::adjust_pvalue() %>%
-        rstatix::add_significance() %>%
-        rstatix::add_xy_position(x="interval")
+        rstatix::add_significance() %>% 
+        rstatix::add_xy_position(x="interval") %>%
+        dplyr::mutate(x=x+rown) %>%
+        dplyr::mutate(xmin=xmin+rown) %>%
+        dplyr::mutate(xmax=xmax+rown)
+      
+    
+      stat.test2 <- data2plot %>%
+        dplyr::filter(variable ==  "freq" ) %>%
+        dplyr::filter(if(length(interv)>0) !(interval == grps$interval[is.na(grps$nas)] & grp2 == grps$grp2[is.na(grps$nas)]) else TRUE) %>%
+        dplyr::group_by(interval, grp2) %>%
+        rstatix::wilcox_test(value  ~ grp) %>%
+        rstatix::adjust_pvalue() %>%
+        rstatix::add_significance() %>% 
+        rstatix::add_xy_position(x="interval") %>%
+        dplyr::mutate(x=x+rown) %>%
+        dplyr::mutate(xmin=xmin+rown) %>%
+        dplyr::mutate(xmax=xmax+rown)
       
     } else if(length(groupBy)==3){
       stat.test1 <- data2plot %>%
-        dplyr::filter(variable == "percent" & value!=0) %>%
-        dplyr::group_by(interval, grp2, grp3) %>%
+        dplyr::filter(variable ==  "percent" ) %>%
+        dplyr::filter(if(length(interv)>0) !(interval == grps$interval[is.na(grps$nas)] & 
+                                               grp2 == grps$grp2[is.na(grps$nas)] &
+                                               grp3 == grps$grp3[is.na(grps$nas)]) else TRUE) %>%
+        dplyr::group_by(interval, grp2,grp3) %>%
         rstatix::wilcox_test(value  ~ grp) %>%
         rstatix::adjust_pvalue() %>%
-        rstatix::add_significance() %>%
-        rstatix::add_xy_position(x="interval")
+        rstatix::add_significance() %>% 
+        rstatix::add_xy_position(x="interval") %>%
+        dplyr::mutate(x=x+rown) %>%
+        dplyr::mutate(xmin=xmin+rown) %>%
+        dplyr::mutate(xmax=xmax+rown)
+    
       
       stat.test2 <- data2plot %>%
-        dplyr::filter(variable== "freq" & value!=0) %>%
-        dplyr::group_by(interval, grp2, grp3) %>%
+        dplyr::filter(variable ==  "freq" ) %>%
+        dplyr::filter(if(length(interv)>0) !(interval == grps$interval[is.na(grps$nas)] & 
+                                               grp2 == grps$grp2[is.na(grps$nas)] &
+                                               grp3 == grps$grp3[is.na(grps$nas)]) else TRUE) %>%
+        dplyr::group_by(interval, grp2,grp3) %>%
         rstatix::wilcox_test(value  ~ grp) %>%
         rstatix::adjust_pvalue() %>%
-        rstatix::add_significance() %>%
-        rstatix::add_xy_position(x="interval")
+        rstatix::add_significance() %>% 
+        rstatix::add_xy_position(x="interval") %>%
+        dplyr::mutate(x=x+rown) %>%
+        dplyr::mutate(xmin=xmin+rown) %>%
+        dplyr::mutate(xmax=xmax+rown)
     }
-    
+  
 
     p1 <-  ggplot2::ggplot(data = data2plot[data2plot$variable == "percent",],
                          ggplot2::aes(x = factor(interval, levels=plotBreaks),
@@ -1406,9 +1519,7 @@ plotCountIntervals <- function(x, level = c("clone","clonotype", "CDR3nt","CDR3a
 
      } else{
    data2plot<- reshape2::melt(data2plot, id.vars=c("interval","sample_id"))
-   colorBreaks <-  c("1"="#1F77B4B2","]1, 10]"="#FF7F0EB2","]10, 100]"=  "#2CA02CB2", "]100, 1000]"="#D62728B2" ,"]1000, 10000]"="#9467BDB2","]10000, Inf]"="#8C564BB2")
-   plotBreaks <- c("1","]1, 10]","]10, 100]", "]100, 1000]" ,"]1000, 10000]","]10000, Inf]")
-
+   plotBreaks<- breaks
 
     p1 <- ggplot2::ggplot(data = data2plot[data2plot$variable == "percent",], ggplot2::aes(x = sample_id, y =value, fill=factor(interval, levels=rev(plotBreaks))) ,  alpha=.7) +
       ggplot2::geom_bar(stat = "identity",  alpha=.8) +

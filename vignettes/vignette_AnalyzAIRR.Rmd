@@ -627,7 +627,7 @@ plotRenyiIndex(x=RepSeqData, level="J", grouped=FALSE, colorBy = "sample_id")
   - The cumulative frequency of a defined repertoire level within each count interval thus giving the proportion that each interval occupies in the repertoire.
 
 ```{r intervals, fig.height=6, fig.width=7,fig.align="center"}
-plotCountIntervals(x=RepSeqData, level="clone")
+plotCountIntervals(x=RepSeqData, level="clone", fractions="frequency")
 ```
 <figcaption align = "center"><em class="special">Figure 7: Stacked bars showing the distribution (upper plot) and the cumulative frequency (lower plot) of clones within each count interval in each sample.</em></figcaption>
 <br>
@@ -654,7 +654,7 @@ In all the following functions, the **sample_id** of interest needs to be specif
    `plotIndCountIntervals()` allows the analysis of the clonal distribution per count interval in a single sample.
 
 ```{r plotIndCountIntervals, echo=TRUE,message=FALSE, warning=FALSE,fig.width=7, fig.height = 4,fig.align="center", cache.comments=FALSE}
-plotIndCountIntervals(RepSeqData,level = "clone", sampleName="tripod-30-813")
+plotIndCountIntervals(RepSeqData,level = "clone", sampleName="tripod-30-813", fractions="frequency")
 ```
 <figcaption align = "center"><em class="special">Figure 9: Barplots showing the distribution (upper plot) and the cumulative frequency (lower plot) of clones within each count interval for one selected sample.</em></figcaption>
 <br>
@@ -777,7 +777,7 @@ plotRenyiIndex(x = RepSeqData,
    Similarly to the analysis applied at the single-sample level, `plotCountIntervals()` allows to plot and compare clonal distributions within defined count intervals between experimental groups.
 
 ```{r plotDistribVpJall,fig.height = 5, fig.width=7, fig.align='center'}
-plotCountIntervals(x=RepSeqData, level="clone", groupBy = c("cell_subset","sex"))
+plotCountIntervals(x=RepSeqData, level="clone", groupBy = c("cell_subset","sex"), fractions="frequency")
 ```
 <figcaption align = "center"><em class="special">Figure 20: The distribution (upper plot) and the cumulative frequency (bottom plot) of clones within each count interval was compared between amTreg and nTreg samples within each sex. A Wilcoxon test is applied and adjusted p-values using the Holm method are shown.</em></figcaption>
 

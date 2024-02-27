@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/reference/test_package.html#special-files
 
 library(testthat)
-library(AnalyzAIRR)
+library(generate-AnalyzAIRR)
 
-test_check("AnalyzAIRR")
+test_check("generate-AnalyzAIRR")

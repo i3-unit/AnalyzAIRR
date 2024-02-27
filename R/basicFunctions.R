@@ -413,7 +413,7 @@ mergeRepSeq <- function(a, b) {
             otherData = metainfo,
             History = all.history)
     
-    oData(out) <- c(oData(out), label_colors=list(plotColors(out)))
+    oData(out) <- c(oData(out), label_colors=list(plotColors(x = out)))
     
     return(out)
 }
