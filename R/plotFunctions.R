@@ -255,9 +255,10 @@ plotRenyiIndex <- function(x, alpha = c(0, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, In
       p <- ggplot2::ggplot(data = data2plot, ggplot2::aes(x = as.numeric(variable), y = mean)) +
           {if(!is.null(shapeBy)) ggplot2::geom_line(ggplot2::aes(group = interaction(colors, shapes),color=colors), linewidth = .8) else
             ggplot2::geom_line(ggplot2::aes(group = colors,color=colors), linewidth = .8) } +
-          {if(!is.null(shapeBy)) ggplot2::geom_point(ggplot2::aes( color=colors, shape=shapes), fill="white",  size=1.2) else
+          {if(!is.null(shapeBy)) ggplot2::geom_point(ggplot2::aes(shape=shapes), color="black",fill="white",  size=1.5) else
           ggplot2::geom_point(ggplot2::aes( color=colors), fill="white",  size=1.2) }+
-          ggplot2::geom_ribbon( ggplot2::aes(ymin=mean-ste, ymax=mean+ste, fill=colors), alpha = 0.3,colour=NA)+
+        {if(!is.null(shapeBy))  ggplot2::geom_ribbon( ggplot2::aes(ymin=mean-ste, ymax=mean+ste,group=interaction(colors, shapes), fill=colors), alpha = 0.3,colour=NA) else 
+          ggplot2::geom_ribbon( ggplot2::aes(ymin=mean-ste, ymax=mean+ste, fill=colors), alpha = 0.3,colour=NA)}+
           ggplot2::xlab("alpha")  +
           ggplot2::ylab("Renyi's Entropy") +
           {if(length(facetBy)==1)list(ggplot2::facet_grid(~facet1))} +

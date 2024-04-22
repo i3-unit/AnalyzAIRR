@@ -730,8 +730,8 @@ plotColors<- function(x){
   }
   
   len<- sum(apply(mData(x)[,names[-1]], 2, dplyr::n_distinct))
-  if(len>70) stop ("A maximum of 74 colors can be assigned. 
-                    The number of different subgroups is higher than 74.")
+  if(len>70) stop ("A maximum of 70 colors can be assigned. 
+                    The number of different subgroups is higher than 70.")
   
   for (i in unique(names)[-1]) {
     l <- length(unique(mData(x)[, i]))
