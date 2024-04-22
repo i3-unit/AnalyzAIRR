@@ -6,7 +6,7 @@
 \usage{
 plotDiffExp(
   x,
-  level = c("clone", "clonotype", "V", "J", "VJ", "CDR3nt", "CDR3aa"),
+  level = c("aaClone", "ntClone", "V", "J", "VJ", "ntCDR3", "aaCDR3"),
   group = c("cell_subset", "amTreg", "nTreg"),
   FC.TH = 2,
   PV.TH = 0.05,
@@ -16,7 +16,7 @@ plotDiffExp(
 \arguments{
 \item{x}{an object of class  \code{\linkS4class{RepSeqExperiment}}}
 
-\item{level}{a character specifying the level of the repertoire on which the diversity should be estimated. Should be one of "clone","clonotype", "V", "J", "VJ", "CDR3nt" or "CDR3aa".}
+\item{level}{a character specifying the level of the repertoire on which the diversity should be estimated. Should be one of "aaClone","ntClone", "V", "J", "VJ", "ntCDR3" or "aaCDR3".}
 
 \item{group}{a vector of character indicating the column name in the mData slot, as well as the two groups to be compared.}
 
@@ -32,6 +32,7 @@ This function plots differentially expressed repertoire levels calculated using 
 \examples{
 
 data(RepSeqData)
+
 plotDiffExp(x = RepSeqData,
             level = "V",
             group = c("cell_subset", "amTreg", "nTreg"),

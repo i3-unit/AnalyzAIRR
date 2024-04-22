@@ -32,7 +32,7 @@ data(RepSeqData)
 
 snames <- rownames(mData(RepSeqData))
 
-plotSpectratypingV(x = RepSeqData, sampleName = snames[1], scale = "count",prop=0.05)
+plotSpectratypingV(x = RepSeqData, sampleName = snames[1], scale = "count", prop=0.05)
 
 plotSpectratypingV(x = RepSeqData, sampleName = snames[1], scale = "frequency")
 

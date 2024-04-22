@@ -20,7 +20,7 @@ This function allows to get the type of a file
 }
 \examples{
 
-l <- list.files(system.file(file.path('extdata/mixcr'),
+l <- list.files(system.file(file.path('extdata/MiAIRR'),
                      package = 'AnalyzAIRR'),
                      full.names = TRUE)
 path <- l[1]

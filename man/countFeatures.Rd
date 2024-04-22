@@ -6,7 +6,7 @@
 \usage{
 countFeatures(
   x,
-  level = c("clone", "V", "J", "VJ", "CDR3aa", "clonotype", "CDR3nt"),
+  level = c("V", "J", "VJ", "ntCDR3", "aaCDR3", "ntClone", "aaClone"),
   scale = c("count", "frequency"),
   group = NULL
 )
@@ -14,18 +14,29 @@ countFeatures(
 \arguments{
 \item{x}{an object of class \code{\linkS4class{RepSeqExperiment}}}
 
-\item{level}{a character specifying the repertoire level to be analyzed. Should be one of "clone","clonotype","CDR3aa","CDR3nt","V", "J",or "VJ".}
+\item{level}{a character specifying the repertoire level to be analyzed.
+Should be one of "aaClone","ntClone","aaCDR3","ntCDR3","V", "J",or "VJ".}
 
-\item{scale}{a character specifying the type of occurrence to return: "count" or "frequency".}
+\item{scale}{a character specifying the type of occurrence to return:
+"count" or "frequency".}
 
-\item{group}{a vector of character indicating the group column name in mData and one experimental group within this column. Samples belonging to the chosen experimental group will be analyzed. The column must be of class factor. Default is NULL, values are calculated in all the samples within the dataset.}
+\item{group}{a vector of character indicating the group column name in
+mData and one experimental group within this column. Samples belonging to
+the chosen group will be analyzed. The column must be of class factor.
+Default is NULL, values are calculated in all the samples within the dataset.}
 }
 \value{
-a data.table summarizing the count or frequency of the analyzed level. In this table, rows correspond to the repertoire level, and columns correspond to the sample_ids.
+a data.table summarizing the count or frequency of the analyzed
+level. In this table, rows correspond to the repertoire level, and columns
+correspond to the sample_ids.
 }
 \description{
-This function calculates the occurrence of a selected repertoire level and returns the calculated values for all the samples within a RepSeqExperiment object.
-It takes into account the weight of the studied level, i.e. the number of sequences expressing a certain gene segment, or the count of a sequence in a sample.
+This function calculates the occurrence of a selected
+repertoire level and returns the calculated values for all the samples
+within a RepSeqExperiment object.
+It takes into account the weight of the studied level, i.e. the number of
+sequences expressing a certain gene segment, or the count of a sequence in
+a sample.
 }
 \examples{
 
@@ -39,7 +50,6 @@ level_statistics <- countFeatures(x = RepSeqData,
                                   level = "J",
                                   group=c("sex", "F"),
                                   scale="count")
-
 
 
 }

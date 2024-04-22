@@ -6,7 +6,7 @@
 \usage{
 filterSequence(
   x,
-  level = c("clone", "clonotype", "CDR3aa", "CDR3nt"),
+  level = c("aaClone", "ntClone", "aaCDR3", "ntCDR3"),
   name,
   group = NULL
 )
@@ -14,24 +14,28 @@ filterSequence(
 \arguments{
 \item{x}{an object of class \code{\linkS4class{RepSeqExperiment}}}
 
-\item{level}{a character specifying the level of the repertoire to be taken into account. Should be one of "clone","clonotype", "CDR3nt" or "CDR3aa".}
+\item{level}{a character specifying the level of the repertoire to be taken
+into account. Should be one of "aaClone","ntClone", "ntCDR3" or "aaCDR3".}
 
-\item{name}{a vector of character specifying the name(s) of the sequence(s) to filter out from the RepSeqExperiment object.}
+\item{name}{a vector of character specifying the name(s) of the sequence(s)
+to filter out from the RepSeqExperiment object.}
 
-\item{group}{a vector of character indicating the group column name in the mData slot and one experimental group within this column.}
+\item{group}{a vector of character indicating the group column name in the
+mData slot and one experimental group within this column.}
 }
 \value{
 a RepSeqExperiment object.
 }
 \description{
-This function allows the dropping of one or several sequences from a RepSeqExperiment object in all samples or a specified group of samples.
+This function allows to drop of one or several sequences from a
+RepSeqExperiment object in all samples or a specified group of samples.
 }
 \examples{
 
 data(RepSeqData)
 
 RepSeqData<- filterSequence(x = RepSeqData,
-                            level="clone",
+                            level="aaClone",
                             name="TRAV11 CVVGDRGSALGRLHF TRAJ18",
                             group=c("cell_subset","Teff"))
 

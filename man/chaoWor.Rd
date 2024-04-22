@@ -7,7 +7,7 @@
 chaoWor(x)
 }
 \arguments{
-\item{x}{a vector of count. Can be the list clonotype counts within a given sample.}
+\item{x}{a vector of count. Can be a list clone counts within a given sample.}
 }
 \value{
 the computed Chao1 value
@@ -16,7 +16,8 @@ the computed Chao1 value
 calculate the adjusted Chao1 index
 }
 \details{
-function computes the adjusted Chao1 index for sampling without replacement
+function computes the adjusted Chao1 index for sampling without
+replacement
 }
 \examples{
 set.seed(1234)

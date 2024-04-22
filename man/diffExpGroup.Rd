@@ -7,7 +7,7 @@
 diffExpGroup(
   x,
   colGrp,
-  level = c("clone", "clonotype", "V", "J", "VJ", "CDR3nt", "CDR3aa"),
+  level = c("aaClone", "ntClone", "V", "J", "VJ", "ntCDR3", "aaCDR3"),
   group
 )
 }
@@ -16,7 +16,7 @@ diffExpGroup(
 
 \item{colGrp}{a vector of character specifying the column names in the mData slot corresponding to the experimental condition to be analyzed.}
 
-\item{level}{a character specifying the level of the repertoire to be compared. Should be one of "clone","clonotype", "V", "J", "VJ", "CDR3nt" or "CDR3aa".}
+\item{level}{a character specifying the level of the repertoire to be compared. Should be one of "aaClone","ntClone", "V", "J", "VJ", "ntCDR3" or "aaCDR3".}
 
 \item{group}{a vector of character indicating the column name in the mData slot, as well as the two groups to be compared.}
 }
@@ -28,7 +28,7 @@ The table is ordered by adjusted p-values.
 This function identifies differentially expressed repertoire levels between groups of samples.
 }
 \details{
-This function uses the DESeq2 package: https://www.rdocumentation.org/packages/DESeq2/versions/1.12.3/topics/DESeq
+This function uses the \href{https://www.rdocumentation.org/packages/DESeq2/versions/1.12.3/topics/DESeq}{DESeq2} package.
 Briefly, it estimates the size factors using the poscounts method which deals with zero counts.
 It then performs a default analysis by estimating the dispersion using a local regression of log dispersions over log base mean.
 Finally, a generalized linear model is fitted using a Negative Binomial distribution and Wald statistics.

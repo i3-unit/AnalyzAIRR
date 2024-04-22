@@ -1,6 +1,6 @@
 # without this, there is a warning during check
 # data.table variables
-utils::globalVariables(c("J", ".", "clone", "sample_id", "V", "J", "VJ","clonotype_id","cell_barcode" ,"..cols", "..n.."))
+utils::globalVariables(c("J", ".", "aaClone", "sample_id", "V", "J", "VJ","clonotype_id","cell_barcode" ,"..cols", "..n.."))
 
 #------------------------------------------------------------------
 # Define the class
@@ -13,9 +13,9 @@ utils::globalVariables(c("J", ".", "clone", "sample_id", "V", "J", "VJ","clonoty
 #'
 #'  - sample_id: sample names
 #'  
-#'  - CDR3nt: CDR3 nucleotide sequence
+#'  - ntCDR3: nucleotide CDR3 sequence
 #'
-#'  - CDR3aa: CDR3 amino acid sequence
+#'  - aaCDR3: amino acid CDR3 sequence
 #'  
 #'  - V: Variable gene name
 #'
@@ -23,11 +23,11 @@ utils::globalVariables(c("J", ".", "clone", "sample_id", "V", "J", "VJ","clonoty
 #'  
 #'  - VJ: V-J gene combination
 #'
-#'  - clone: Full sequence including the V gene, the CDR3 amino acid sequence and the J gene
+#'  - aaClone: Full sequence including the V gene, the CDR3 amino acid sequence and the J gene
 #'  
-#'  - clonotype: Full sequence including the CDR3 nucleotide sequence, the V gene, the CDR3 amino acid sequence and the J gene
+#'  - ntClone: Full sequence including the the V gene, CDR3 nucleotide sequence and the J gene
 #'
-#'  - count: the occurrence of the clonotype, i.e the clone sequence
+#'  - count: the occurrence of the clone sequence
 #'
 #' @slot metaData a data frame containing sample information specified during the building of the \code{\linkS4class{RepSeqExperiment}} object. Each row represents a sample, and columns the possible information or group that can be attributed to the samples such as the cell population, the donor's age, sex, etc...
 #' @slot otherData a list of data frames containing sequences that were filtered out from the RepSeqExperiment object in case filtering functions were applied.
@@ -254,10 +254,10 @@ function(object) {
     sNames <- unique(cts, by = "sample_id")$sample_id
     V <- sort(unique(cts, by = "V")$V)
     J <- sort(unique(cts, by = "J")$J)
-    m <- cts[, .(n = uniqueN(sample_id), V = uniqueN(V), J = uniqueN(J), s = uniqueN(clonotype), VJ = uniqueN(VJ))]
+    m <- cts[, .(n = uniqueN(sample_id), V = uniqueN(V), J = uniqueN(J), s = uniqueN(ntClone), VJ = uniqueN(VJ))]
 	cat("An object of class \"", class(object), "\"\n", sep="")
 	    cat("Sample_ids              :", m$n,"\n")
-	cat("Number of unique clonotypes :", m$s, "\n")
+	cat("Number of unique clones :", m$s, "\n")
     cat("Number of V genes           :", m$V,  "\n")
 	cat("Number of J genes           :", m$J, "\n")
 })
@@ -315,7 +315,7 @@ setValidity("RepSeqExperiment", function(object) {
 #' Wrapper functions
 #'
 #' \code{[]} Extract parts of the \code{\linkS4class{RepSeqExperiment}} object
-#' @param i indice(s) of clonotype(s) to extract
+#' @param i indice(s) of clone(s) to extract
 #' @param j indice(s) of sample(s) to extract
 #' @param drop If \code{TRUE} the result is coerced to the lowest possible dimension
 #' @return an object of class [\code{\linkS4class{RepSeqExperiment}}]

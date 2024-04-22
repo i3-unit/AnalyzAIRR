@@ -1,17 +1,31 @@
-utils::globalVariables(c("J", ".", "..sNames", "sdata", "metaData", ".SD", ".SDcols", "key", ".N", "count", "..keep.cols", "sampleNames", "CDR3aa.length", "CDR3aa", "CDR3nt","pct", "ctrl.mean", "ID","prop", "nSequences", "clonotype", "ranks"))
+utils::globalVariables(c("J", ".", "..sNames", "sdata", "metaData", ".SD", 
+                        ".SDcols", "key", ".N", "count", "..keep.cols","ntCDR3",
+                        "sampleNames", "aaCDR3.length", "aaCDR3", "ntClone",
+                        "pct", "ctrl.mean", "ID","prop", "nSequences", "ranks"))
 
 
 #' @title Computing the occurrence of any repertoire level
 #'
-#' @description  This function calculates the occurrence of a selected repertoire level and returns the calculated values for all the samples within a RepSeqExperiment object.
-#' It takes into account the weight of the studied level, i.e. the number of sequences expressing a certain gene segment, or the count of a sequence in a sample.
+#' @description  This function calculates the occurrence of a selected
+#' repertoire level and returns the calculated values for all the samples
+#' within a RepSeqExperiment object.
+#' It takes into account the weight of the studied level, i.e. the number of
+#' sequences expressing a certain gene segment, or the count of a sequence in
+#' a sample.
 #'
 #' @param x an object of class \code{\linkS4class{RepSeqExperiment}}
-#' @param level a character specifying the repertoire level to be analyzed. Should be one of "clone","clonotype","CDR3aa","CDR3nt","V", "J",or "VJ".
-#' @param scale a character specifying the type of occurrence to return: "count" or "frequency".
-#' @param group a vector of character indicating the group column name in mData and one experimental group within this column. Samples belonging to the chosen experimental group will be analyzed. The column must be of class factor. Default is NULL, values are calculated in all the samples within the dataset.
+#' @param level a character specifying the repertoire level to be analyzed.
+#' Should be one of "aaClone","ntClone","aaCDR3","ntCDR3","V", "J",or "VJ".
+#' @param scale a character specifying the type of occurrence to return:
+#' "count" or "frequency".
+#' @param group a vector of character indicating the group column name in
+#' mData and one experimental group within this column. Samples belonging to
+#' the chosen group will be analyzed. The column must be of class factor.
+#' Default is NULL, values are calculated in all the samples within the dataset.
 #'
-#' @return a data.table summarizing the count or frequency of the analyzed level. In this table, rows correspond to the repertoire level, and columns correspond to the sample_ids.
+#' @return a data.table summarizing the count or frequency of the analyzed
+#' level. In this table, rows correspond to the repertoire level, and columns
+#' correspond to the sample_ids.
 #' @export
 #' @examples
 #'
@@ -27,43 +41,44 @@ utils::globalVariables(c("J", ".", "..sNames", "sdata", "metaData", ".SD", ".SDc
 #'                                   scale="count")
 #'
 #'
-#'
 countFeatures <- function(x,
-                          level=c("clone", "V", "J", "VJ", "CDR3aa", "clonotype","CDR3nt"),
-                          scale=c("count","frequency"), group=NULL) {
-    if (missing(x)) stop("x is missing.")
-    if (!is.RepSeqExperiment(x)) stop("An object of class RepSeqExperiment is expected.")
-    levelChoice <- match.arg(level)
-    cts <- data.table::copy(assay(x))
-    scl <- match.arg(scale)
-    metaData <- mData(x)
-    if (!is.null(group)) {
-      grp <- metaData[, group[1]]
-      grp.name <- group[2]
-      sampleNames <- rownames(metaData[grp %in% grp.name, ])
-      cts <- cts[sampleNames, on = "sample_id"]
-    }
-    if (scl=="count"){
-    out <- data.table::dcast(cts, as.formula(paste0(levelChoice, "~ sample_id")), value.var="count", fun=sum)
-    } else {
+                          level = c("V", "J", "VJ",
+                                    "ntCDR3", "aaCDR3", "ntClone", "aaClone"),
+                          scale = c("count", "frequency"), group = NULL) {
+  if (missing(x)) stop("x is missing.")
+  if (!is.RepSeqExperiment(x)) stop("An object of class RepSeqExperiment 
+                                      is expected.")
+  levelChoice <- match.arg(level)
+  cts <- data.table::copy(assay(x))
+  scl <- match.arg(scale)
+  metaData <- mData(x)
+  if (!is.null(group)) {
+    grp <- metaData[, group[1]]
+    grp.name <- group[2]
+    sampleNames <- rownames(metaData[grp %in% grp.name, ])
+    cts <- cts[sampleNames, on = "sample_id"]
+  }
+  if (scl == "count"){
+    out <- data.table::dcast(cts, as.formula(paste0(levelChoice,"~ sample_id")), value.var="count", fun=sum)
+  } else {
     cts <- cts[, .(count = sum(count)), by=c("sample_id", levelChoice)][, prop := count/sum(count), by = "sample_id"]
     out <- data.table::dcast(cts, as.formula(paste0(levelChoice, "~sample_id")), value.var = "prop", fill = 0)
-    }
+  }
     return(out)
 }
 
-# @title Gene and clonotype usage
+# @title Gene and clone usage
 #
-# @description compute gene segment or clonotype usage
+# @description compute gene segment or clone usage
 #
-# @details function computes segment or clonotype frequency in each sample. The function takes into account the occurence of the analyzed level.
+# @details function computes segment or clone frequency in each sample. The function takes into account the occurence of the analyzed level.
 #
 # @param x an object of class \code{\linkS4class{RepSeqExperiment}}
-# @param level character, the level of the repertoire to estimate. Should be one of "clone", "CDR3aa","V", "J" or "VJ"
+# @param level character, the level of the repertoire to estimate. Should be one of "aaClone", "aaCDR3","V", "J" or "VJ"
 # @return a data.table
 
 
-# segmentUsage <- function(x, level=c("clone", "V", "J", "VJ","CDR3aa")) {
+# segmentUsage <- function(x, level=c("aaClone", "V", "J", "VJ","aaCDR3")) {
 #     if (missing(x)) stop("x is missing.")
 #     if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected.")
 #     levelChoice <- match.arg(level)
@@ -75,13 +90,24 @@ countFeatures <- function(x,
 
 #' @title Filtering based on sequence count
 #'
-#' @description This function filters out, in each sample, sequences having a count equal to or below a specified threshold.
-#' It can be applied on all the samples within a RepSeqExperiment object, or a group of samples belonging to a specific experimental group.
+#' @description This function filters out, in each sample, sequences having a
+#' count equal to or below a specified threshold. It can be applied on all the
+#' samples within a RepSeqExperiment object, or a group of samples belonging to
+#' a specific experimental group.
 #'
 #' @param x an object of class \code{\linkS4class{RepSeqExperiment}}
-#' @param level a character specifying the type of sequences on which the filtering will be applied. Should be one of "clone","clonotype","CDR3aa" or "CDR3nt". For instance, for level="CDR3aa", counts will first be recalculated based on this column. Then, CDR3aa sequences with counts equal or below the n threshold will be excluded.
-#' @param n an integer specifying the count threshold below which sequences will be filtered out. For instance, for n=2, sequences with a count of 1 and 2 will be filtered out.
-#' @param group a vector of character indicating the group column name in mData and one experimental group within this column. Samples belonging to the chosen experimental group will be analyzed. The column must be of class factor. Default is NULL, values are calculated in all the samples within the dataset.
+#' @param level a character specifying the type of sequences on which the
+#' filtering will be applied. Should be one of "aaClone","ntClone","aaCDR3" or
+#' "ntCDR3". For instance, for level="aaCDR3", counts will first be recalculated
+#' based on this column. Then, aaCDR3 sequences with counts equal or below the
+#' n threshold will be excluded.
+#' @param n an integer specifying the count threshold below which sequences will
+#' be filtered out. For instance, for n=2, sequences with a count of 1 and 2
+#' are filtered out.
+#' @param group a vector of character indicating the group column name in mData
+#' and one experimental group within this column. Samples belonging to the
+#' chosen group will be analyzed. The column must be of class factor. Default
+#' is NULL, values are calculated in all the samples within the dataset.
 
 #' @return an object of class \code{RepSeqExperiment}
 #' @export
@@ -89,15 +115,21 @@ countFeatures <- function(x,
 #'
 #' data(RepSeqData)
 #'
-#' filterdata <- filterCount(x=RepSeqData, n=1, level = "clone", group=c("cell_subset", "amTreg"))
+#' filterdata <- filterCount(x = RepSeqData,
+#'                           n = 1,
+#'                           level = "aaClone",
+#'                           group = c("cell_subset", "amTreg"))
 #'
-#' filterdata <- filterCount(x=RepSeqData, n=1, level = "clonotype", group=NULL)
+#' filterdata <- filterCount(x=RepSeqData,
+#'                           n = 1,
+#'                           level = "ntClone",
+#'                           group = NULL)
 #'
-filterCount <- function(x, level=c("clone","clonotype","CDR3aa","CDR3nt"), n=1, group=NULL) {
+filterCount <- function(x, level=c("aaClone","ntClone","aaCDR3","ntCDR3"), n=1, group=NULL) {
     V1 <- NULL
     if (missing(x)) stop("x is missing.")
     if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected.")
-    if (class(n)!= "numeric") stop("n should be an integer")
+    if (!is(n, 'numeric')) stop("n should be an integer")
     levelChoice <- match.arg(level)
     cts <- data.table::copy(assay(x))
     metaData <- mData(x)
@@ -120,9 +152,9 @@ filterCount <- function(x, level=c("clone","clonotype","CDR3aa","CDR3nt"), n=1, 
 
     nfilter <- nrow(cts) - nrow(res)
 
-    stats <- data.frame(res[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols = c("CDR3nt", "CDR3aa", "V", "J", "VJ","clone","clonotype"), by = "sample_id"], row.names = 1)
+    stats <- data.frame(res[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols = c("V", "J", "VJ", "ntCDR3", "aaCDR3", "ntClone", "aaClone"), by = "sample_id"], row.names = 1)
     metaData<- metaData %>%
-      dplyr::select(-c(nSequences,CDR3nt,CDR3aa,V,J,VJ,clone,clonotype))
+      dplyr::select(-c(nSequences,ntCDR3,aaCDR3,V,J,VJ,aaClone,ntClone))
     sdata <- data.frame(base::merge(metaData, stats, by = 0, sort = FALSE),
                         row.names=1,  stringsAsFactors = TRUE)
     
@@ -145,20 +177,26 @@ filterCount <- function(x, level=c("clone","clonotype","CDR3aa","CDR3nt"), n=1, 
 
 #' @title Extract private sequences
 #'
-#' @description This function extract private sequences within the whole dataset, i.e. sequences found exclusively in one sample.
+#' @description This function extract private sequences from the whole dataset,
+#'  i.e. sequences found exclusively in one sample.
 #'
 #' @param x an object of class \code{\linkS4class{RepSeqExperiment}}
-#' @param level a character specifying the level of the repertoire to be taken into account. Should be one of clone","clonotype", "CDR3nt" or "CDR3aa".
-#' @param singletons a boolean indicating whether or not private sequences with a count of 1 should be extracted. Default is FALSE.
-#' @return an object of class \code{\linkS4class{RepSeqExperiment}} composed exclusively of private sequences.
+#' @param level a character specifying the level of the repertoire to be taken
+#' into account. Should be one of aaClone","ntClone", "ntCDR3" or "aaCDR3".
+#' @param singletons a boolean indicating whether or not private sequences with
+#' a count of 1 should be extracted. Default is FALSE.
+#' @return an object of class \code{\linkS4class{RepSeqExperiment}} composed
+#' exclusively of private sequences.
 #' @export
 #' @examples
 #'
 #' data(RepSeqData)
 #'
-#' privateclonotypes <- getPrivate(RepSeqData, level = "clonotype", singletons = FALSE)
+#' privateclones <- getPrivate(RepSeqData,
+#'                             level = "ntClone",
+#'                             singletons = FALSE)
 #'
-getPrivate <- function(x,  level=c("clone","clonotype","CDR3aa","CDR3nt"), singletons=FALSE) {
+getPrivate <- function(x,  level=c("ntCDR3", "aaCDR3", "ntClone", "aaClone"), singletons=FALSE) {
     V1 <- NULL
     if (missing(x)) stop("x is missing.")
     if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected.")
@@ -175,9 +213,9 @@ getPrivate <- function(x,  level=c("clone","clonotype","CDR3aa","CDR3nt"), singl
     setkey(res, sample_id)
     nfilter <- nrow(cts) - nrow(res)
 
-    stats <- data.frame(res[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols = c("CDR3nt", "CDR3aa", "V", "J", "VJ","clone","clonotype"), by = "sample_id"], row.names = 1)
+    stats <- data.frame(res[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols = c("V", "J", "VJ", "ntCDR3", "aaCDR3", "ntClone", "aaClone"), by = "sample_id"], row.names = 1)
     metaData<- metaData %>%
-      dplyr::select(-c(nSequences,CDR3nt,CDR3aa,V,J,VJ,clone,clonotype))
+      dplyr::select(-c(nSequences,ntCDR3,aaCDR3,V,J,VJ,aaClone,ntClone))
     sdata <- data.frame(base::merge(metaData, stats, by = 0, sort = FALSE),
                         row.names=1,  stringsAsFactors = TRUE)
     sdata <- sdata[match(rownames(metaData), rownames(stats)), ]
@@ -196,32 +234,37 @@ getPrivate <- function(x,  level=c("clone","clonotype","CDR3aa","CDR3nt"), singl
 
 #' @title Extract public sequences
 #'
-#' @description This function allows to subset a RepSeqExperiment object in order to keep sequences that are shared by at least two samples:
+#' @description This function allows to subset a RepSeqExperiment object in
+#' order to keep sequences that are shared by at least two samples:
 #'
 #' - belonging to a specified group
 #'
 #' - within the whole dataset
 #'
 #' @param x an object of class \code{\linkS4class{RepSeqExperiment}}
-#' @param level a character specifying the level of the repertoire to be taken into account. Should be one of "clone","clonotype", "CDR3nt" or "CDR3aa".
-#' @param group a vector of character indicating the group column name in the mData slot and one experimental group within this column.
+#' @param level a character specifying the level of the repertoire to be taken
+#' into account. Should be one of "aaClone","ntClone", "ntCDR3" or "aaCDR3".
+#' @param group a vector of character indicating the group column name in the
+#' mData slot and one experimental group within this column.
 #'
-#' Samples belonging to the chosen experimental group will be analyzed. The column must be of class factor.
+#' Samples belonging to the chosen experimental group will be analyzed.
+#' The column must be of class factor.
 #'
 #' Default is NULL, the analysis is performed on the whole dataset.
 #'
 #'
-#' @return an object of class \code{\linkS4class{RepSeqExperiment}} composed exclusively of shared sequences between the specified samples.
+#' @return an object of class \code{\linkS4class{RepSeqExperiment}} composed
+#' exclusively of shared sequences between the specified samples.
 #' @export
 #' @examples
 #'
 #' data(RepSeqData)
 #'
 #' publicSeq <- getPublic(x = RepSeqData,
-#'                              level = "clone",
+#'                              level = "aaClone",
 #'                              group = c("cell_subset", "amTreg"))
 #'
-getPublic <- function(x, level=c("clone","clonotype","CDR3aa","CDR3nt"),
+getPublic <- function(x, level=c("ntCDR3", "aaCDR3", "ntClone", "aaClone"),
                         group = NULL) {
   V1 <- NULL
   if (missing(x)) stop("x is missing.")
@@ -245,9 +288,9 @@ getPublic <- function(x, level=c("clone","clonotype","CDR3aa","CDR3nt"),
   setkey(res, sample_id)
   rm(cts, keep)
 
-  stats <- data.frame(res[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols = c("CDR3nt", "CDR3aa", "V", "J", "VJ","clone","clonotype"), by = "sample_id"], row.names = 1)
+  stats <- data.frame(res[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols = c("V", "J", "VJ", "ntCDR3", "aaCDR3", "ntClone", "aaClone"), by = "sample_id"], row.names = 1)
   metaData<- metaData %>%
-    dplyr::select(-c(nSequences,CDR3nt,CDR3aa,V,J,VJ,clone,clonotype))
+    dplyr::select(-c(nSequences,ntCDR3,aaCDR3,V,J,VJ,aaClone,ntClone))
   sdata <- data.frame(base::merge(metaData, stats, by = 0, sort = FALSE),
                       row.names=1,  stringsAsFactors = TRUE)
   sdata <- sdata[match(rownames(sdata), rownames(stats)), ]
@@ -264,23 +307,27 @@ getPublic <- function(x, level=c("clone","clonotype","CDR3aa","CDR3nt"),
 
 #' @title Extract the most frequent sequences
 #'
-#' @description This function extracts the top n sequences within all samples or a group of samples.
+#' @description This function extracts the top n sequences within all samples
+#' or a group of samples.
 #'
 #' @param x an object of class \code{\linkS4class{RepSeqExperiment}}
-#' @param level a character specifying the level of the repertoire to be taken into account. Should be one of clone","clonotype", "CDR3nt" or "CDR3aa".
-#' @param prop a numeric between 0 and 1 indicating the proportion of top sequences to extract.
-#' @param group character, column name in sData. Must be of class factor. Default is NULL, the threshold is calculated across all the samples within the dataset.
+#' @param level a character specifying the level of the repertoire to be taken
+#' into account. Should be one of aaClone","ntClone", "ntCDR3" or "aaCDR3".
+#' @param prop a numeric between 0 and 1 indicating the proportion of top
+#' sequences to extract.
+#' @param group character, column name in mData indicating the group on which
+#' the extraction will be applied. Must be of class factor. Default is NULL.
 #' @return an object of class \code{\linkS4class{RepSeqExperiment}}
 #' @export
 #' @examples
 #'
 #' data(RepSeqData)
 #' topClones <- getTopSequences(x = RepSeqData,
-#'                           level = "clone",
+#'                           level = "aaClone",
 #'                           group = c("cell_subset", "amTreg"), prop = 0.1)
 #'
 #'
-getTopSequences <- function(x, level=c("clone","clonotype","CDR3aa","CDR3nt"),
+getTopSequences <- function(x, level=c("aaClone","ntClone","aaCDR3","ntCDR3"),
                          group = NULL, prop=0.01) {
   V1 <- NULL
   if (missing(x)) stop("x is missing.")
@@ -306,8 +353,8 @@ getTopSequences <- function(x, level=c("clone","clonotype","CDR3aa","CDR3nt"),
   rm(cts, keep)
 
   sdata <- sdata[sdata$sample_id %in% unique(res$sample_id), ]
-  stats <- data.frame(res[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols = c("clone", "V", "J", "VJ", "CDR3aa"), by = "sample_id"], row.names = 1)
-  sdata <- setDT(sdata)[, c("nSequences" ,"clone" , "V" ,"J" ,"VJ","CDR3aa" ) := NULL]
+  stats <- data.frame(res[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols = c("aaClone", "V", "J", "VJ", "aaCDR3"), by = "sample_id"], row.names = 1)
+  sdata <- setDT(sdata)[, c("nSequences" ,"aaClone" , "V" ,"J" ,"VJ","aaCDR3" ) := NULL]
   sdata<- data.frame(sdata,row.names =sdata$sample_id )
   sdata <- data.frame(base::merge(sdata, stats, by = 0, sort=FALSE), row.names = 1, stringsAsFactors = TRUE)
   sdata <- sdata[match(rownames(sdata), rownames(stats)),]
@@ -335,7 +382,7 @@ getTopSequences <- function(x, level=c("clone","clonotype","CDR3aa","CDR3nt"),
 #' @keywords internal
 #' @examples
 #'
-#' l <- list.files(system.file(file.path('extdata/mixcr'),
+#' l <- list.files(system.file(file.path('extdata/MiAIRR'),
 #'                      package = 'AnalyzAIRR'),
 #'                      full.names = TRUE)
 #' path <- l[1]
@@ -353,17 +400,19 @@ filetype <- function(path) {
 
 #' @title Merge RepSeqExperiment objects
 #'
-#' @description This function allows the merging of two RepSeqExperiement objects.
+#' @description This function allows to merge of two RepSeqExperiement objects.
 #'
-#' The two objects must however contain completely different sample_ids, as duplicates are not supported.
+#' The two objects must however contain unique and different sample_ids.
 #'
-#' This function can be useful in case users wish to analyze alignment files from different formats, or biological/technical replicates.
+#' This function can be useful in case users wish to analyze alignment files
+#' from different formats, or biological/technical replicates.
 #' @param a the first  \code{\linkS4class{RepSeqExperiment}} object.
 #' @param b the second  \code{\linkS4class{RepSeqExperiment}} object.
-#' @return a  \code{\linkS4class{RepSeqExperiment}} object containing all information from the two merged objects.
+#' @return a  \code{\linkS4class{RepSeqExperiment}} object containing all
+#' information from the two merged objects.
 #' @export
 #' @examples
-#' l <- list.files(system.file(file.path('extdata/mixcr'),
+#' l <- list.files(system.file(file.path('extdata/MiAIRR'),
 #'                      package = 'AnalyzAIRR'),
 #'                      full.names = TRUE)
 #'
@@ -371,10 +420,10 @@ filetype <- function(path) {
 #'                          package='AnalyzAIRR'),
 #'                          sep = "\t",
 #'                          row.names = 1, header = TRUE)
-#'                          
+#'
 #' dataset1 <- readAIRRSet(fileList = l[c(1:3)],
 #'                        cores=1L,
-#'                        fileFormat = "MiXCR",
+#'                        fileFormat = "MiAIRR",
 #'                        chain = "TRA",
 #'                        sampleinfo = metaData[1:3,],
 #'                        filter.singletons = FALSE,
@@ -383,7 +432,7 @@ filetype <- function(path) {
 #'
 #' dataset2 <- readAIRRSet(fileList = l[c(4:8)],
 #'                        cores=1L,
-#'                        fileFormat = "MiXCR",
+#'                        fileFormat = "MiAIRR",
 #'                        chain = "TRA",
 #'                        sampleinfo = metaData[4:8,],
 #'                        filter.singletons = FALSE,
@@ -420,10 +469,12 @@ mergeRepSeq <- function(a, b) {
 
 #' @title Exclude repertoires from a RepSeqExperiment object.
 #'
-#' @description This function allows the dropping of one or several samples from a RepSeqExperiment object by specifying their corresponding sample ids.
+#' @description This function allows the dropping of one or several samples
+#' from a RepSeqExperiment object by specifying their corresponding sample ids.
 #'
 #' @param x an object of class \code{\linkS4class{RepSeqExperiment}}
-#' @param sampleNames a vector of character with the sample_ids of the repertoires to drop from the RepSeqExperiment object.
+#' @param sampleNames a vector of character with the sample_ids of the
+#' repertoires to drop from the RepSeqExperiment object.
 #' @return a RepSeqExperiment object.
 #' @export
 #' @examples
@@ -431,7 +482,7 @@ mergeRepSeq <- function(a, b) {
 #' data(RepSeqData)
 #'
 #' dropRepSeqData<- dropSamples(x = RepSeqData,
-#'             sampleNames=c("tripod-30-813", "tripod-30-815"))
+#'                              sampleNames=c("tripod-30-813", "tripod-30-815"))
 #'
 dropSamples <- function(x, sampleNames) {
     if (missing(x)) stop("A RepSeqExperiment object is required.")
@@ -463,12 +514,16 @@ dropSamples <- function(x, sampleNames) {
 
 #' @title Exclude a sequence from a RepSeqExperiment object.
 #'
-#' @description This function allows the dropping of one or several sequences from a RepSeqExperiment object in all samples or a specified group of samples.
+#' @description This function allows to drop of one or several sequences from a
+#' RepSeqExperiment object in all samples or a specified group of samples.
 #'
 #' @param x an object of class \code{\linkS4class{RepSeqExperiment}}
-#' @param level a character specifying the level of the repertoire to be taken into account. Should be one of "clone","clonotype", "CDR3nt" or "CDR3aa".
-#' @param name a vector of character specifying the name(s) of the sequence(s) to filter out from the RepSeqExperiment object.
-#' @param group a vector of character indicating the group column name in the mData slot and one experimental group within this column.
+#' @param level a character specifying the level of the repertoire to be taken
+#' into account. Should be one of "aaClone","ntClone", "ntCDR3" or "aaCDR3".
+#' @param name a vector of character specifying the name(s) of the sequence(s)
+#' to filter out from the RepSeqExperiment object.
+#' @param group a vector of character indicating the group column name in the
+#' mData slot and one experimental group within this column.
 #' @return a RepSeqExperiment object.
 #' @export
 #' @examples
@@ -476,11 +531,11 @@ dropSamples <- function(x, sampleNames) {
 #' data(RepSeqData)
 #'
 #' RepSeqData<- filterSequence(x = RepSeqData,
-#'                             level="clone",
+#'                             level="aaClone",
 #'                             name="TRAV11 CVVGDRGSALGRLHF TRAJ18",
 #'                             group=c("cell_subset","Teff"))
 #'
-filterSequence <- function(x, level=c("clone","clonotype","CDR3aa","CDR3nt"), name, group=NULL) {
+filterSequence <- function(x, level=c("aaClone","ntClone","aaCDR3","ntCDR3"), name, group=NULL) {
   V1 <- NULL
   if (missing(x)) stop("x is missing.")
   if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected.")
@@ -509,9 +564,9 @@ filterSequence <- function(x, level=c("clone","clonotype","CDR3aa","CDR3nt"), na
   
   nfilter <- nrow(cts) - nrow(res)
   
-  stats <- data.frame(res[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols = c("CDR3nt", "CDR3aa", "V", "J", "VJ","clone","clonotype"), by = "sample_id"], row.names = 1)
+  stats <- data.frame(res[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols = c("V", "J", "VJ", "ntCDR3", "aaCDR3", "ntClone", "aaClone"), by = "sample_id"], row.names = 1)
   metaData<- metaData %>%
-    dplyr::select(-c(nSequences,CDR3nt,CDR3aa,V,J,VJ,clone,clonotype))
+    dplyr::select(-c(nSequences,ntCDR3,aaCDR3,V,J,VJ,aaClone,ntClone))
   sdata <- data.frame(base::merge(metaData, stats, by = 0, sort = FALSE),
                       row.names=1,  stringsAsFactors = TRUE)
   sdata <- sdata[order(match(rownames(sdata), rownames(stats))), ]
@@ -534,14 +589,17 @@ filterSequence <- function(x, level=c("clone","clonotype","CDR3aa","CDR3nt"), na
 
 #' @title Extract productive sequences
 #'
-#' @description Extract productive sequences from a RepSeqExperiment object by filtering out unproductive ones. Filtered sequences include:
+#' @description Extract productive sequences from a RepSeqExperiment object by
+#' filtering out unproductive ones. Filtered sequences include:
 #'
-#' - out-of-frame sequences: sequences with frame shifts based on the number of nucleotides in the CDR3nt column.
+#' - out-of-frame sequences: sequences with frame shifts based on the number of
+#' nucleotides in the ntCDR3 column.
 #'
-#' - sequences containing stop codons: CDR3aa sequences with a "*" or "~" symbols.
+#' - sequences containing stop codons: aaCDR3s with a "*" or "~" symbols.
 #'
 #' @param x an object of class \code{\linkS4class{RepSeqExperiment}}.
-#' @return a filtered \code{\linkS4class{RepSeqExperiment}} object exclusively containing productive sequences.
+#' @return a filtered \code{\linkS4class{RepSeqExperiment}} object exclusively
+#' containing productive sequences.
 #' @export
 #' @examples
 #'
@@ -549,18 +607,18 @@ filterSequence <- function(x, level=c("clone","clonotype","CDR3aa","CDR3nt"), na
 #' productiveData <- getProductive(x = RepSeqData)
 #'
 getProductive <- function(x) {
-  CDR3nt <- NULL
+  ntCDR3 <- NULL
   metaData <- mData(x)
   if (missing(x)) stop("A RepSeqExperiment object is required.")
   if (!is.RepSeqExperiment(x)) stop("x is not an object of class RepSeqExperiment.")
   cts <- data.table::copy(assay(x))
 
-  indx <- !cts[, nchar(CDR3nt) %% 3 > 0 | grepl("\\*", CDR3aa) | grepl("\\~", CDR3aa)]
+  indx <- !cts[, nchar(ntCDR3) %% 3 > 0 | grepl("\\*", aaCDR3) | grepl("\\~", aaCDR3)]
   res <- cts[indx, ]
 
-  stats <- data.frame(res[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols = c("CDR3nt", "CDR3aa", "V", "J", "VJ","clone","clonotype"), by = "sample_id"], row.names = 1)
+  stats <- data.frame(res[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols =c("V", "J", "VJ", "ntCDR3", "aaCDR3", "ntClone", "aaClone"), by = "sample_id"], row.names = 1)
   metaData<- metaData %>%
-    dplyr::select(-c(nSequences,CDR3nt,CDR3aa,V,J,VJ,clone,clonotype))
+    dplyr::select(-c(nSequences,ntCDR3,aaCDR3,V,J,VJ,aaClone,ntClone))
   sdata <- data.frame(base::merge(metaData, stats, by = 0, sort = FALSE),
                       row.names=1,  stringsAsFactors = TRUE)
   sdata <- sdata[match(rownames(sdata), rownames(stats)), ]
@@ -579,18 +637,21 @@ getProductive <- function(x) {
 
 #' @title Extract unproductive sequences
 #'
-#' @description Extract unproductive sequences from a RepSeqExperiment object, which include:
+#' @description Extract unproductive sequences from a RepSeqExperiment object,
+#' which include:
 #'
-#' - out-of-frame sequences: sequences with frame shifts based on the number of nucleotides in the CDR3nt column
+#' - out-of-frame sequences: sequences with frame shifts based on the number of
+#' nucleotides in the ntCDR3 column
 #'
-#' - sequences containing stop codons: CDR3aa sequences with a "*" or "~" symbols.
+#' - sequences containing stop codons: aaCDR3s with a "*" or "~" symbols.
 #'
 #' @param x an object of class \code{\linkS4class{RepSeqExperiment}}.
-#' @return a filtered \code{\linkS4class{RepSeqExperiment}} object exclusively containing unproductive sequences.
+#' @return a filtered \code{\linkS4class{RepSeqExperiment}} object exclusively
+#' containing unproductive sequences.
 #' @export
 #' @examples
 #' 
-#' \dontrun{
+#' \donttest{
 #' data(RepSeqData)
 #'
 #' unproductiveData <- getUnproductive(x = RepSeqData)
@@ -598,17 +659,17 @@ getProductive <- function(x) {
 #' }
 #' 
 getUnproductive <- function(x) {
-  CDR3nt <- NULL
+  ntCDR3 <- NULL
   if (missing(x)) stop("A RepSeqExperiment object is required.")
   if (!is.RepSeqExperiment(x)) stop("x is not an object of class RepSeqExperiment.")
   cts <- data.table::copy(assay(x))
   metaData <- mData(x)
-  indx <- cts[, nchar(CDR3nt) %% 3 > 0 | grepl("\\*", CDR3aa) | grepl("\\~", CDR3aa) ]
+  indx <- cts[, nchar(ntCDR3) %% 3 > 0 | grepl("\\*", aaCDR3) | grepl("\\~", aaCDR3) ]
   res <- cts[indx, ]
 
-  stats <- data.frame(res[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols = c("CDR3nt", "CDR3aa", "V", "J", "VJ","clone","clonotype"), by = "sample_id"], row.names = 1)
+  stats <- data.frame(res[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols =c("V", "J", "VJ", "ntCDR3", "aaCDR3", "ntClone", "aaClone"), by = "sample_id"], row.names = 1)
   metaData<- metaData %>%
-    dplyr::select(-c(nSequences,CDR3nt,CDR3aa,V,J,VJ,clone,clonotype))
+    dplyr::select(-c(nSequences,ntCDR3,aaCDR3,V,J,VJ,aaClone,ntClone))
   sdata <- data.frame(base::merge(metaData, stats, by = 0, sort = FALSE),
                       row.names=1,  stringsAsFactors = TRUE)
   sdata <- sdata[match(rownames(sdata), rownames(stats)), ]
@@ -628,11 +689,14 @@ getUnproductive <- function(x) {
 
 #' @title Color palette
 #'
-#' @description This function allows an automatic color assigning, chosen from color-blinded friendly palettes, to every sample and experimental group in the metadata.
-#' As such, each sample/group will be assigned the same color in all the visualization functions.
+#' @description This function allows an automatic color assigning, chosen from
+#' color-blinded friendly palettes, to every sample and experimental group in
+#' the metadata.
+#' As such, each sample/group will be assigned the same color in all the
+#' visualization functions.
 #'
 #' @param x an object of class \code{\linkS4class{RepSeqExperiment}}
-#' @return a list of distinct colors assigned to each sample/group in the metadata.
+#' @return a list of distinct colors assigned to each sample/group in the mData.
 #' @export
 #' @examples
 #'
@@ -642,20 +706,16 @@ getUnproductive <- function(x) {
 #'
 
 plotColors<- function(x){
-  # qual_col_pals = RColorBrewer::brewer.pal.info[RColorBrewer::brewer.pal.info$maxcolors  == 8 & RColorBrewer::brewer.pal.info$colorblind == 'TRUE',]
-  # PAIRED = RColorBrewer::brewer.pal(n = 12, name = 'Paired')[c(2,4,6,8,10,12,1,3,5,7,9,11)]
-  # mycolors <- colorRampPalette(RColorBrewer::brewer.pal(12, "Set3"))(as.vector(as.matrix(mData(x)[, unlist(lapply(mData(x), is.factor)), drop = FALSE])) %>% unique() %>% length())
-  # mycolors = as.vector(unlist(mapply(RColorBrewer::brewer.pal, qual_col_pals$maxcolors, rownames(qual_col_pals))))
-  
+
   col_pals = RColorBrewer::brewer.pal.info[RColorBrewer::brewer.pal.info$category  == "qual" ,]
   mycolors = as.vector(unlist(mapply(RColorBrewer::brewer.pal, col_pals$maxcolors, rownames(col_pals))))
   
-  names=as.vector(mData(x)[, unlist(lapply(mData(x), is.factor)), drop = FALSE]) %>% names()
- 
+  names=unique(as.vector(mData(x)[, unlist(lapply(mData(x), is.factor)), drop = FALSE]) %>% names())
+  
   ann_colors<-vector("list")
   l<- length(unique(mData(x)[,names[1]]))
   
-  if(l<74){
+  if(l<=70){
     mycolors_b<- mycolors[seq_len(l)]
     names(mycolors_b) <- unique(mData(x)[,names[1]])
     ann_colors[["sample_id"]]<- mycolors_b
@@ -668,9 +728,10 @@ plotColors<- function(x){
     names(mycolors_b) <-unique(mData(x)[,names[1]])
     ann_colors[["sample_id"]]<- mycolors_b
   }
-
+  
   len<- sum(apply(mData(x)[,names[-1]], 2, dplyr::n_distinct))
-  if(len>74) stop ("A maximum of 74 colors can be assigned. The number of different subgroups is higher than 74.")
+  if(len>70) stop ("A maximum of 74 colors can be assigned. 
+                    The number of different subgroups is higher than 74.")
   
   for (i in unique(names)[-1]) {
     l <- length(unique(mData(x)[, i]))
@@ -706,7 +767,8 @@ ggname <- function(x) {
 #' @title A theme for the visualization plots
 #'
 #' @description A unique plot theme used in all the visualization plots.
-#' As this function is generated using the ggplot2 package, users can easily customize all of the generated plots using ggplot2 arguments.
+#' As this function is generated using the ggplot2 package, users can easily
+#' customize all of the generated plots using ggplot2 arguments.
 #'
 #' @import ggplot2
 #' @export

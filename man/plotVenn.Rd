@@ -6,14 +6,14 @@
 \usage{
 plotVenn(
   x,
-  level = c("clone", "clonotype", "V", "J", "VJ", "CDR3nt", "CDR3aa"),
+  level = c("aaClone", "ntClone", "V", "J", "VJ", "ntCDR3", "aaCDR3"),
   sampleNames = NULL
 )
 }
 \arguments{
 \item{x}{an object of class \code{\linkS4class{RepSeqExperiment}}}
 
-\item{level}{a character specifying the level of the repertoire on which the diversity should be estimated. Should be one of "clone","clonotype", "V", "J", "VJ", "CDR3nt" or "CDR3aa".}
+\item{level}{a character specifying the level of the repertoire on which the diversity should be estimated. Should be one of "aaClone","ntClone", "V", "J", "VJ", "ntCDR3" or "aaCDR3".}
 
 \item{sampleNames}{a vector of character indicating the sample_ids of the repertoires to be analyzed. If not specified, the first three samples in the dataset are analyzed.}
 }
@@ -31,6 +31,6 @@ snames <- rownames(mData(RepSeqData))[1:4]
 
 plotVenn(x = RepSeqData, level = "V", sampleNames = snames)
 
-plotVenn(x = RepSeqData, level = "J", sampleNames = NULL)
+plotVenn(x = RepSeqData, level = "aaCDR3", sampleNames = NULL)
 
 }

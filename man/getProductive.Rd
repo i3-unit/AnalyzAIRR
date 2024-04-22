@@ -10,14 +10,17 @@ getProductive(x)
 \item{x}{an object of class \code{\linkS4class{RepSeqExperiment}}.}
 }
 \value{
-a filtered \code{\linkS4class{RepSeqExperiment}} object exclusively containing productive sequences.
+a filtered \code{\linkS4class{RepSeqExperiment}} object exclusively
+containing productive sequences.
 }
 \description{
-Extract productive sequences from a RepSeqExperiment object by filtering out unproductive ones. Filtered sequences include:
+Extract productive sequences from a RepSeqExperiment object by
+filtering out unproductive ones. Filtered sequences include:
 
-- out-of-frame sequences: sequences with frame shifts based on the number of nucleotides in the CDR3nt column.
+- out-of-frame sequences: sequences with frame shifts based on the number of
+nucleotides in the ntCDR3 column.
 
-- sequences containing stop codons: CDR3aa sequences with a "*" or "~" symbols.
+- sequences containing stop codons: aaCDR3s with a "*" or "~" symbols.
 }
 \examples{
 

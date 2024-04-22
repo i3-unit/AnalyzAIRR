@@ -7,29 +7,40 @@
 renyiIndex(
   x,
   alpha = c(0, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, Inf),
-  level = c("clone", "clonotype", "V", "J", "VJ", "CDR3nt", "CDR3aa")
+  level = c("aaClone", "ntClone", "V", "J", "VJ", "ntCDR3", "aaCDR3")
 )
 }
 \arguments{
 \item{x}{an object of class RepSeqExperiment}
 
-\item{alpha}{a numerical vector specifying the alpha values to compute. If not specified, the following values are estimated: c(0, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, Inf).}
+\item{alpha}{a numerical vector specifying the alpha values to compute. If
+not specified, the following values are estimated: c(0, 0.25, 0.5, 1, 2, 4,
+8, 16, 32, 64, Inf).}
 
-\item{level}{a character specifying the level of the repertoire to be taken into account when calculate VJ usages. Should be one of clone","clonotype", "V", "J", "VJ", "CDR3nt" or "CDR3aa".}
+\item{level}{a character specifying the level of the repertoire to be taken
+into account when calculate VJ usages. Should be one of "aaClone","ntClone",
+"V", "J", "VJ", "ntCDR3" or "aaCDR3".}
 }
 \value{
-a data.table with the Renyi values calculated for all alpha in each sample.
+a table with Renyi values calculated for all alpha in each sample.
 }
 \description{
-This function computes the Renyi values at any repertoire level for all the samples in the RepSeqExperiment object.
+This function computes the Renyi values at any repertoire level
+for all the samples in the RepSeqExperiment object.
 
-The alpha values for which the Renyi is to be estimated can be personalized, thus allowing to focus on certain indices such as the Shannon index for alpha=1 or the Simpson index for alpha=2.
+The alpha values for which the Renyi is to be estimated can be personalized,
+thus allowing to focus on certain indices such as the Shannon index for
+alpha=1 or the Simpson index for alpha=2.
 }
 \details{
-The Renyi index is a generalization of the Shannon index. It represents the distribution of clonal expansions
-as a function of the parameter alpha. At alpha=0, it equally considers all species including the rare ones,
-whereas it up-weighs the abundant species with an increasing value of alpha. Alpha =1 is an approximation of the Shannon index; 
-alpha = 2 corresponds to the Simpson index and alpha=Inf corresponds to the Berger-Parker index. The latter expresses the proportional importance of the most abundant species.
+The Renyi index is a generalization of the Shannon index.
+It represents the distribution of clonal expansions
+as a function of the parameter alpha. At alpha=0, it equally considers all
+species including the rare ones, whereas it up-weighs the abundant species
+with an increasing value of alpha. Alpha =1 is an approximation of
+the Shannon index; alpha = 2 corresponds to the Simpson index and alpha=Inf
+corresponds to the Berger-Parker index. The latter expresses the proportional
+importance of the most abundant species.
 }
 \examples{
 

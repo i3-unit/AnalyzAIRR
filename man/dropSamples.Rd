@@ -9,19 +9,21 @@ dropSamples(x, sampleNames)
 \arguments{
 \item{x}{an object of class \code{\linkS4class{RepSeqExperiment}}}
 
-\item{sampleNames}{a vector of character with the sample_ids of the repertoires to drop from the RepSeqExperiment object.}
+\item{sampleNames}{a vector of character with the sample_ids of the
+repertoires to drop from the RepSeqExperiment object.}
 }
 \value{
 a RepSeqExperiment object.
 }
 \description{
-This function allows the dropping of one or several samples from a RepSeqExperiment object by specifying their corresponding sample ids.
+This function allows the dropping of one or several samples
+from a RepSeqExperiment object by specifying their corresponding sample ids.
 }
 \examples{
 
 data(RepSeqData)
 
 dropRepSeqData<- dropSamples(x = RepSeqData,
-            sampleNames=c("tripod-30-813", "tripod-30-815"))
+                             sampleNames=c("tripod-30-813", "tripod-30-815"))
 
 }

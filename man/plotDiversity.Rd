@@ -7,10 +7,12 @@
 plotDiversity(
   x,
   index = c("chao1", "shannon", "simpson", "invsimpson", "bergerparker", "gini", "iChao"),
-  level = c("clone", "clonotype", "V", "J", "VJ", "CDR3nt", "CDR3aa"),
-  groupBy = NULL,
+  level = c("aaClone", "ntClone", "V", "J", "VJ", "ntCDR3", "aaCDR3"),
+  grouped = FALSE,
+  colorBy = NULL,
+  facetBy = NULL,
   label_colors = NULL,
-  show_stats = TRUE
+  show_stats = FALSE
 )
 }
 \arguments{
@@ -18,9 +20,13 @@ plotDiversity(
 
 \item{index}{a character specifying the diversity index to be estimated. Should be one of "chao1", shannon","invsimpson","simpson" or "gini".}
 
-\item{level}{a character specifying the level of the repertoire on which the diversity should be estimated. Should be one of "clone","clonotype", "V", "J", "VJ", "CDR3nt" or "CDR3aa".}
+\item{level}{a character specifying the level of the repertoire on which the diversity should be estimated. Should be one of "aaClone","ntClone", "V", "J", "VJ", "ntCDR3" or "aaCDR3".}
 
-\item{groupBy}{a character indicating one or multiple groups to be compared. A Wilcoxon test is thus performed and adjusted p-values using the Holm method are shown. Colors are attributed to the different groups within the first column, and a facet is applied on the second column. If not specified, no statistical tests will be performed, and calculated values for each sample_id will be represented.}
+\item{grouped}{a character indicating one or multiple groups to be compared. A Wilcoxon test is thus performed and adjusted p-values using the Holm method are shown. Colors are attributed to the different groups within the first column, and a facet is applied on the second column. If not specified, no statistical tests will be performed, and calculated values for each sample_id will be represented.}
+
+\item{colorBy}{a character indicating a column name in mData. Colors are thus attributed to the different groups within this column. The chosen column must be of class factor.}
+
+\item{facetBy}{a vector of character indicating one or two column names in mData to apply a facet on.}
 
 \item{label_colors}{a list of colors for each variable in ColorBy. See \code{\link{plotColors}}. If NULL, default colors are used.}
 
@@ -49,8 +55,12 @@ The calculated indices can be one of the following:
 
 data(RepSeqData)
 
-plotDiversity(x = RepSeqData, level = "V", groupBy = "sex", index="shannon")
+plotDiversity(x = RepSeqData, level = "V", colorBy = "sample_id", 
+              facetBy="cell_subset", index="shannon")
 
-plotDiversity(x = RepSeqData, level = "clone", groupBy = c("cell_subset", "sex"), index="shannon")
+plotDiversity(x = RepSeqData, level = "ntCDR3", colorBy = "cell_subset", facetBy="sex", 
+              grouped=TRUE, index="simpson")
 
+plotDiversity(x = RepSeqData, level = "aaClone", colorBy = "cell_subset", facetBy="sex", 
+              grouped=TRUE, index="shannon",  show_stats=TRUE)
 }

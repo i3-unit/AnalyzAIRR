@@ -7,7 +7,7 @@
 iChao(x)
 }
 \arguments{
-\item{x}{a vector of count. Can be the list clonotype counts within a given sample.}
+\item{x}{a vector of count. Can be a list clone counts within a given sample.}
 }
 \value{
 the computed iChao1 value
@@ -16,7 +16,7 @@ the computed iChao1 value
 calculate the improved Chao1 index
 }
 \details{
-function computes the improved version of Chao1, Chao and Lin Chao, A. and Lin, C.-W. (2012).
+function computes the improved version of Chao1 (Chao and Lin, 2012)
 }
 \examples{
 set.seed(1234)

@@ -6,7 +6,7 @@
 \usage{
 readAIRRSet(
   fileList,
-  fileFormat = c("MiXCR", "immunoseq", "AIRR-C"),
+  fileFormat = c("MiXCR", "immunoseq", "MiAIRR"),
   chain = c("TRA", "TRB", "TRG", "TRD", "IGH", "IGK", "IGL"),
   sampleinfo = NULL,
   keep.ambiguous = FALSE,
@@ -21,7 +21,7 @@ readAIRRSet(
 \arguments{
 \item{fileList}{a list of paths to the alignment files. File format can be one of the following: .tsv, txt.gz, .zip, or .tar}
 
-\item{fileFormat}{a character vector specifying the format of the input files, i.e. the tool that was used to generate/align the files. Should be one of "MiXCR", "immunoseq", or "AIRR-C".}
+\item{fileFormat}{a character vector specifying the format of the input files, i.e. the tool that was used to generate/align the files. Should be one of "MiXCR", "immunoseq", or "MiAIRR".}
 
 \item{chain}{a character vector indicating a single TCR or Ig chain to analyze. The vector can be one of the following:
 
@@ -44,9 +44,9 @@ Unproductive sequences include:
 
 - out-of-frame sequences: sequences with frame shifts based on the number of nucleotides in their CDR3s
 
-- sequences containing stop codons: CDR3aa sequences with a "*" or "~" should be kept. Default is \code{FALSE}}
+- sequences containing stop codons: aaCDR3 sequences with a "*" or "~" should be kept. Default is \code{FALSE}}
 
-\item{filter.singletons}{a boolean indicating whether or not clonotypes (CDR3nt+V+CDR3aa+J) with an occurrence of 1 should be filtered out. Default is \code{FALSE}}
+\item{filter.singletons}{a boolean indicating whether or not ntClones (V+ntCDR3+J) with an occurrence of 1 should be filtered out. Default is \code{FALSE}}
 
 \item{aa.th}{an integer determining the CDR3 amino acid sequence length limits, i.e. the maximum number of amino acids deviating from the mean length that is accepted. The default value is 8, which keeps amino acid CDR3s with a length that falls inside the following range: mean length-8 =< aa.th <= mean length+ 8.}
 
@@ -68,12 +68,12 @@ A set of filters can be applied on the loaded files during the building process 
 
  - filtering out unproductive sequences including the ones with stop codons, namely out-of-frame sequences
 
- - filtering out singletons, i.e clonotypes with an occurrence of 1
+ - filtering out singletons, i.e clones with an occurrence of 1
 
  - filtering out short or extensively long amino acid CDR3 sequences
 }
 \examples{
-l <- list.files(system.file(file.path('extdata/mixcr'),
+l <- list.files(system.file(file.path('extdata/MiAIRR'),
                      package = 'AnalyzAIRR'),
                      full.names = TRUE)
 
@@ -86,7 +86,7 @@ metaData$cell_subset <- factor(metaData$cell_subset)
 metaData$sex <- factor(metaData$sex)
 
 dataset <- readAIRRSet(fileList = l,
-                       fileFormat = "MiXCR",
+                       fileFormat = "MiAIRR",
                        chain = "TRA",
                        sampleinfo = metaData,
                        filter.singletons = FALSE,

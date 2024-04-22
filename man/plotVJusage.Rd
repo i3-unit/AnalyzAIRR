@@ -8,7 +8,7 @@ plotVJusage(
   x,
   sampleName = NULL,
   scale = c("count", "frequency"),
-  level = c("clone", "clonotype"),
+  level = c("aaClone", "ntClone"),
   prop = 1,
   plot = c("Circos", "Heatmap")
 )
@@ -20,22 +20,25 @@ plotVJusage(
 
 \item{scale}{a character specifying whether to plot the VJ usage in "count" or "frequency".}
 
-\item{level}{a character specifying the level of the repertoire to be taken into account when calculate VJ usages. Should be one of "clone" or "clonotype".}
+\item{level}{a character specifying the level of the repertoire to be taken into account when calculate VJ usages. Should be one of "aaClone" or "ntClone".}
 
 \item{prop}{a numeric indicating the proportions of top VJ combinations to be plotted. It ranges from 0 to 1.}
 
 \item{plot}{a character indicating the type of visualization in which the results will be represented, either a heatmap or a circos plot.}
 }
 \description{
-This function calculates the count or frequency of each combination by taking into account the weight of the chosen repertoire level: either "clone" or "clonotype".
+This function calculates the count or frequency of each combination by taking into account the weight of the chosen repertoire level: either "aaClone" or "ntClone".
 
 It offers two types of visualization of the calculated VJ usage in a given sample, either a circos plot or a heatmap.
 }
 \examples{
 
 data(RepSeqData)#'
-plotVJusage(x = RepSeqData, sampleName = NULL, scale = "count", level="clone", prop=0.1, plot="Circos")
 
-plotVJusage(x = RepSeqData, sampleName = NULL, scale = "count", level="clone", prop=0.8, plot="Heatmap")
+plotVJusage(x = RepSeqData, sampleName = NULL, scale = "count", 
+            level="aaClone", prop=0.1, plot="Circos")
+
+plotVJusage(x = RepSeqData, sampleName = NULL, scale = "frequency", 
+            level="ntClone", prop=1, plot="Heatmap")
 
 }

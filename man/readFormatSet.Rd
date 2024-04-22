@@ -41,9 +41,9 @@ Unproductive sequences include:
 
 - out-of-frame sequences: sequences with frame shifts based on the number of nucleotides in their CDR3s
 
-- sequences containing stop codons: CDR3aa sequences with a "*" or "~" should be kept. Default is \code{FALSE}}
+- sequences containing stop codons: aaCDR3 sequences with a "*" or "~" should be kept. Default is \code{FALSE}}
 
-\item{filter.singletons}{a boolean indicating whether or not clonotypes (CDR3nt+V+CDR3aa+J) with an occurrence of 1 should be filtered out. Default is \code{FALSE}}
+\item{filter.singletons}{a boolean indicating whether or not ntClones (V+ntCDR3+J) with an occurrence of 1 should be filtered out. Default is \code{FALSE}}
 
 \item{aa.th}{an integer determining the CDR3 amino acid sequence length limits, i.e. the maximum number of amino acids deviating from the mean length that is accepted. The default value is 8, which keeps amino acid CDR3s with a length that falls inside the following range: mean length-8 =< aa.th <= mean length+ 8.}
 
@@ -61,9 +61,9 @@ This function allows the loading of alignment files in other formats than the on
 These files should contain the following column names:
 - sample_id: Sample names
 
-- CDR3nt: CDR3 nucleotide sequence
+- ntCDR3: nucleotide CDR3 sequence
 
-- CDR3aa: CDR3 amino acid sequence
+- aaCDR3: amino acid CDR3 sequence
 
 - V: Variable gene name (IMGT nomenclature)
 
@@ -88,18 +88,6 @@ The possible filters that can be applied include:
 l <- list.files(system.file(file.path('extdata/informat'),
                      package = 'AnalyzAIRR'),
                      full.names = TRUE)
-l # list of gz-compressed files
-
-dataset <- readFormatSet(fileList = l,
-                        sampleinfo = NULL,
-                        cores = 10,
-                        chain = "TRA",
-                        keep.ambiguous = FALSE,
-                        keep.unproductive = FALSE,
-                        filter.singletons = FALSE,
-                        aa.th = 8,
-                        raretab = TRUE,
-                        outFiltered = TRUE)
 
 
 }

@@ -100,7 +100,7 @@ knitr::opts_chunk$set(
 ```
 # Introduction
 
-**AnalyzAIRR** is an R package developed to analyze bulk Ig/TCR repertoire datasets.
+**AnalyzAIRR** is an R package developed to analyze bulk Ig/TCR repertoire datasets. 
 
 * It can be used by both biologists and bioinformaticians.
 
@@ -118,6 +118,7 @@ The latest release of **AnalyzAIRR** can be installed from Github using **devtoo
 install.packages("devtools")  
 devtools::install_github("vanessajmh/AnalyzAIRR")
 ```
+
 Load the **AnalyzAIRR** package
 ```{r load library, echo=T, eval=T, warning=F, message=F}
 library(AnalyzAIRR)
@@ -143,16 +144,13 @@ library(AnalyzAIRR)
   
 All needed is to specify the list of paths to the alignement files.
 
-A list of 8 samples were selected from a published study (Mhanna et al., 2021) to illustrate the use of this package. Fastq files were aligned using MiXCR and can be found at https://github.com/tchitchek-lab/RepSeq/extdata/mixcr
+A list of 8 samples were selected from a published study (Mhanna et al., 2021) to illustrate the use of this package. Fastq files were aligned using MiXCR and exported in a MiAIRR format, and can be found at https://github.com/tchitchek-lab/RepSeq/extdata/mixcr
 
 
 ```{r load aligned files, echo=T, eval=T}
-l <- list.files(system.file(file.path('extdata/mixcr'),
+l <- list.files(system.file(file.path('extdata/MiAIRR'),
                             package='AnalyzAIRR'),
                             full.names = T)
-```
-```{r show path, echo=F, eval=T}
-l
 ```
 
 **2. Load the metadata**
@@ -217,7 +215,7 @@ To do so, the following parameters must be specified:
  
  * `filter.singletons`: A choice whether sequences with an occurrence of 1 should be filtered out
   
- * `aa.th`: A threshold determining the CDR3 amino acid sequence length limits. Refer to the function's documentation for more details
+ * `aa.th`: A threshold determining the amino acid CDR3 sequence length limits. Refer to the function's documentation for more details
  
  * `outFiltered`: A choice whether to write an output file containing the filtered out reads by the previously cited filtering parameters
  
@@ -230,7 +228,7 @@ It is possible to apply the above-mentioned filtering functions subsequently to 
 
 ```{r data loading, echo=T, eval=T}
 RepSeqData <- readAIRRSet(fileList = l,
-                          fileFormat = "MiXCR",
+                          fileFormat = "MiAIRR",
                           chain = "TRA",
                           sampleinfo = metadata,
                           keep.ambiguous = FALSE,
@@ -240,7 +238,6 @@ RepSeqData <- readAIRRSet(fileList = l,
                           outFiltered=TRUE,
                           raretab=FALSE,
                           cores=1L)
-
 
 ```
 
@@ -254,15 +251,15 @@ Alignment files should contain the following required column names:
 
 - **sample_id**: Sample names
 
-- **CDR3nt**: CDR3 nucleotide sequence
-
-- **CDR3aa**: CDR3 amino acid sequence
-
 - **V**: Variable gene name (IMGT nomenclature)
 
 - **J**: Joining gene name (IMGT nomenclature)
 
-- **count**: the occurrence of each sequence within the sample
+- **ntCDR3**: Nucleotide CDR3 sequence
+
+- **aaCDR3**: Amino acid CDR3 sequence
+
+- **count**: The occurrence of each sequence within the sample
 
 **Note**: The order of the columns must be respected. Input files can contain additional columns that will not be taken into account during the loading process.
 
@@ -282,21 +279,21 @@ It is composed of 4 slots, each containing a different type of information.
 
     - **sample_id**: Sample names
 
-  - **CDR3nt**: CDR3 nucleotide sequence
-
-  - **CDR3aa**: CDR3 amino acid sequence
-
   - **V**: Variable gene name
 
   - **J**: Joining gene name
 
   - **VJ**: V-J gene combination using V and J gene names.
+  
+  - **ntCDR3**: Nucleotide CDR3 sequence
 
-  - **clone**: The sequence including the V gene, the amino acid CDR3 sequence and the J gene
+  - **aaCDR3**: Amino acid CDR3 sequence
 
-  - **clonotype**: The sequence of the clone as well as the nucleotide CDR3 sequence
+  - **aaClone**: The full sequence including the V gene, the amino acid CDR3 sequence and the J gene
 
-  - **count**: the occurrence of each sequence
+  - **ntClone**: The full sequence including the V gene, the nucleotide CDR3 sequence and the J gene 
+
+  - **count**: The occurrence of each clone
 
 This slot can be extracted using the `assay()` function.
 
@@ -319,19 +316,19 @@ knitr::kable(head(assay(RepSeqData))) %>%
   
     * **nSequences**: the total number of sequences in a sample
 
-  * **CDR3nt**: the number of unique nucleotide CDR3s
-
-  * **CDR3aa**: the number of unique amino acid CDR3s
-
-  * **V**: the total number of V genes expressed in each sample
+  * **V**: The total number of V genes expressed in each sample
   
-  * **J**: the total number of J genes
+  * **J**: The total number of J genes
 
-  * **VJ**: the total number of V-J gene combinations
+  * **VJ**: The total number of V-J gene combinations
   
-  * **clone**: the number of unique clones
+  * **ntCDR3**: The number of unique nucleotide CDR3s
 
-  * **clonotype**: the number of unique clonotypes
+  * **aaCDR3**: The number of unique amino acid CDR3s
+  
+  * **aaClone**: The number of unique aaClones
+
+  * **ntClone**: The number of unique ntClones
 
 
 This slot can be extracted using the `mData()` function.
@@ -412,12 +409,12 @@ The function returns a RepSeqExperiment object with the selected clones.
 
 ```{r getoverlaps,  echo = T, eval=F}
 # Get clones present in at least 50% of the samples belonging to the amTreg group
-getPublic(x=RepSeqData, level="clone", group=c("cell_subset", "amTreg"))
+getPublic(x=RepSeqData, level="aaClone", group=c("cell_subset", "amTreg"))
 ```
 
   Similarly, it is possible to extract private sequences with `getPrivate()`. If the parameter `singletons` is set to TRUE, only private sequences with a count of 1 will be returned.
 
-**Note**: All the above-mentioned functions can be applied at any of the following repertoire level: **clone**, **clonotype**, **CDR3aa** and **CDR3nt**.
+**Note**: All the above-mentioned functions can be applied at any of the following repertoire level: **aaClone**, **ntClone**, **aaCDR3** and **ntCDR3**.
 
 + **Filter out one or multiple sequence(s)**
 
@@ -472,20 +469,20 @@ Data characterization can be performed using different exploratory functions pro
 
 + **Visualize the metaData statistics**
 
-Statistics in the **metaData** slot, calculated during the building of the RepSeqExperiment object, can be visualized for each sample using the `plotStatistics()` function with the parameter `groupBy` set to NULL.
+Statistics in the **metaData** slot, calculated during the building of the RepSeqExperiment object, can be visualized for each sample using the `plotStatistics()` function with the `colorBy` parameter set to the sample id column. Groups can be separated using the `facetBy` parameter. 
 
 <div class="column-left">
 ```{r sd1, fig.cap="Figure 1: A barplot showing the number of TCR sequences identified in each sample."}
 plotStatistics(x = RepSeqData,
                stat = "nSequences",
-               groupBy = NULL)
+               colorBy = "sample_id")
 ```
 </div>
 <div class="column-right">
-```{r sd2,fig.cap="Figure 2: A barplot showing the number of clonotypes identified in each sample."}
+```{r sd2,fig.cap="Figure 2: A barplot showing the number of ntClones identified in each sample."}
 plotStatistics(x = RepSeqData,
-               stat = "clonotype",
-               groupBy = NULL)
+               stat = "ntClone",
+               colorBy = "sample_id")
 ```
 </div>
 </div>
@@ -517,11 +514,11 @@ knitr::kable(countFeatures(RepSeqData, level="J", scale="frequency")) %>%
 
    Species richness can be assessed by a rarefaction table generated using the `rarefactionTab()` function.
    
-   Rarefaction curves can as well be plotted using `plotRarefaction()`. The `colorBy` parameter is used to assign colors to plotted curves based on any group column from the **metaData** slot.
+   Rarefaction curves can as well be plotted using `plotRarefaction()`. The `colorBy` parameter is used to assign colors to plotted curves based on any group column from the **metaData** slot, and `facetBy` to separate the samples based on a different set of group columns.
 ```{r plot rarefaction, echo=T, fig.width=8,fig.height=4, fig.align="center"}
 plotRarefaction(x=RepSeqData, colorBy="sample_id")
 ```
-<figcaption align = "center"><em class="special">Figure 3: Rarefaction curves plotting the number of clonotypes against the number of sequences in each sample.</em></figcaption>
+<figcaption align = "center"><em class="special">Figure 3: Rarefaction curves plotting the number of clones against the number of sequences in each sample.</em></figcaption>
 <br>
 
 +  **Calculation of diversity indices**
@@ -543,11 +540,11 @@ plotRarefaction(x=RepSeqData, colorBy="sample_id")
    - **Improved Chao1**: An extension of **Chao1** which uses additional information, namely, the numbers of tripletons and quadrupletons  (Chiu et al., 2014).
 
 ```{r indices, echo = TRUE, eval=F}
-diversityIndices(x=RepSeqData, level="clone")
+diversityIndices(x=RepSeqData, level="aaClone")
 
 ```
 ```{r indices bis, echo = FALSE}
-indices<- diversityIndices(x=RepSeqData, level="clone")
+indices<- diversityIndices(x=RepSeqData, level="aaClone")
 ```
 
 ```{r view indices, echo = F}
@@ -561,23 +558,21 @@ knitr::kable(indices) %>%
 
 The calculated indices can be plotted using `plotDiversity()`. The parameter `index` allows to choose which index is to be plotted.
 
-If `groupBy` is not specified, calculated values in each sample are represented.
-
 <div class="column-left">
-```{r plot indices 1,fig.cap="Figure 4: A barplot showing the Gini values calculated at the clone level within each sample."}
+```{r plot indices 1,verbose=FALSE, fig.cap="Figure 4: A barplot showing the Gini values calculated at the aaClone level within each sample."}
 plotDiversity(x=RepSeqData,
-              level = "clone",
-              groupBy = NULL,
-              index = "gini")
+              level = "aaClone",
+              index = "gini",
+              colorBy="sample_id")
 
 ```
 </div>
 <div class="column-right">
-```{r plot indices 2,fig.cap="Figure 5: A barplot showing the Shannon values calculated at the clonotype level within each sample."}
+```{r plot indices 2,fig.cap="Figure 5: A barplot showing the Shannon values calculated at the ntClone level within each sample."}
 plotDiversity(x=RepSeqData,
-              level = "clonotype",
-              groupBy = NULL,
-              index = "shannon")
+              level = "ntClone",
+              index = "shannon",
+               colorBy="sample_id")
 ```
 </div>
 
@@ -592,14 +587,14 @@ plotDiversity(x=RepSeqData,
 By default, it is assessed for the following alpha values: $$\alpha \in {0, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, Inf}$$
 
 ```{r renyi, echo = TRUE, eval=F}
-renyiIndex(x=RepSeqData, level="clone")
+renyiIndex(x=RepSeqData, level="aaClone")
 
 ```
 ```{r renyi bis, echo = FALSE}
-rn<- renyiIndex(x=RepSeqData, level="clone")
+rn<- renyiIndex(x=RepSeqData, level="aaClone")
 ```
 
-```{r view renyi, echo = F}
+```{r view renyi, echo = F, verbose=FALSE}
 knitr::kable(rn) %>%
      kableExtra::kable_styling(bootstrap_options = "condensed",
                      full_width = F,
@@ -609,9 +604,10 @@ knitr::kable(rn) %>%
 ```
 
   Renyi's entropy values can be plotted using `plotRenyiIndex()`. If the `grouped` parameter is set to **FALSE**, a curve for each sample is plotted and colors are attributed based on the `colorBy` parameter. 
+ The `facetBy` parameter can be used to separate samples based on a group column. A shape can also be assigned for each curve of groups of curves with the `shapeBy` parameter.
 
 ```{r plot renyi, echo = TRUE, fig.width=8, fig.height = 4,fig.align="center"}
-plotRenyiIndex(x=RepSeqData, level="J", grouped=FALSE, colorBy = "sample_id")
+plotRenyiIndex(x=RepSeqData, level="J", grouped=FALSE, colorBy = "sample_id", facetBy="cell_subset")
 ```
 <figcaption align = "center"><em class="special">Figure 6: The Renyi values were calculated at the J gene level at each pre-defined alpha value and plotted for each sample.</em></figcaption>
 
@@ -619,7 +615,7 @@ plotRenyiIndex(x=RepSeqData, level="J", grouped=FALSE, colorBy = "sample_id")
 
 + **Clonal distribution within count intervals**
 
-  The `plotCountIntervals()` function can be used to assess the clonal distribution within pre-defined count intervals.
+  The `plotIntervals()` function can be used to assess the clonal distribution within pre-defined count intervals.
 
   It computes:
 
@@ -627,7 +623,7 @@ plotRenyiIndex(x=RepSeqData, level="J", grouped=FALSE, colorBy = "sample_id")
   - The cumulative frequency of a defined repertoire level within each count interval thus giving the proportion that each interval occupies in the repertoire.
 
 ```{r intervals, fig.height=6, fig.width=7,fig.align="center"}
-plotCountIntervals(x=RepSeqData, level="clone", fractions="frequency")
+plotIntervals(x=RepSeqData, level="aaClone", fractions="frequency", facetBy = "cell_subset")
 ```
 <figcaption align = "center"><em class="special">Figure 7: Stacked bars showing the distribution (upper plot) and the cumulative frequency (lower plot) of clones within each count interval in each sample.</em></figcaption>
 <br>
@@ -638,7 +634,7 @@ plotCountIntervals(x=RepSeqData, level="clone", fractions="frequency")
  Samples can be colored by **sample_id** as well as by any group column from the `mData()` slot.
 
 ```{r plot clone distri, echo = TRUE, warning=FALSE,fig.width=8, fig.height =4,fig.align="center"}
-plotRankDistrib(x=RepSeqData,level="clone", colorBy="sample_id", grouped=F, scale="frequency")
+plotRankDistrib(x=RepSeqData,level="aaClone", colorBy="sample_id", scale="frequency", grouped=F)
 ```
 <figcaption align = "center"><em class="special">Figure 8: Clonal distribution as a function of the occurrence rank for each sample.</em></figcaption>
 <div>
@@ -649,14 +645,14 @@ Descriptive analyses of each repertoire can be performed individually.
 These analyses include the ones previously described as well as other metrics.
 In all the following functions, the **sample_id** of interest needs to be specified in the `sampleName` parameter. If not specified, the first **sample_id** in the dataset will be analyzed
 
-+ **Assess the clonal distribution per count intervals**
++ **Assess the clonal distribution per interval**
 
-   `plotIndCountIntervals()` allows the analysis of the clonal distribution per count interval in a single sample.
+   `plotIndIntervals()` allows the analysis of the clonal distribution per intervals of counts or fractions in a single sample.
 
-```{r plotIndCountIntervals, echo=TRUE,message=FALSE, warning=FALSE,fig.width=7, fig.height = 4,fig.align="center", cache.comments=FALSE}
-plotIndCountIntervals(RepSeqData,level = "clone", sampleName="tripod-30-813", fractions="frequency")
+```{r plotIndIntervals, echo=TRUE,message=FALSE, warning=FALSE,fig.width=7, fig.height = 4,fig.align="center", cache.comments=FALSE}
+plotIndIntervals(RepSeqData,level = "aaClone", sampleName="tripod-30-813", fractions="frequency")
 ```
-<figcaption align = "center"><em class="special">Figure 9: Barplots showing the distribution (upper plot) and the cumulative frequency (lower plot) of clones within each count interval for one selected sample.</em></figcaption>
+<figcaption align = "center"><em class="special">Figure 9: Barplots showing the distribution (upper plot) and the cumulative frequency (lower plot) of aaClone within each frequency interval for one selected sample.</em></figcaption>
 <br>
 
 + **Analyze V and J gene usages**
@@ -704,22 +700,24 @@ The majority of the functions described in [the Exploratory analysis section](#E
 
 + **Compare metaData statistics**
 
-   The calculated statistics in the **metaData** slot can be compared between groups of samples. This is possible using the `plotStatistics()` function by specifying one or multiple group columns from the **metadata** slot in the `groupBy` parameter. 
+   The calculated statistics in the **metaData** slot can be compared between groups of samples. This is possible using the `plotStatistics()` function by setting the `grouped` parameter to **TRUE** and specifying one group column from the **metadata** slot to compare in the `colorBy` parameter, and up to two columns in the `facetBy` parameter.
    
    In case multiple groups are specified, the first group will be compared and the others will be used as facets.
 
 <div class="column-left">
-```{r comp sd1,fig.cap="Figure 14: Comparison of the the number of clonotypes between amTreg and nTreg samples. Boxplots represent the median across all samples belonging to the same group. A Wilcoxon test is applied and adjusted p-values using the Holm method are shown."}
+```{r comp sd1,fig.cap="Figure 14: Comparison of the the number of ntClones between amTreg and nTreg samples. Boxplots represent the median across all samples belonging to the same group. A Wilcoxon test is applied and adjusted p-values using the Holm method are shown."}
 plotStatistics(x = RepSeqData,
-               stat = "clonotype",
-               groupBy = "cell_subset")
+               stat = "ntClone",
+               colorBy = "cell_subset",
+               grouped=TRUE)
 ```
 </div>
 <div class="column-right">
-```{r comp sd2,fig.cap="Figure 15: Comparison of the the number of clonotypes between amTreg and nTreg samples within each sex. Boxplots represent the median across all samples belonging to the same specified group. A Wilcoxon test is applied and adjusted p-values using the Holm method are shown."}
+```{r comp sd2,fig.cap="Figure 15: Comparison of the the number of ntClones between amTreg and nTreg samples within each sex. Boxplots represent the median across all samples belonging to the same specified group. A Wilcoxon test is applied and adjusted p-values using the Holm method are shown."}
 plotStatistics(x = RepSeqData,
-               stat = "clonotype",
-               groupBy = c("cell_subset", "sex"))
+               stat = "ntClone",
+               colorBy = "cell_subset", facetBy="sex",
+               grouped=TRUE)
 ```
 </div>
 
@@ -727,59 +725,62 @@ plotStatistics(x = RepSeqData,
 
 + **Compare gene usage**
 
-  `plotGeneUsage()` allows the comparison of V or J gene usages between groups of samples using the `groupBy` parameter
+  `plotGeneUsage()` allows the comparison of V or J gene usages between groups of samples using the `colorBy` parameter
 
 ```{r J usage , echo = TRUE, fig.width=12, fig.height=3.5, message=F,warning=F,fig.align="center"}
-plotGeneUsage(x=RepSeqData, level="J", scale="frequency", groupBy="cell_subset")
+plotGeneUsage(x=RepSeqData, level="J", scale="frequency", colorBy="cell_subset")
 ```
 <figcaption align = "center"><em class="special">Figure 16: Comparison of the J gene usage between amTreg and nTreg samples. A Wilcoxon test was performed. Only significant values are plotted.</em></figcaption>
 <br>
 
 + **Compare repertoire diversities**
 
-   The `plotDiversity()` function also supports the `groupBy` parameter to compare groups for a chosen diversity index.
+   For The `plotDiversity()` function, the `grouped` parameter should be set to **TRUE**, and the groups to be analysed should be specified in the `colorBy` parameter.
 
 <div class="column-left">
-```{r plot indices 3, fig.cap="Figure 17: The Gini index is calculated at the clone level and compared between cell subsets. Boxplots represent the median across all samples belonging to the same group. A Wilcoxon test is applied and adjusted p-values using the Holm method are shown." }
+```{r plot indices 3,verbose=FALSE, fig.cap="Figure 17: The Gini index is calculated at the aaClone level and compared between cell subsets. Boxplots represent the median across all samples belonging to the same group. A Wilcoxon test is applied and adjusted p-values using the Holm method are shown." }
 plotDiversity(x = RepSeqData,
-              level = "clone",
-              groupBy = "cell_subset",
-              index = "gini")
+              level = "aaClone",
+              index = "gini",
+              colorBy = "cell_subset",
+              grouped=TRUE)
 
 ```
 </div>
 <div class="column-right">
-```{r plot indices 4, fig.cap="Figure 18: The Gini index is calculated at the clone level and compared between cell subsets within each sex. Boxplots represent the median across all samples belonging to the same group. A Wilcoxon test is applied and adjusted p-values using the Holm method are shown." }
+```{r plot indices 4, verbose=FALSE, fig.cap="Figure 18: The Gini index is calculated at the aaClone level and compared between cell subsets within each sex. Boxplots represent the median across all samples belonging to the same group. A Wilcoxon test is applied and adjusted p-values using the Holm method are shown." }
 plotDiversity(x = RepSeqData,
-              level = "clone",
-              groupBy = c("cell_subset","sex"),
-              index = "gini")
+              level = "aaClone",
+              index = "gini",
+              colorBy = "cell_subset", facetBy = "sex",
+              grouped = TRUE)
 
 ```
 </div>
 <br>
 
-  For the Renyi index, the `grouped` parameter should be set to **TRUE**, and the groups to be analysed should be specified in the `colorBy` parameter.
+  The Renyi index also supports the `grouped` parameter.
 
-```{r plot plotRenyiIndexG, fig.height = 5, fig.width=7, fig.align='center'}
+```{r plot plotRenyiIndexG,verbose=FALSE, fig.height = 5, fig.width=7, fig.align='center'}
 plotRenyiIndex(x = RepSeqData,
-                  level = "clone",
-                  grouped = "TRUE",
-                  colorBy = c("cell_subset","sex"))
+                  level = "aaClone",
+                  colorBy = "cell_subset",
+                  shapeBy = "sex",
+                  grouped = TRUE)
 
 ```
-<figcaption align = "center"><em class="special">Figure 19: The Renyi values were calculated at the clone level at each pre-defined alpha value. For each specified group, the mean (circles) and stantard error (shade) are plotted. The area under the curve (AUC) is calculated for each sample and compared between chosen groups using a Wilcoxon test with Holm's correction.</em></figcaption>
+<figcaption align = "center"><em class="special">Figure 19: The Renyi values were calculated at the aaClone level at each pre-defined alpha value. For each specified group, the mean (circles) and stantard error (shade) are plotted. The area under the curve (AUC) is calculated for each sample and compared between chosen groups using a Wilcoxon test with Holm's correction.</em></figcaption>
 
 <br><br>
 
 + **Compare clonal distributions**
 
-   Similarly to the analysis applied at the single-sample level, `plotCountIntervals()` allows to plot and compare clonal distributions within defined count intervals between experimental groups.
+   Similarly to the analysis applied at the single-sample level, `plotIntervals()` allows to plot and compare clonal distributions within defined count intervals between experimental groups.
 
 ```{r plotDistribVpJall,fig.height = 5, fig.width=7, fig.align='center'}
-plotCountIntervals(x=RepSeqData, level="clone", groupBy = c("cell_subset","sex"), fractions="frequency")
+plotIntervals(x=RepSeqData, level="aaClone", colorBy = "cell_subset", facetBy="sex", fractions="count", grouped=TRUE)
 ```
-<figcaption align = "center"><em class="special">Figure 20: The distribution (upper plot) and the cumulative frequency (bottom plot) of clones within each count interval was compared between amTreg and nTreg samples within each sex. A Wilcoxon test is applied and adjusted p-values using the Holm method are shown.</em></figcaption>
+<figcaption align = "center"><em class="special">Figure 20: The distribution (upper plot) and the cumulative frequency (bottom plot) of aaClones within each count interval was compared between amTreg and nTreg samples within each sex. A Wilcoxon test is applied and adjusted p-values using the Holm method are shown.</em></figcaption>
 
 
 ## Similarity analysis
@@ -795,10 +796,10 @@ Different statistical methods are proposed herein to evaluate this convergence.
 ```{r venn, fig.align='center',echo = T, eval=T,  fig.width=8, fig.height=4}
 ctrnames <- rownames(mData(RepSeqData))[which(mData(RepSeqData)[,"cell_subset" ] %in% "nTreg")]
 plotVenn(x = RepSeqData,
-           level = "clone",
+           level = "aaClone",
            sampleNames = ctrnames)
 ```
-<figcaption align = "center"><em class="special">Figure 21: Venn diagram representing the number of shared clones between the nTreg samples.</em></figcaption>
+<figcaption align = "center"><em class="special">Figure 21: Venn diagram representing the number of shared aaClones between the nTreg samples.</em></figcaption>
 <br>
 
 + **Assess the correlation between a pair of samples**
@@ -817,7 +818,7 @@ plotScatter(x = RepSeqData,
 <div class="column-right">
 ```{r scatter 2, echo = T, eval=T, message=FALSE, fig.cap="Figure 23: A biplot comparing the clonal expression between two defined samples. A linear model is fitted on the data. Clonal overlap and expression are significantly low between the compared samples."}
 plotScatter(x = RepSeqData,
-            level = "clone",
+            level = "aaClone",
             scale = "frequency",
             sampleNames = c("tripod-30-813","tripod-31-846"))
 ```
@@ -840,9 +841,9 @@ plotScatter(x = RepSeqData,
     - Used to perform a multidimensional scaling analysis by setting `plot` to **MDS**. In this case, no clustering method is needed.
 
 <div class="column-left">
-```{r dissimilarity, echo = TRUE, fig.cap="Figure 24: A heatmap showing the Morisita distances calculated at the clone level between all pairwise samples. The ward D method was used to perform the hierarchical clustering."}
+```{r dissimilarity, echo = TRUE, fig.cap="Figure 24: A heatmap showing the Morisita distances calculated at the aaClone level between all pairwise samples. The ward D method was used to perform the hierarchical clustering."}
 plotDissimilarity(x = RepSeqData,
-                  level = "clone",
+                  level = "aaClone",
                   method = "morisita",
                   clustering = "ward.D",
                   colorBy = c("sex","cell_subset"),
@@ -851,9 +852,9 @@ plotDissimilarity(x = RepSeqData,
 </div>
 
 <div class="column-right">
-```{r mds1, echo = TRUE,warning=FALSE, message=FALSE, fig.cap="Figure 25: Morisita distances were calculated at the clone level between all pairwise samples within the dataset and used to perform a multidimensional scaling analysis."}
+```{r mds1, echo = TRUE,warning=FALSE, message=FALSE, fig.cap="Figure 25: Morisita distances were calculated at the aaClone level between all pairwise samples within the dataset and used to perform a multidimensional scaling analysis."}
 plotDissimilarity(x = RepSeqData,
-                 level = "clone",
+                 level = "aaClone",
                  method = "morisita",
                  colorBy = "cell_subset",
                  plot="MDS"
@@ -904,7 +905,7 @@ plotDiffExp(x = RepSeqData,
 
 ## Spectratyping comparison
 
- `perturbationScore()` function computes the perturbation scores of the CDR3aa length distribution within each V gene as a distance between each repertoire and the mean repertoire of the control group.
+ `perturbationScore()` function computes the perturbation scores of the aaCDR3 length distribution within each V gene as a distance between each repertoire and the mean repertoire of the control group.
 
 ```{r, echo=TRUE, eval=FALSE}
 ctrnames <- rownames(mData(RepSeqData))[which(mData(RepSeqData)[,"cell_subset" ] %in% "nTreg")]
@@ -933,5 +934,5 @@ The parameter `order` allows to define the order in which the samples will be pl
 plotPerturbationScore(RepSeqData, ctrl.names=ctrnames, distance ="euclidean", order="cell_subset")
 
 ```
-<figcaption align = "center"><em class="special">Figure 28: A heatmap plotting the perturbation scores of the CDR3aa length distribution within each V gene in the amTreg population compared to the nTregs (used as reference). The parameter order allows to define the order in which the samples will be plotted on the heatmap which helps a better separation between the control groups and the other samples.</em></figcaption>
+<figcaption align = "center"><em class="special">Figure 28: A heatmap plotting the perturbation scores of the aaCDR3 length distribution within each V gene in the amTreg population compared to the nTregs (used as reference). The parameter order allows to define the order in which the samples will be plotted on the heatmap which helps a better separation between the control groups and the other samples.</em></figcaption>
 

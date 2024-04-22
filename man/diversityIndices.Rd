@@ -6,35 +6,48 @@
 \usage{
 diversityIndices(
   x,
-  level = c("clone", "clonotype", "V", "J", "VJ", "CDR3nt", "CDR3aa")
+  level = c("aaClone", "ntClone", "V", "J", "VJ", "ntCDR3", "aaCDR3")
 )
 }
 \arguments{
 \item{x}{an object of class \code{\linkS4class{RepSeqExperiment}}}
 
-\item{level}{a character specifying the level of the repertoire on which the diversity should be estimated. Should be one of "clone","clonotype", "V", "J", "VJ", "CDR3nt" or "CDR3aa".}
+\item{level}{a character specifying the level of the repertoire on which the
+diversity should be estimated. Should be one of "aaClone","ntClone", "V",
+"J", "VJ", "ntCDR3" or "aaCDR3".}
 }
 \value{
 a data table with the diversity indices calculated for each sample.
 }
 \description{
-This function computes a set of diversity indices of a repertoire level for each sample.
+This function computes a set of diversity indices of a
+repertoire level for each sample.
 
 The calculated indices are the following:
 
-- Shannon index: Calculates the proportional abundance of species in a repertoire (Shannon, 1948).
+- Shannon index: Calculates the proportional abundance of species in a
+repertoire (Shannon, 1948).
 
-- Simpson index: Takes into account the number of species present as well as their abundance. It gives relatively little weight to the rare species and more weight to the frequent ones (Simpson, 1949).
+- Simpson index: Takes into account the number of species present as well as
+their abundance. It gives relatively little weight to the rare species and
+more weight to the frequent ones (Simpson, 1949).
 
-- Inverse Simpson index: Is the effective number of species that is obtained when the weighted arithmetic mean is used to quantify average proportional abundance of species.
+- Inverse Simpson index: Is the effective number of species that is obtained
+when the weighted arithmetic mean is used to quantify average proportional
+abundance of species.
 
-- Berger-Parker index: Expresses the proportional importance of the most abundant species. This metric is highly biased by sample size and richness (Berger and Parker 1970).
+- Berger-Parker index: Expresses the proportional importance of the most
+abundant species. This metric is highly biased by sample size and richness
+(Berger and Parker 1970).
 
-- Gini coefficient: Measures the degree of inequality in a distribution of abundances (Gini, 1921).
+- Gini coefficient: Measures the degree of inequality in a distribution of
+abundances (Gini, 1921).
 
-- Chao1: Estimates undetected species using the information on the rarest species (the numbers of singletons and doubletons) (Chao, 1984).
+- Chao1: Estimates undetected species using the information on the rarest
+species (the numbers of singletons and doubletons) (Chao, 1984).
 
-- Improved Chao1: an extension of Chao1 which uses additional information, namely, the numbers of tripletons and quadrupletons (Chiu et al., 2014).
+- Improved Chao1: an extension of Chao1 which uses additional information,
+namely, the numbers of tripletons and quadrupletons (Chiu et al., 2014).
 }
 \examples{
 

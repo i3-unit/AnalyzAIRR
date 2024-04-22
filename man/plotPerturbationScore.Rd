@@ -35,6 +35,6 @@ data(RepSeqData)
 plotPerturbationScore(x = RepSeqData,
                       ctrl.names = c("tripod-30-813" ,"tripod-31-846"  ,"tripod-35-970"),
                       distance = "manhattan",
-                      order="cell_subset")
+                      order= "cell_subset")
                       
 }

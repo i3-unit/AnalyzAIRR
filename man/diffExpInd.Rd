@@ -7,7 +7,7 @@
 diffExpInd(
   x,
   sampleNames = NULL,
-  level = c("clone", "clonotype", "V", "J", "VJ", "CDR3nt", "CDR3aa"),
+  level = c("aaClone", "ntClone", "V", "J", "VJ", "ntCDR3", "aaCDR3"),
   scale = c("frequency", "count"),
   th = 1.5,
   remove.zeros = TRUE
@@ -18,7 +18,7 @@ diffExpInd(
 
 \item{sampleNames}{a vector of character with the sample_ids of the repertoires to drop from the RepSeqExperiment object.}
 
-\item{level}{a character specifying the repertoire level to be analyzed. Should be one of "clone","clonotype","CDR3aa","CDR3nt","V", "J",or "VJ".}
+\item{level}{a character specifying the repertoire level to be analyzed. Should be one of "aaClone","ntClone","aaCDR3","ntCDR3","V", "J",or "VJ".}
 
 \item{scale}{a character specifying the type of occurrence to take into account: "count" or "frequency".}
 

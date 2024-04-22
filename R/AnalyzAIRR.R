@@ -58,9 +58,12 @@
 #' @import gridExtra
 #' @import kableExtra
 #' @import MESS
+#' @import tibble
 #' @import ComplexHeatmap
 #' @importFrom car dataEllipse
+#' @importFrom rlang sym
 #' @importFrom lemon g_legend
+#' @importFrom tidyselect all_of
 #' @importFrom circlize chordDiagram circos.track circos.text 
 #' @importFrom stats median sd as.formula var frequency cmdscale lag lm
 #' @importFrom grDevices colorRampPalette

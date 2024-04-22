@@ -6,10 +6,12 @@
 \usage{
 plotStatistics(
   x,
-  stat = c("nSequences", "clone", "clonotype", "V", "J", "VJ", "CDR3aa", "CDR3nt"),
-  groupBy = NULL,
+  stat = c("nSequences", "aaClone", "ntClone", "V", "J", "VJ", "aaCDR3", "ntCDR3"),
+  grouped = FALSE,
+  colorBy = NULL,
+  facetBy = NULL,
   label_colors = NULL,
-  show_stats = TRUE
+  show_stats = FALSE
 )
 }
 \arguments{
@@ -17,7 +19,11 @@ plotStatistics(
 
 \item{stat}{a character specifying the statistic to plot. Should one of the statistics in the metaData slot.}
 
-\item{groupBy}{a character indicating one or multiple groups to be compared. A Wilcoxon test is thus performed and adjusted p-values using the Holm method are shown. Colors are attributed to the different groups within the first column, and a facet is applied on the second column. If not specified, no statistical tests will be performed, and calculated values for each sample_id will be represented.}
+\item{grouped}{a character indicating one or multiple groups to be compared. A Wilcoxon test is thus performed and adjusted p-values using the Holm method are shown. Colors are attributed to the different groups within the first column, and a facet is applied on the second column. If not specified, no statistical tests will be performed, and calculated values for each sample_id will be represented.}
+
+\item{colorBy}{a character indicating a column name in mData. Colors are thus attributed to the different groups within this column. The chosen column must be of class factor.}
+
+\item{facetBy}{a vector of character indicating one or two column names in mData to apply a facet on.}
 
 \item{label_colors}{a list of colors for each variable in groupBy See \code{\link{plotColors}}. If NULL, default colors are used.}
 
@@ -30,9 +36,9 @@ These statistics include:
 
 - nSequences: the total number of sequences in a sample
 
-- CDR3nt: the number of unique nucleotide CDR3s
+- ntCDR3: the number of unique nucleotide CDR3s
 
-- CDR3aa: the number of unique amino acid CDR3s
+- aaCDR3: the number of unique amino acid CDR3s
 
 - V: the total number of V genes expressed in each sample
 
@@ -40,9 +46,9 @@ These statistics include:
 
 - VJ: the total number of V-J gene combinations
 
-- clone: the number of unique clones
+- aaClone: the number of unique aaClones
 
-- clonotype: the number of unique clonotypes
+- ntClone: the number of unique ntClones
 
 They can be compared between groups of samples or simply plotted for each sample.
 }
@@ -50,8 +56,8 @@ They can be compared between groups of samples or simply plotted for each sample
 
 data(RepSeqData)
 
-plotStatistics(x = RepSeqData, groupBy = "sex", stat = "V")
+plotStatistics(x = RepSeqData, stat = "V", colorBy = "sex")
 
-plotStatistics(x = RepSeqData, groupBy = c("cell_subset", "sex"), stat = "V")
+plotStatistics(x = RepSeqData, colorBy = "cell_subset", facetBy="sex", stat = "aaClone", grouped=TRUE)
 
 }

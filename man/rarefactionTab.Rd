@@ -10,12 +10,17 @@ rarefactionTab(x)
 \item{x}{an object of class \code{\linkS4class{RepSeqExperiment}}}
 }
 \value{
-a data.table of values that can be represented graphically as rarefaction curves. The function \code{\link{plotRarefaction}} can be used for that purpose.
+a data.table of values that can be represented graphically as
+rarefaction curves. The function \code{\link{plotRarefaction}} can be used
+for that purpose.
 }
 \description{
 This function computes rarefaction values for each sample.
 
-Rarefaction is a measure of species richness. It assesses the number of observed clonotypes for sets of N of sequences in a sample by randomly re-sampling a number of sequences multiple times and calculating the mean number of observed clonotypes.
+Rarefaction is a measure of species richness. It assesses the number of
+observed clones for sets of N of sequences in a sample by randomly
+re-sampling a number of sequences multiple times and calculating the mean
+number of observed clones.
 }
 \examples{
 

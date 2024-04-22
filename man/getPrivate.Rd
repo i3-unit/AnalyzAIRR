@@ -6,27 +6,33 @@
 \usage{
 getPrivate(
   x,
-  level = c("clone", "clonotype", "CDR3aa", "CDR3nt"),
+  level = c("ntCDR3", "aaCDR3", "ntClone", "aaClone"),
   singletons = FALSE
 )
 }
 \arguments{
 \item{x}{an object of class \code{\linkS4class{RepSeqExperiment}}}
 
-\item{level}{a character specifying the level of the repertoire to be taken into account. Should be one of clone","clonotype", "CDR3nt" or "CDR3aa".}
+\item{level}{a character specifying the level of the repertoire to be taken
+into account. Should be one of aaClone","ntClone", "ntCDR3" or "aaCDR3".}
 
-\item{singletons}{a boolean indicating whether or not private sequences with a count of 1 should be extracted. Default is FALSE.}
+\item{singletons}{a boolean indicating whether or not private sequences with
+a count of 1 should be extracted. Default is FALSE.}
 }
 \value{
-an object of class \code{\linkS4class{RepSeqExperiment}} composed exclusively of private sequences.
+an object of class \code{\linkS4class{RepSeqExperiment}} composed
+exclusively of private sequences.
 }
 \description{
-This function extract private sequences within the whole dataset, i.e. sequences found exclusively in one sample.
+This function extract private sequences from the whole dataset,
+ i.e. sequences found exclusively in one sample.
 }
 \examples{
 
 data(RepSeqData)
 
-privateclonotypes <- getPrivate(RepSeqData, level = "clonotype", singletons = FALSE)
+privateclones <- getPrivate(RepSeqData,
+                            level = "ntClone",
+                            singletons = FALSE)
 
 }

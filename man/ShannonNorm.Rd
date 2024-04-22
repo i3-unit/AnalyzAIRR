@@ -10,16 +10,21 @@ ShannonNorm(x)
 \item{x}{an object of class \code{\linkS4class{RepSeqExperiment}}}
 }
 \value{
-a new \code{\linkS4class{RepSeqExperiment}} object with the normalized data.
+a new \code{\linkS4class{RepSeqExperiment}} object with the
+normalized data.
 }
 \description{
-This function allows to normalize repertoires using the Shannon entropy as a threshold, thus eliminating rare sequences.
+This function allows to normalize repertoires using the Shannon
+entropy as a threshold, thus eliminating rare sequences.
 
-It is described in (Chaara et al., 2018) and is used to eliminate “uninformative” sequences resulting from experimental noise.
+It is described in (Chaara et al., 2018) and is used to eliminate
+“uninformative” sequences resulting from experimental noise.
 
-It is particularly efficient when applied on small samples as it corrects altered count distributions caused by a high-sequencing depth.
+It is particularly efficient when applied on small samples as it corrects
+altered count distributions caused by a high-sequencing depth.
 
-Sequences that are eliminated with this method are stored in the \code{oData} slot.
+Sequences that are eliminated with this method are stored in the \code{oData}
+slot.
 }
 \examples{
 

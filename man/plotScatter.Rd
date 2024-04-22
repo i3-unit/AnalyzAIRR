@@ -7,7 +7,7 @@
 plotScatter(
   x,
   sampleNames = NULL,
-  level = c("clone", "clonotype", "V", "J", "VJ", "CDR3nt", "CDR3aa"),
+  level = c("aaClone", "ntClone", "V", "J", "VJ", "ntCDR3", "aaCDR3"),
   scale = c("frequency", "log")
 )
 }
@@ -16,7 +16,7 @@ plotScatter(
 
 \item{sampleNames}{a vector of character indicating the two sample_ids of the repertoires to be analyzed. If not specified, the first two samples in the dataset are analyzed.}
 
-\item{level}{a character specifying the level of the repertoire to be analyzes. Should be one of "clone", "clonotype", "V", "J", "VJ", "CDR3nt" or "CDR3aa".}
+\item{level}{a character specifying the level of the repertoire to be analyzes. Should be one of "aaClone", "ntClone", "V", "J", "VJ", "ntCDR3" or "aaCDR3".}
 
 \item{scale}{an integer indicating whether to plot a regular or a logarithmic scale.}
 }
@@ -31,5 +31,10 @@ plotScatter(x = RepSeqData,
             level = "V",
             sampleNames = c("tripod-30-813", "tripod-30-815"),
             scale = "log")
+            
+plotScatter(x = RepSeqData,
+            level = "aaClone",
+            sampleNames = c("tripod-30-813", "tripod-30-815"),
+            scale = "frequency")
 
 }

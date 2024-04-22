@@ -24,7 +24,7 @@ perturbationScore(
 a data frame containing the perturbation scores for each V-gene.
 }
 \description{
-This function computes the perturbation scores of the CDR3aa length distribution within each V gene.
+This function computes the perturbation scores of the aaCDR3 length distribution within each V gene.
 
 Scores are calculated as a distance between each repertoire and the mean of the control group using the ISEApeaks method (Colette and Six., 2002).
 }

@@ -1,5 +1,5 @@
 test_that("multiplication works", {
-  l <-   list.files(system.file(file.path('extdata/mixcr'),
+  l <-   list.files(system.file(file.path('extdata/MiAIRR'),
                                  package = 'AnalyzAIRR'),
                                  full.names = TRUE)
 
@@ -10,10 +10,10 @@ test_that("multiplication works", {
   metaData$sex <- factor(metaData$sex)
   
   dataset <- AnalyzAIRR::readAIRRSet(fileList = l,
-                         fileFormat = "MiXCR",
+                         fileFormat = "MiAIRR",
                          chain = "TRA",
                          sampleinfo = metaData,
-                         filter.singletons = FALSE,
+                         filter.singletons = TRUE,
                          aa.th=9,
                          outFiltered = FALSE,
                          raretab = FALSE,

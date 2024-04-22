@@ -1,32 +1,4 @@
-utils::globalVariables(c("J", ".", "..sNames", ".SD", "variable2", "cdr3", "cdr3_nt", "v_gene", "j_gene", "barcode","raw_clonotype_id", ".SDcols", "key", ".N", "count", "..keep.cols", "sampleNames", "CDR3aa.length", "CDR3aa", "pct", "ctrl.mean", "ID","prop"))
-
-#' @title parse rTCR output
-#'
-#' @description parse output tables from rTCR
-#'
-#' @details function imports clonotype tables produced by the rTCR aligner.
-#'
-#' @param path full path to the aligned file. Files can be loaded as gzipped.
-#' @return a data.table of 9 columns: \code{sample_id} name, \code{V} V gene, \code{J} J gene, \code{CDR3aa} amino acid CDR3 sequence, \code{CDR3nt} nucleotide CDR3 sequence, \code{clone} full clonotype sequence, \code{VJ} V-J gene combinations, \code{score} mapq quality score, \code{count} clonotype count. Clonotypes are eliminated if a STOP codon (*) is detected in CDR3aa chain, if the CDR3nt length is not divisible by 3 or if the CDR3nt sequence is ambiguous (contains a "N" base).
-#' @export
-#' @keywords internal
-#'
-parseRTCR <- function(path) {
-  if (missing(path)) stop("path to rtcr output is missing.")
-  V=CDR3aa <- NULL
-  # load
-  if (filetype(path) == "gzfile") {
-    rtcrtab <- data.table::fread(cmd=eval(paste("gunzip -c ", path)))
-  } else {
-    rtcrtab <- data.table::fread(path)
-  }
-  sName <- gsub(".tsv|.txt|.gz|.zip|.tar|.csv", "", basename(path))
-  data.table::setnames(rtcrtab, c("count", "CDR3aa", "V", "J", "CDR3nt", "V.pos", "J.pos", "Frame", "stopCodons", "score", "Quality"))
-  rtcrtab$sample_id <- sName
-  out <- rtcrtab[, c("V", "J") := list(gsub("\\*..", "", V), gsub("\\*..", "", J))][, c("VJ", "clone","clonotype") := list(paste(V, J), paste(V, CDR3aa, J),paste(CDR3nt, V, CDR3aa, J))]
-  out <- out[, c("sample_id", "CDR3nt", "CDR3aa", "V", "J", "VJ", "clone","clonotype" , "count")]
-  return(out)
-}
+utils::globalVariables(c("J", ".", "..sNames", ".SD", "variable2", "cdr3", "cdr3_nt", "v_gene", "j_gene", "barcode","raw_clonotype_id", ".SDcols", "key", ".N", "count", "..keep.cols", "sampleNames", "aaCDR3.length", "aaCDR3", "pct", "ctrl.mean", "ID","prop"))
 
 #' @title parse MiXCR output
 #'
@@ -36,19 +8,13 @@ parseRTCR <- function(path) {
 #'
 #' @param path full path to the aligned file. Files can be loaded as gzipped.
 #' @param chain character, the TCR chain to be analyzed. One of \code{A} or \code{B}. Default value is \code{A}.
-#' @return a data.table of 9 columns: \code{sample_id} name, \code{V} V gene, \code{J} J gene, \code{CDR3aa} amino acid CDR3 sequence, \code{CDR3nt} nucleotide CDR3 sequence, \code{clone} full clonotype sequence, \code{VJ} V-J gene combinations, \code{score} mapq quality score, \code{count} clonotype count. Clonotypes are eliminated if a STOP codon (*) is detected in CDR3aa chain, if the CDR3nt length is not divisible by 3 or if the CDR3nt sequence is ambiguous (contains a "N" base).
+#' @return a data.table of 9 columns: \code{sample_id} name, \code{V} V gene, \code{J} J gene,\code{VJ} V-J gene combinations, \code{aaCDR3} amino acid CDR3 sequence, \code{ntCDR3} nucleotide CDR3 sequence, \code{ntClone} full clone sequence in nucleotide, \code{aaClone} full clone sequence in amino acid, \code{count} clone count. Clones are eliminated if a STOP codon (*) is detected in aaCDR3 chain, if the ntCDR3 length is not divisible by 3 or if the ntCDR3 sequence is ambiguous (contains a "N" base).
 #' @export
 #' @keywords internal
-#' @examples
-#' l <- list.files(system.file(file.path('extdata/mixcr'),
-#'                      package = 'AnalyzAIRR'),
-#'                      full.names = TRUE)
-#' path <- l[1]
-#' mixcr_table <- parseMiXCR(path = path, chain = "TRA")
-#'
+
 parseMiXCR <- function(path, chain = c("TRA", "TRB","TRG","TRD","IGH","IGK","IGL")) {
   if (path == "" | missing(path))  stop("Empty file name.")
-  tab=V=CDR3nt=CDR3aa=J=sample_id <- NULL
+  tab=V=ntCDR3=aaCDR3=J=sample_id <- NULL
   if (filetype(path)=="gzfile") {
     tab <- data.table::fread(cmd=eval(paste("gunzip -c ", path)))
   } else {
@@ -108,10 +74,10 @@ parseMiXCR <- function(path, chain = c("TRA", "TRB","TRG","TRD","IGH","IGK","IGL
   keep.cols <- c(ntcdr3, aacdr3, vHits, jHits, count)
 
   tab <- tab[, ..keep.cols]
-  data.table::setnames(tab, c("CDR3nt", "CDR3aa", "V", "J", "count"))
+  data.table::setnames(tab, c("ntCDR3", "aaCDR3", "V", "J", "count"))
   tab[, V := {t1 = gsub("\\*..", "", V); t2 = gsub("\\s*\\([^\\)]+\\)", "", t1); t3 = gsub("\\,.*", "", t2); t4 = gsub("/.*", "", t3)}]
   tab[, J := {t1 = gsub("\\*..", "", J); t2 = gsub("\\s*\\([^\\)]+\\)", "", t1); t3 = gsub("\\,.*", "", t2); t4 = gsub("/.*", "", t3)}]
-  tab[, CDR3aa := gsub("\\_", "*", CDR3aa)]
+  tab[, aaCDR3 := gsub("\\_", "*", aaCDR3)]
 
   ch <- match.arg(chain)
   tab <- switch(ch,
@@ -138,7 +104,7 @@ parseMiXCR <- function(path, chain = c("TRA", "TRB","TRG","TRD","IGH","IGK","IGL
                 })
   sName <- gsub(".tsv|.txt|.gz|.zip|.tar|.csv", "", basename(path))
   tab$sample_id <- sName
-  out <- tab[, c("VJ", "clone", "clonotype") := list(paste(V, J), paste(V, CDR3aa, J), paste(CDR3nt, V, CDR3aa, J))][, c("sample_id", "CDR3nt", "CDR3aa", "V", "J", "VJ", "clone","clonotype" ,"count")]
+  out <- tab[, c("VJ", "aaClone", "ntClone") := list(paste(V, J), paste(V, aaCDR3, J), paste( V, ntCDR3, J))][, c("sample_id", "V", "J", "VJ", "ntCDR3", "aaCDR3", "aaClone","ntClone" ,"count")]
   return(out)
 }
 
@@ -150,13 +116,13 @@ parseMiXCR <- function(path, chain = c("TRA", "TRB","TRG","TRD","IGH","IGK","IGL
 #'
 #' @param path full path to the aligned file. Files can be loaded as gzipped.
 #' @param chain character, the TCR chain to be analyzed. One of \code{A} or \code{B}. Default value is \code{A}.
-#' @return a data.table of 9 columns: \code{sample_id} name, \code{V} V gene, \code{J} J gene, \code{CDR3aa} amino acid CDR3 sequence, \code{CDR3nt} nucleotide CDR3 sequence, \code{clone} full clonotype sequence, \code{VJ} V-J gene combinations, \code{score} mapq quality score, \code{count} clonotype count. Clonotypes are eliminated if a STOP codon (*) is detected in CDR3aa chain, if the CDR3nt length is not divisible by 3 or if the CDR3nt sequence is ambiguous (contains a "N" base).
+#' @return a data.table of 9 columns: \code{sample_id} name, \code{V} V gene, \code{J} J gene,\code{VJ} V-J gene combinations, \code{aaCDR3} amino acid CDR3 sequence, \code{ntCDR3} nucleotide CDR3 sequence, \code{ntClone} full clone sequence in nucleotide, \code{aaClone} full clone sequence in amino acid, \code{count} clone count. Clones are eliminated if a STOP codon (*) is detected in aaCDR3 chain, if the ntCDR3 length is not divisible by 3 or if the ntCDR3 sequence is ambiguous (contains a "N" base).
 #' @export
 #' @keywords internal
 #'
 parseImmunoseq <- function(path, chain = c("TRA", "TRB","TRG","TRD","IGH","IGK","IGL")) {
   if (path == "" | missing(path))  stop("Empty file name.")
-  tab=V=CDR3nt=CDR3aa=J=sample_id=vMaxResolved=jMaxResolved <- NULL
+  tab=V=ntCDR3=aaCDR3=J=sample_id=vMaxResolved=jMaxResolved <- NULL
   if (filetype(path) == "gzfile") {
     tab <- data.table::fread(cmd=eval(paste("gunzip -c ", path)))
   } else {
@@ -191,27 +157,28 @@ parseImmunoseq <- function(path, chain = c("TRA", "TRB","TRG","TRD","IGH","IGK",
                 }
   )
   tab[, vMaxResolved := gsub("\\*..", "", vMaxResolved)][, jMaxResolved := gsub("\\*..", "", jMaxResolved)]
-  data.table::setnames(tab, c( "CDR3nt", "CDR3aa", "V", "J", "count"))
+  data.table::setnames(tab, c( "ntCDR3", "aaCDR3", "V", "J", "count"))
   sName <- gsub(".tsv|.txt|.gz|.zip|.tar|.csv", "", basename(path))
   tab$sample_id <- sName
-  out <- tab[, c("VJ", "clone", "clonotype") := list(paste(V, J), paste(V, CDR3aa, J), paste(CDR3nt, V, CDR3aa, J))][, c("sample_id", "CDR3nt", "CDR3aa", "V", "J", "VJ", "clone","clonotype" ,"count")]
+  out <- tab[, c("VJ", "aaClone", "ntClone") := list(paste(V, J), paste(V, aaCDR3, J), paste(V, ntCDR3, J))][, c("sample_id", "ntCDR3", "aaCDR3", "V", "J", "VJ", "aaClone","ntClone" ,"count")]
   return(out)
 }
 
-#' @title parse AIRR-C format
+#' @title parse MiAIRR format
 #'
-#' @description parse AIRR-C format
+#' @description parse MiAIRR format
 #'
-#' @details function imports the AIRR-C Rearrangement format which is a tab-delimited file format (.tsv) that defines the required and optional annotations for rearranged adaptive immune receptor sequences
+#' @details function imports the MiAIRR Rearrangement format which is a tab-delimited file format (.tsv) that defines the required and optional annotations for rearranged adaptive immune receptor sequences
 #'
 #' @param path full path to the aligned file. Files can be loaded as gzipped.
 #' @param chain character, the TCR chain to be analyzed. One of \code{A} or \code{B}. Default value is \code{A}.
-#' @return a data.table of 9 columns: \code{sample_id} name, \code{V} V gene, \code{J} J gene, \code{CDR3aa} amino acid CDR3 sequence, \code{CDR3nt} nucleotide CDR3 sequence, \code{clone} full clonotype sequence, \code{VJ} V-J gene combinations, \code{score} mapq quality score, \code{count} clonotype count. Clonotypes are eliminated if a STOP codon (*) is detected in CDR3aa chain, if the CDR3nt length is not divisible by 3 or if the CDR3nt sequence is ambiguous (contains a "N" base).
+#' @return a data.table of 9 columns: \code{sample_id} name, \code{V} V gene, \code{J} J gene,\code{VJ} V-J gene combinations, \code{aaCDR3} amino acid CDR3 sequence, \code{ntCDR3} nucleotide CDR3 sequence, \code{ntClone} full clone sequence in nucleotide, \code{aaClone} full clone sequence in amino acid, \code{count} clone count. Clones are eliminated if a STOP codon (*) is detected in aaCDR3 chain, if the ntCDR3 length is not divisible by 3 or if the ntCDR3 sequence is ambiguous (contains a "N" base).
 #' @keywords internal
 #' @export
+#' 
 parseAIRRC <- function(path, chain = c("TRA", "TRB","TRG","TRD","IGH","IGK","IGL")) {
   if (path == "" | missing(path))  stop("Empty file name.")
-  tab=V=CDR3nt=CDR3aa=J=sample_id <- NULL
+  tab=V=ntCDR3=aaCDR3=J=sample_id <- NULL
   if (filetype(path)=="gzfile") {
     tab <- data.table::fread(cmd=eval(paste("gunzip -c ", path)))
   } else {
@@ -222,10 +189,10 @@ parseAIRRC <- function(path, chain = c("TRA", "TRB","TRG","TRD","IGH","IGK","IGL
   keep.cols <- c("junction", "junction_aa", "v_call", "j_call", n_count)
 
   tab <- tab[, ..keep.cols]
-  data.table::setnames(tab, c("CDR3nt", "CDR3aa", "V", "J", "count"))
+  data.table::setnames(tab, c("ntCDR3", "aaCDR3", "V", "J", "count"))
   tab[, V := {t1 = gsub("\\*..", "", V); t2 = gsub("\\s*\\([^\\)]+\\)", "", t1); t3 = gsub("\\,.*", "", t2); t4 = gsub("/.*", "", t3)}]
   tab[, J := {t1 = gsub("\\*..", "", J); t2 = gsub("\\s*\\([^\\)]+\\)", "", t1); t3 = gsub("\\,.*", "", t2); t4 = gsub("/.*", "", t3)}]
-  tab[, CDR3aa := gsub("\\_", "*", CDR3aa)]
+  tab[, aaCDR3 := gsub("\\_", "*", aaCDR3)]
 
   ch <- match.arg(chain)
   tab <- switch(ch,
@@ -252,7 +219,7 @@ parseAIRRC <- function(path, chain = c("TRA", "TRB","TRG","TRD","IGH","IGK","IGL
                 })
   sName <- gsub(".tsv|.txt|.gz|.zip|.tar|.csv", "", basename(path))
   tab$sample_id <- sName
-  out <- tab[, c("VJ", "clone", "clonotype") := list(paste(V, J), paste(V, CDR3aa, J), paste(CDR3nt, V, CDR3aa, J))][, c("sample_id", "CDR3nt", "CDR3aa", "V", "J", "VJ", "clone","clonotype" ,"count")]
+  out <- tab[, c("VJ", "aaClone", "ntClone") := list(paste(V, J), paste(V, aaCDR3, J), paste(V, ntCDR3, J))][, c("sample_id", "V", "J", "VJ", "ntCDR3", "aaCDR3", "aaClone","ntClone" ,"count")]
   return(out)
 }
 
@@ -267,13 +234,13 @@ parseAIRRC <- function(path, chain = c("TRA", "TRB","TRG","TRD","IGH","IGK","IGL
 #' @param keep.unproductive a boolean, whether unproductive sequences should be left in. Default is \code{FALSE}.
 #' Unproductive sequences include:
 #'
-#' - out-of-frame sequences: sequences with frame shifts based on the number of nucleotides in the CDR3nt column
+#' - out-of-frame sequences: sequences with frame shifts based on the number of nucleotides in the ntCDR3 column
 #'
-#' - sequences containing stop codons: CDR3aa sequences with a "*" or "~" symbols.should be kept. Default is \code{FALSE}.
+#' - sequences containing stop codons: aaCDR3 sequences with a "*" or "~" symbols.should be kept. Default is \code{FALSE}.
 #'
 #' @param aa.th an interger, indicates the maximum number of amino acids deviating from the mean length to tolerate. Default is 8. In this case, all amino acid CDR3s sequences with length falling outside the range of mean+- 8 are filtered out.
 #' @param outFiltered write in the directory path a data frame containing the filtered out reads. Default path is getwd().
-#' @return a data.table of 9 columns: \code{sample_id} name, \code{V} V gene, \code{J} J gene, \code{CDR3aa} amino acid CDR3 sequence, \code{CDR3nt} nucleotide CDR3 sequence, \code{clone} full clonotype sequence, \code{VJ} V-J gene combinations, \code{score} mapq quality score, \code{count} clonotype count. Clonotypes are eliminated if a STOP codon (*) is detected in CDR3aa chain, if the CDR3nt length is not divisible by 3 or if the CDR3nt sequence is ambiguous (contains a "N" base).
+#' @return a data.table of 9 columns: \code{sample_id} name, \code{V} V gene, \code{J} J gene,\code{VJ} V-J gene combinations, \code{aaCDR3} amino acid CDR3 sequence, \code{ntCDR3} nucleotide CDR3 sequence, \code{ntClone} full clone sequence in nucleotide, \code{aaClone} full clone sequence in amino acid, \code{count} clone count. Clones are eliminated if a STOP codon (*) is detected in aaCDR3 chain, if the ntCDR3 length is not divisible by 3 or if the ntCDR3 sequence is ambiguous (contains a "N" base).
 #' @export
 #' @keywords internal
 #'
@@ -283,17 +250,17 @@ readInFormat <- function(path,
                          keep.ambiguous = FALSE, keep.unproductive = FALSE,
                          aa.th = NULL, outFiltered = FALSE) {
   if (path == "" | missing(path))  stop("Empty file name.")
-  tab=V=CDR3nt=CDR3aa=J=sample_id <- NULL
+  tab=V=ntCDR3=aaCDR3=J=sample_id <- NULL
   if (filetype(path)=="gzfile") {
     tab <- data.table::fread(cmd=eval(paste("gunzip -c ", path)))
   } else {
     tab <- data.table::fread(path)
   }
 
-  coltab <- c("sample_id", "CDR3nt", "CDR3aa", "V", "J", "count")
+  coltab <- c("sample_id", "V", "J", "ntCDR3", "aaCDR3", "count")
 
   if (!all(grepl(paste(colnames(tab), collapse = "|"), coltab))) {
-    stop("Column names of clonotype table must contain sample_id, CDR3nt, CDR3aa, V, J, and count")
+    stop("Column names of clonotype table must be sample_id, V, J, ntCDR3, aaCDR3, and count")
   }
 
   ch <- match.arg(chain)
@@ -319,9 +286,9 @@ readInFormat <- function(path,
                 IGL = {
                   tab[grepl("IGL", V) & grepl("IGL", J), ]
                 })
-  tab <- tab[, c("VJ", "clone", "clonotype") := list(paste(V, J), paste(V, CDR3aa, J), paste(CDR3nt, V, CDR3aa, J))][, c("sample_id", "CDR3nt", "CDR3aa", "V", "J", "VJ", "clone","clonotype" ,"count")]
+  tab <- tab[, c("VJ", "aaClone", "ntClone") := list(paste(V, J), paste(V, aaCDR3, J), paste(V, ntCDR3, J))][, c("sample_id",  "V", "J", "VJ", "ntCDR3", "aaCDR3","aaClone","ntClone" ,"count")]
 
-  out <- filterClonotypes(tab, keep.ambiguous = keep.ambiguous,
+  out <- filterClones(tab, keep.ambiguous = keep.ambiguous,
                           keep.unproductive = keep.unproductive, aa.th = aa.th,
                           outFiltered = outFiltered)
 
@@ -339,34 +306,34 @@ readInFormat <- function(path,
 #'
 #'  - J: Joining gene name
 #'
-#'  - CDR3aa: CDR3 amino acid sequence
+#'  - aaCDR3: amino acid CDR3 sequence
 #'
-#'  - CDR3nt: CDR3 nucleotide sequence
+#'  - ntCDR3: nucleotide CDR3 sequence
 #'
-#'  - clone: Full clonotype sequence including the V gene, the amino acid CDR3 sequence and the J gene
+#'  - aaClone: Full clone sequence including the V gene, the amino acid CDR3 sequence and the J gene
 #'
 #'  - VJ: V-J gene combination using V and J gene names
 #'
-#'  - score: the alignment score communicated by the alignment tool
+#'  - ntClone: Full clone sequence including the V gene, the nucleotide CDR3 sequence and the J gene
 #'
-#'  - count: the occurrence of the clonotype, i.e the clone sequence
+#'  - count: the occurrence of the clone
 #'
 #'  and applies at least one of the following filters:
 #'
-#'  - filter out ambiguous clonotypes
+#'  - filter out ambiguous clones
 #'
 #'  - filter out unproductive sequences including out-of-frame sequences with stop codons
 #'
-#'  - filter out singletons, i.e clonotypes with an occurrence of 1
+#'  - filter out singletons, i.e clones with an occurrence of 1
 #'
 #' @param raw a single clonotype table containing the previously cited required columns
 #' @param keep.ambiguous a boolean, whether ambiguous sequences containing an "N" in the CDR3 nucleotide should be left in. Default is \code{FALSE}.
 #' @param keep.unproductive a boolean, whether unproductive sequences should be left in. Default is \code{FALSE}.
 #' Unproductive sequences include:
 #'
-#' - out-of-frame sequences: sequences with frame shifts based on the number of nucleotides in the CDR3nt column
+#' - out-of-frame sequences: sequences with frame shifts based on the number of nucleotides in the ntCDR3 column
 #'
-#' - sequences containing stop codons: CDR3aa sequences with a "*" or "~" symbols.should be kept. Default is \code{FALSE}.
+#' - sequences containing stop codons: aaCDR3 sequences with a "*" or "~" symbols.should be kept. Default is \code{FALSE}.
 #'
 #' @param aa.th an interger, indicates the maximum number of amino acids deviating from the mean length to tolerate. Default is 8. In this case, all amino acid CDR3s sequences with length falling outside the range of mean+- 8 are filtered out.
 #' @param outFiltered write in the directory path a data frame containing the filtered out reads. Default path is getwd().
@@ -375,14 +342,14 @@ readInFormat <- function(path,
 #' @keywords internal
 #' @examples
 #'
-#' l <- list.files(system.file(file.path('extdata/mixcr'),
+#' l <- list.files(system.file(file.path('extdata/MiAIRR'),
 #'                      package = 'AnalyzAIRR'),
 #'                      full.names = TRUE)
 #' path <- l[1]
 #'
-#' mixcr_table <- parseMiXCR(path = path, chain = "TRA")
+#' miairr_table <- parseAIRRC(path = path, chain = "TRA")
 #'
-#' out <- filterClonotypes(mixcr_table,
+#' out <- filterClones(miairr_table,
 #'                         keep.ambiguous = FALSE,
 #'                         keep.unproductive = TRUE,
 #'                         aa.th = 8,
@@ -390,16 +357,16 @@ readInFormat <- function(path,
 #'
 #'
 #'
-filterClonotypes <- function(raw,
+filterClones <- function(raw,
                              keep.ambiguous = FALSE,
                              keep.unproductive = FALSE,
                              aa.th = NULL,
                              outFiltered = FALSE) {
-  CDR3aa=CDR3nt <- NULL
+  aaCDR3=ntCDR3 <- NULL
   if (missing(raw)) stop("a clonotype table is required.\n")
   if (!data.table::is.data.table(raw)) stop("a data.table is expected.\n")
 
-  aa.size <- raw[, nchar(CDR3aa)]
+  aa.size <- raw[, nchar(aaCDR3)]
   if (!is.null(aa.th)){
   aa.distr <- table(aa.size)
   aa.length <- as.numeric(names(aa.distr))
@@ -411,9 +378,9 @@ filterClonotypes <- function(raw,
     indx <- keep.length
   }
   if (!keep.ambiguous)
-    indx <- indx & !raw[, grepl("N", CDR3nt)]
+    indx <- indx & !raw[, grepl("N", ntCDR3)]
   if (!keep.unproductive)
-    indx <- indx & !raw[, nchar(CDR3nt) %% 3 > 0 | grepl("\\*", CDR3aa) | grepl("\\~", CDR3aa)]
+    indx <- indx & !raw[, nchar(ntCDR3) %% 3 > 0 | grepl("\\*", aaCDR3) | grepl("\\~", aaCDR3)]
   if (outFiltered) {
     #data.table::fwrite(raw[!indx, ], file=file.path(getwd(), paste("filtered_", raw$sample_id[1], ".csv", sep="")), row.names=TRUE)
   out <- list(raw[indx, ], raw[!indx, ])
@@ -428,13 +395,13 @@ filterClonotypes <- function(raw,
 #'
 #' @description parse and filter clonotype tables.
 #'
-#' @details this function is a wrapper of parse functions & filterClonotypes
+#' @details this function is a wrapper of parse functions & filterClones
 #'
 #' @param path a path to an output file of the supported aligners.
-#' @param fileFormat a character, the name of the aligner. Should be one of "immunoseq" or "MiXCR". Default is MiXCR.
+#' @param fileFormat a character, the name of the aligner. Should be one of "immunoseq", "MiXCR" or "MiAIRR". Default is MiXCR.
 #' @param chain a character, indicates which TCR chain to import: \code{A} for the alpha chain and \code{B} for the beta chain. Default is \code{A}.
-#' @param keep.ambiguous a boolean, whether ambiguous clonotypes (containing a STOP codon) should be kept. Default is \code{FALSE}.
-#' @param keep.unproductive a boolean, whether unproductive clonotypes (Euclidean dividion of aa length by 3 > 0) should be kept. Default is \code{FALSE}.
+#' @param keep.ambiguous a boolean, whether ambiguous sequences (containing a STOP codon) should be kept. Default is \code{FALSE}.
+#' @param keep.unproductive a boolean, whether unproductive sequences (Euclidean dividion of aa length by 3 > 0) should be kept. Default is \code{FALSE}.
 #' @param aa.th an interger, indicates the maximum number of amino acids deviating from the mean length to tolerate. Default is NULL.
 #' @param outFiltered write in the directory path a data frame containing the columns of the input clonotype table and the filterd out reads as rows. Default path is getwd().
 #' @return a filtered clonotype table.
@@ -442,20 +409,20 @@ filterClonotypes <- function(raw,
 #' @keywords internal
 #' @examples
 #'
-#' l <- list.files(system.file(file.path('extdata/mixcr'),
+#' l <- list.files(system.file(file.path('extdata/MiAIRR'),
 #'                      package = 'AnalyzAIRR'),
 #'                      full.names = TRUE)
 #'
 #'
 #' dataset <- readAIRR(path = l[1],
-#'                           fileFormat = "MiXCR",
+#'                           fileFormat = "MiAIRR",
 #'                           chain = "TRA",
 #'                           keep.ambiguous = FALSE,
 #'                           keep.unproductive = FALSE,
 #'                          outFiltered = FALSE,
 #'                           aa.th = NULL)
 #'
-readAIRR <- function(path, fileFormat=c("MiXCR", "immunoseq", "AIRR-C"),
+readAIRR <- function(path, fileFormat=c("MiXCR", "immunoseq", "MiAIRR"),
                            chain=c("TRA", "TRB","TRG","TRD","IGH","IGK","IGL"),
                            keep.ambiguous=FALSE, keep.unproductive=FALSE, aa.th=NULL,
                            outFiltered=FALSE) {
@@ -470,10 +437,10 @@ readAIRR <- function(path, fileFormat=c("MiXCR", "immunoseq", "AIRR-C"),
                 immunoseq = {
                   parseImmunoseq(path, chain = ch)
                 },
-                `AIRR-C` = {
+                `MiAIRR` = {
                   parseAIRRC(path, chain = ch)
                 })
-  out <- filterClonotypes(raw,
+  out <- filterClones(raw,
                           keep.ambiguous = keep.ambiguous,
                           keep.unproductive = keep.unproductive,
                           aa.th = aa.th,
@@ -493,12 +460,12 @@ readAIRR <- function(path, fileFormat=c("MiXCR", "immunoseq", "AIRR-C"),
 #'
 #'  - filtering out unproductive sequences including the ones with stop codons, namely out-of-frame sequences
 #'
-#'  - filtering out singletons, i.e clonotypes with an occurrence of 1
+#'  - filtering out singletons, i.e clones with an occurrence of 1
 #'
 #'  - filtering out short or extensively long amino acid CDR3 sequences
 #'
 #' @param fileList a list of paths to the alignment files. File format can be one of the following: .tsv, txt.gz, .zip, or .tar
-#' @param fileFormat a character vector specifying the format of the input files, i.e. the tool that was used to generate/align the files. Should be one of "MiXCR", "immunoseq", or "AIRR-C".
+#' @param fileFormat a character vector specifying the format of the input files, i.e. the tool that was used to generate/align the files. Should be one of "MiXCR", "immunoseq", or "MiAIRR".
 #' @param chain a character vector indicating a single TCR or Ig chain to analyze. The vector can be one of the following:
 #'
 #' - "TRA", "TRB","TRG" or "TRD" for the TCR repertoires
@@ -518,9 +485,9 @@ readAIRR <- function(path, fileFormat=c("MiXCR", "immunoseq", "AIRR-C"),
 #'
 #' - out-of-frame sequences: sequences with frame shifts based on the number of nucleotides in their CDR3s
 #'
-#' - sequences containing stop codons: CDR3aa sequences with a "*" or "~" should be kept. Default is \code{FALSE}
+#' - sequences containing stop codons: aaCDR3 sequences with a "*" or "~" should be kept. Default is \code{FALSE}
 #'
-#' @param filter.singletons a boolean indicating whether or not clonotypes (CDR3nt+V+CDR3aa+J) with an occurrence of 1 should be filtered out. Default is \code{FALSE}
+#' @param filter.singletons a boolean indicating whether or not ntClones (V+ntCDR3+J) with an occurrence of 1 should be filtered out. Default is \code{FALSE}
 #' @param aa.th an integer determining the CDR3 amino acid sequence length limits, i.e. the maximum number of amino acids deviating from the mean length that is accepted. The default value is 8, which keeps amino acid CDR3s with a length that falls inside the following range: mean length-8 =< aa.th <= mean length+ 8.
 #' @param outFiltered a boolean indicating whether or not to write in the oData slot of the RepSeqexperiment object a data frame containing the filtered out reads.
 #' @param raretab a boolean indicating whether or not a rarefaction table should be generated. It uses the \code{\link{rarefactionTab}} function, which computes a rarefaction table for each sample. Default is \code{TRUE}.
@@ -529,7 +496,7 @@ readAIRR <- function(path, fileFormat=c("MiXCR", "immunoseq", "AIRR-C"),
 #' @return an object of class \code{\link{RepSeqExperiment}} that is  used in all the analytical metrics proposed by the AnalyzAIRR package. See \code{\link{RepSeqExperiment-class}} for more details.
 #' @export
 #' @examples
-#' l <- list.files(system.file(file.path('extdata/mixcr'),
+#' l <- list.files(system.file(file.path('extdata/MiAIRR'),
 #'                      package = 'AnalyzAIRR'),
 #'                      full.names = TRUE)
 #'
@@ -542,7 +509,7 @@ readAIRR <- function(path, fileFormat=c("MiXCR", "immunoseq", "AIRR-C"),
 #' metaData$sex <- factor(metaData$sex)
 #'
 #' dataset <- readAIRRSet(fileList = l,
-#'                        fileFormat = "MiXCR",
+#'                        fileFormat = "MiAIRR",
 #'                        chain = "TRA",
 #'                        sampleinfo = metaData,
 #'                        filter.singletons = FALSE,
@@ -551,7 +518,7 @@ readAIRR <- function(path, fileFormat=c("MiXCR", "immunoseq", "AIRR-C"),
 #'                        raretab = FALSE,
 #'                        cores=1L)
 #'
-readAIRRSet <- function(fileList, fileFormat = c("MiXCR", "immunoseq",  "AIRR-C"),
+readAIRRSet <- function(fileList, fileFormat = c("MiXCR", "immunoseq",  "MiAIRR"),
                              chain = c("TRA", "TRB","TRG","TRD","IGH","IGK","IGL"),
                              sampleinfo = NULL,
                              keep.ambiguous = FALSE,
@@ -575,7 +542,7 @@ readAIRRSet <- function(fileList, fileFormat = c("MiXCR", "immunoseq",  "AIRR-C"
     cat("Loading and filtering sequences")
     cl <- parallel::makeCluster(cores, type = "SOCK", rscript_args = "--vanilla", useXDR = TRUE)
     parallel::clusterExport(cl = cl, varlist = c("filetype", "readAIRR",
-                                                 "parseMiXCR", "parseImmunoseq", "parseAIRRC", "filterClonotypes", "setnames"))
+                                                 "parseMiXCR", "parseImmunoseq", "parseAIRRC", "filterClones", "setnames"))
     repList <- pbapply::pblapply(cl = cl,
                                  fileList,
                                  readAIRR,
@@ -612,8 +579,8 @@ readAIRRSet <- function(fileList, fileFormat = c("MiXCR", "immunoseq",  "AIRR-C"
   sdata <- data.frame(sample_id = snames, row.names = snames, stringsAsFactors = TRUE)
   if (!is.null(sampleinfo)) sdata <- data.frame(base::merge(sdata, sampleinfo, by = 0, sort = FALSE), row.names = 1)
   if (nrow(sdata) != length(fileList)) stop("Number of files to import differ from the number of samples in sampleinfo file.")
-  sdata[vapply(sdata, FUN = is.character, FUN.VALUE = logical(1))] <- lapply(sdata[vapply(sdata, FUN = is.character, FUN.VALUE = logical(1))], as.factor)
-  stats <- data.frame(countobj[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols = c("CDR3nt", "CDR3aa", "V", "J", "VJ","clone","clonotype"), by = "sample_id"], row.names = 1)
+  #sdata[vapply(sdata, FUN = is.character, FUN.VALUE = logical(1))] <- lapply(sdata[vapply(sdata, FUN = is.character, FUN.VALUE = logical(1))], as.factor)
+  stats <- data.frame(countobj[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols = c( "V", "J", "VJ","ntCDR3", "aaCDR3","aaClone","ntClone"), by = "sample_id"], row.names = 1)
   sdata <- data.frame(base::merge(sdata, stats, by = 0, sort=FALSE), row.names = 1, stringsAsFactors = TRUE)
   sdata <- sdata[match(rownames(sdata), rownames(stats)),]
   cat("Creating a RepSeqExperiment object...\n")
@@ -650,7 +617,7 @@ readAIRRSet <- function(fileList, fileFormat = c("MiXCR", "immunoseq",  "AIRR-C"
   }
   if (filter.singletons) {
     cat ("Removing singleton sequences...")
-    out <- filterCount(out,level="clonotype", n = 1)
+    out <- filterCount(out,level="ntClone", n = 1)
   }
   
   oData(out) <- c(oData(out), label_colors=list(plotColors(out)))
@@ -669,22 +636,22 @@ readAIRRSet <- function(fileList, fileFormat = c("MiXCR", "immunoseq",  "AIRR-C"
 #'
 #'  - J: Joining gene name
 #'
-#'  - CDR3aa: CDR3 amino acid sequence
+#'  - aaCDR3: amino acid CDR3 sequence
 #'
-#'  - CDR3nt: CDR3 nucleotide sequence
+#'  - ntCDR3: nucleotide CDR3 sequence
 #'
-#'  - clone: Full clonotype sequence including the V gene, the amino acid CDR3 sequence and the J gene
+#'  - aaClone: Full clone sequence including the V gene, the amino acid CDR3 sequence and the J gene
 #'  
 #'  - VJ: V-J gene combination using V and J gene names
 #'
-#'  - score: the alignment score communicated by the alignment tool
+#'  - ntClone: Full clone sequence including the V gene, the nucleotide CDR3 sequence and the J gene
 #'
-#'  - count: the occurrence of the clonotype, i.e the clone sequence
+#'  - count: the occurrence of the clone
 #'
 #' Clonotype tables must only contain a single chain. No paired-chain analysis are provided by the AnalyzAIRR package.
-#' Pre-filtered files obtained using the \code{\link{filterClonotypes}} function can be used as input.
+#' Pre-filtered files obtained using the \code{\link{filterClones}} function can be used as input.
 #'
-#' @param clonotypetab a single clonotype table containnig the previously cited columns
+#' @param clonotypetab a single clonotype table containing the previously cited columns
 #' @param sampleinfo a data frame containing:
 #'
 #' - a column with the sample names. Names should match the base names of the corresponding files and their order. This column should be assigned as row.names when the metadata file is loaded. See the example below.
@@ -695,33 +662,19 @@ readAIRRSet <- function(fileList, fileFormat = c("MiXCR", "immunoseq",  "AIRR-C"
 #' @return an object of class \code{RepSeqExperiment} that is  used in all the analytical metrics proposed by the AnalyzAIRR package. See \code{\link{RepSeqExperiment-class}} for more details.
 #' @export
 #' @keywords internal
-#' @examples
-#' l <- list.files(system.file(file.path('extdata/mixcr'),
-#'                      package = 'AnalyzAIRR'),
-#'                      full.names = TRUE)
-#'
-#' dataset <- readAIRR(path = l[1],
-#'                           fileFormat = "MiXCR",
-#'                           chain = "TRA",
-#'                           keep.ambiguous = FALSE,
-#'                           keep.unproductive = FALSE,
-#'                           outFiltered = FALSE,
-#'                           aa.th = 8)
-#'
-#' repseqexp_object <- RepSeqExp(clonotypetab = dataset)
 #'
 RepSeqExp <- function(clonotypetab, sampleinfo = NULL){
-  coltab <- c("sample_id", "CDR3nt", "CDR3aa", "V", "J", "count")
+  coltab <- c("sample_id", "V", "J", "ntCDR3", "aaCDR3", "count")
   if (missing(clonotypetab)) stop("clonotype table is missing, a clonotype table is expected.")
   if (!is.data.table(clonotypetab)) setDT(clonotypetab)
 
   if (!all(grepl(paste(colnames(clonotypetab), collapse = "|"), coltab))) {
-    stop("Column names of clonotype table must contain sample_id, CDR3nt, CDR3aa, V, J, VJ, count")
+    stop("Column names of clonotype table must contain sample_id, V, J, ntCDR3, aaCDR3, VJ, count")
   }
 
-  clonotypetab <- clonotypetab[, c("VJ", "clone", "clonotype") := list(paste(V, J), paste(V, CDR3aa, J), paste(CDR3nt, V, CDR3aa, J))][, c("sample_id", "CDR3nt", "CDR3aa", "V", "J", "VJ", "clone", "clonotype" ,"count")]
+  clonotypetab <- clonotypetab[, c("VJ", "aaClone", "ntClone") := list(paste(V, J), paste(V, aaCDR3, J), paste(V, ntCDR3, J))][, c("sample_id", "V", "J", "VJ","ntCDR3", "aaCDR3",  "aaClone", "ntClone" ,"count")]
 
-  stats <- clonotypetab[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), by = "sample_id", .SDcols = c("CDR3nt", "CDR3aa", "V", "J", "VJ", "clone", "clonotype")]
+  stats <- clonotypetab[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), by = "sample_id", .SDcols = c( "V", "J", "VJ", "ntCDR3", "aaCDR3","aaClone", "ntClone")]
   sNames <- unique(clonotypetab$sample_id)
   if (is.null(sampleinfo)) {
     sampleinfo <- data.frame(stats, row.names = sNames)
@@ -749,9 +702,9 @@ RepSeqExp <- function(clonotypetab, sampleinfo = NULL){
 #' These files should contain the following column names:
 #' - sample_id: Sample names
 #'
-#' - CDR3nt: CDR3 nucleotide sequence
+#' - ntCDR3: nucleotide CDR3 sequence
 #'
-#' - CDR3aa: CDR3 amino acid sequence
+#' - aaCDR3: amino acid CDR3 sequence
 #'
 #' - V: Variable gene name (IMGT nomenclature)
 #'
@@ -792,9 +745,9 @@ RepSeqExp <- function(clonotypetab, sampleinfo = NULL){
 #'
 #' - out-of-frame sequences: sequences with frame shifts based on the number of nucleotides in their CDR3s
 #'
-#' - sequences containing stop codons: CDR3aa sequences with a "*" or "~" should be kept. Default is \code{FALSE}
+#' - sequences containing stop codons: aaCDR3 sequences with a "*" or "~" should be kept. Default is \code{FALSE}
 #'
-#' @param filter.singletons a boolean indicating whether or not clonotypes (CDR3nt+V+CDR3aa+J) with an occurrence of 1 should be filtered out. Default is \code{FALSE}
+#' @param filter.singletons a boolean indicating whether or not ntClones (V+ntCDR3+J) with an occurrence of 1 should be filtered out. Default is \code{FALSE}
 #' @param aa.th an integer determining the CDR3 amino acid sequence length limits, i.e. the maximum number of amino acids deviating from the mean length that is accepted. The default value is 8, which keeps amino acid CDR3s with a length that falls inside the following range: mean length-8 =< aa.th <= mean length+ 8.
 #' @param outFiltered a boolean indicating whether or not to write in the oData slot of the RepSeqexperiment object a data frame containing the filtered out reads.
 #' @param raretab a boolean indicating whether or not a rarefaction table should be generated. It uses the \code{\link{rarefactionTab}} function which computes a rarefaction table for each sample. Default is \code{TRUE}.
@@ -806,18 +759,6 @@ RepSeqExp <- function(clonotypetab, sampleinfo = NULL){
 #' l <- list.files(system.file(file.path('extdata/informat'),
 #'                      package = 'AnalyzAIRR'),
 #'                      full.names = TRUE)
-#' l # list of gz-compressed files
-#'
-#' dataset <- readFormatSet(fileList = l,
-#'                         sampleinfo = NULL,
-#'                         cores = 10,
-#'                         chain = "TRA",
-#'                         keep.ambiguous = FALSE,
-#'                         keep.unproductive = FALSE,
-#'                         filter.singletons = FALSE,
-#'                         aa.th = 8,
-#'                         raretab = TRUE,
-#'                         outFiltered = TRUE)
 #'
 #'
 readFormatSet <- function(fileList,
@@ -841,7 +782,7 @@ readFormatSet <- function(fileList,
     cat("Loading and filtering sequences...\n")
     cl <- parallel::makeCluster(cores, type = "SOCK", rscript_args = "--vanilla", useXDR = TRUE)
     parallel::clusterExport(cl = cl, varlist = c("filetype", "readInFormat",
-                                                 "filterClonotypes",
+                                                 "filterClones",
                                                  "setnames"))
     repList <- pbapply::pblapply(cl = cl,
                                  fileList,
@@ -888,7 +829,7 @@ readFormatSet <- function(fileList,
   if (nrow(sdata) != length(fileList))
     stop("Number of files to import differ from the number of samples in sampleinfo file.")
 
-  stats <- data.frame(tab[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols = c("CDR3nt", "CDR3aa", "V", "J", "VJ","clone","clonotype"), by = "sample_id"], row.names = 1)
+  stats <- data.frame(tab[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols = c("V", "J", "VJ","ntCDR3", "aaCDR3", "aaClone","ntClone"), by = "sample_id"], row.names = 1)
   sdata <- data.frame(base::merge(sdata, stats, by = 0, sort = FALSE),
                       row.names = 1, stringsAsFactors = TRUE)
   sdata <- sdata[match(rownames(sdata), rownames(stats)), ]
@@ -922,7 +863,7 @@ readFormatSet <- function(fileList,
   }
   if (filter.singletons) {
     cat("Removing singleton sequences...")
-    out <- filterCount(out, level = "clonotype", n = 1)
+    out <- filterCount(out, level = "ntClone", n = 1)
   }
 
   oData(out) <- c(oData(out), label_colors=list(plotColors(out)))
@@ -944,7 +885,7 @@ formatSingleCell<-function(path)
 {
   if (path == "" | missing(path)) 
     stop("Empty file name.")
-  tab = V = CDR3nt = CDR3aa = J = sample_id = cell_barcode = clonotype_ID <- NULL
+  tab = V = ntCDR3 = aaCDR3 = J = sample_id = cell_barcode = clonotype_ID <- NULL
   if (filetype(path) == "gzfile") {
     tab <- data.table::fread(cmd = eval(paste("gunzip -c ", 
                                               path)))
@@ -968,27 +909,27 @@ formatSingleCell<-function(path)
 
   keep.cols <- c(ntcdr3, aacdr3, vHits, jHits,cellbarcode,clonotypeid)
   tab <- tab[, ..keep.cols]
-  tab <- tab[, `:=`(c("clonotype_id","VJ", "clone", "clonotype"), list(paste(raw_clonotype_id),
+  tab <- tab[, `:=`(c("clonotype_id","VJ", "aaClone", "ntClone"), list(paste(raw_clonotype_id),
                                                         paste(v_gene,j_gene),
                                            paste(v_gene, cdr3, j_gene), 
-                                           paste(cdr3_nt,v_gene, cdr3, j_gene)))]
+                                           paste(v_gene, cdr3_nt, j_gene)))]
   tab_d<- tab %>%
     dplyr::group_by(clonotype_id) %>%
-    dplyr::summarize("CDR3nt"=paste0(unique(cdr3_nt),collapse = '; '),
-                     "CDR3aa"=paste0(unique(cdr3),collapse = '; '),
+    dplyr::summarize("ntCDR3"=paste0(unique(cdr3_nt),collapse = '; '),
+                     "aaCDR3"=paste0(unique(cdr3),collapse = '; '),
                      "V"=paste0(unique(v_gene),collapse = '; '),
                      "J"=paste0(unique(j_gene),collapse = '; '),
                      "cell_barcode"=paste0(unique(barcode),collapse = '; '),
                      "VJ"=paste0(unique(VJ),collapse = '; '),
-                     "clone"=paste0(unique(clone),collapse = '; '),
-                     "clonotype"=paste0(unique(clonotype),collapse = '; ')) %>%
+                     "aaClone"=paste0(unique(clone),collapse = '; '),
+                     "ntClone"=paste0(unique(ntClone),collapse = '; ')) %>%
     dplyr::group_by(clonotype_id) %>%
     dplyr::mutate(count=length(strsplit(cell_barcode, ';')[[1]]))
   
   sName <- stringr::str_split(basename(path),pattern="_filtered_contig_annotations.csv")[[1]][1]
   tab_d$sample_id <- sName  
-  out <- tab_d[,   c("sample_id", "CDR3nt", "CDR3aa", "V", "J", "VJ", "clone", 
-                 "clonotype", "count","clonotype_id","cell_barcode")]
+  out <- tab_d[,   c("sample_id", "V", "J", "VJ","ntCDR3", "aaCDR3",  "aaClone", 
+                 "ntClone", "count","clonotype_id","cell_barcode")]
    return(out)
 }
 
@@ -1010,7 +951,7 @@ readSingleCellSet <- function(fileList,
                               sampleinfo = NULL, 
                               filter.singletons = FALSE,
                               cores = 1L) {
-  snames <- unlist(stringr::str_split(basename(fileList),pattern="_filtered_contig_annotations.csv", simplify = T)[,1])
+  snames <- unlist(stringr::str_split(basename(fileList),pattern="_filtered_contig_annotations.csv", simplify = TRUE)[,1])
   
   if (length(fileList) == 0) stop("Empty list of files, please check folder path.\n")
   cores <- min(parallel::detectCores()-1, cores)
@@ -1021,7 +962,7 @@ readSingleCellSet <- function(fileList,
     cat("Loading and filtering sequences...\n")
     cl <- parallel::makeCluster(cores, type = "SOCK", rscript_args = "--vanilla", useXDR = TRUE)
     parallel::clusterExport(cl = cl, varlist = c("filetype", "formatSingleCell",
-                                                   "readInFormat", "filterClonotypes", "setnames"))
+                                                   "readInFormat", "filterClones", "setnames"))
     repList <- pbapply::pblapply(cl = cl,
                                  fileList,
                                  formatSingleCell)
@@ -1050,7 +991,7 @@ readSingleCellSet <- function(fileList,
   }
   if (nrow(sdata) != length(fileList))  stop("Number of files to import differ from the number of samples in sampleinfo file.")
   
-  stats <- data.frame(tab[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols = c("CDR3nt", "CDR3aa", "V", "J", "VJ","clone","clonotype"), by = "sample_id"], row.names = 1)
+  stats <- data.frame(tab[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols = c( "V", "J", "VJ","ntCDR3", "aaCDR3","aaClone","ntClone"), by = "sample_id"], row.names = 1)
   sdata <- data.frame(base::merge(sdata, stats, by = 0, sort = FALSE),
                       row.names = 1, stringsAsFactors = TRUE)
   sdata <- sdata[match(rownames(sdata), rownames(stats)), ]
@@ -1068,7 +1009,7 @@ readSingleCellSet <- function(fileList,
 
   if (filter.singletons) {
     cat("Removing singleton sequences...")
-    out <- filterCount(out, level = "clonotype", n = 1)
+    out <- filterCount(out, level = "ntClone", n = 1)
   }
   
     cat("Done.\n")

@@ -7,8 +7,10 @@
 plotRenyiIndex(
   x,
   alpha = c(0, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, Inf),
-  level = c("clone", "clonotype", "V", "J", "VJ", "CDR3nt", "CDR3aa"),
+  level = c("aaClone", "ntClone", "V", "J", "VJ", "ntCDR3", "aaCDR3"),
   colorBy = NULL,
+  facetBy = NULL,
+  shapeBy = NULL,
   grouped = FALSE,
   label_colors = NULL
 )
@@ -18,11 +20,15 @@ plotRenyiIndex(
 
 \item{alpha}{a numerical vector specifying the alpha values to compute. If not specified, the following values are estimated: c(0, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, Inf).}
 
-\item{level}{a character specifying the level of the repertoire to be taken into account when calculating VJ usages. Should be one of clone","clonotype", "V", "J", "VJ", "CDR3nt" or "CDR3aa".}
+\item{level}{a character specifying the level of the repertoire to be taken into account when calculating VJ usages. Should be one of "aaClone","ntClone", "V", "J", "VJ", "ntCDR3" or "aaCDR3".}
 
 \item{colorBy}{a character indicating a column name in mData. Colors are thus attributed to the different groups within this column. The chosen column must be of class factor.}
 
-\item{grouped}{a boolean indicating whether or not the mean and se of samples belonging to the same experimental group specified in the ColorBy parameter should be calculated. Default is FALSE. The area under the curve (AUC) is calculated for each sample and compared between chosen groups using a Wilcoxon test with Holm's correction.}
+\item{facetBy}{a vector of character indicating one or two column names in mData to apply a facet on.}
+
+\item{shapeBy}{a vector of character indicating one column names in mData to be used to attribute group shapes.}
+
+\item{grouped}{a boolean indicating whether or not the mean and se of samples belonging to the same experimental group specified in the ColorBy parameter should be calculated. Grouping will be performed on the group chosen in the colorBy parameter. Default is FALSE.}
 
 \item{label_colors}{a list of colors for each variable in ColorBy. See \code{\link{plotColors}}. If NULL, default colors are used.}
 }
@@ -40,10 +46,14 @@ alpha = 2 corresponds to the Simpson index and alpha=Inf corresponds to the Berg
 \examples{
 
 data(RepSeqData)
-plotRenyiIndex(x = RepSeqData, level = "V", colorBy = "sex")
 
-plotRenyiIndex(x = RepSeqData, level = "J", colorBy = "sex", grouped=TRUE)
+plotRenyiIndex(x = RepSeqData,  alpha = c(0,  1, 2, 8, 16, 32, 64), level = "V", colorBy = "sex")
 
-plotRenyiIndex(x = RepSeqData, level = "J", colorBy = c("sex", "cell_subset"), grouped=TRUE)
+plotRenyiIndex(x = RepSeqData,  alpha = c(0,  1, 2, 8, 16, 32, 64), level = "V", colorBy = "sample_id")
 
+plotRenyiIndex(x = RepSeqData, level = "J", colorBy = "cell_subset", grouped=TRUE)
+
+plotRenyiIndex(x = RepSeqData, level = "J", colorBy = "sex", facetBy= "cell_subset", grouped=TRUE)
+
+plotRenyiIndex(x = RepSeqData, level = "J", colorBy = "sample_id", shapeBy= "sex", grouped=FALSE)
 }

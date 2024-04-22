@@ -8,5 +8,5 @@ level_statistics <- AnalyzAIRR::countFeatures(x = RepSeqData,
                                   level = "J",
                                   group=c("sex", "F"),
                                   scale="count")
-expect_equal(dim(level_statistics), c(46,5))
+expect_equal(dim(level_statistics), c(44,5))
 })

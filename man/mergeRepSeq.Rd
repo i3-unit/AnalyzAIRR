@@ -12,17 +12,19 @@ mergeRepSeq(a, b)
 \item{b}{the second  \code{\linkS4class{RepSeqExperiment}} object.}
 }
 \value{
-a  \code{\linkS4class{RepSeqExperiment}} object containing all information from the two merged objects.
+a  \code{\linkS4class{RepSeqExperiment}} object containing all
+information from the two merged objects.
 }
 \description{
-This function allows the merging of two RepSeqExperiement objects.
+This function allows to merge of two RepSeqExperiement objects.
 
-The two objects must however contain completely different sample_ids, as duplicates are not supported.
+The two objects must however contain unique and different sample_ids.
 
-This function can be useful in case users wish to analyze alignment files from different formats, or biological/technical replicates.
+This function can be useful in case users wish to analyze alignment files
+from different formats, or biological/technical replicates.
 }
 \examples{
-l <- list.files(system.file(file.path('extdata/mixcr'),
+l <- list.files(system.file(file.path('extdata/MiAIRR'),
                      package = 'AnalyzAIRR'),
                      full.names = TRUE)
 
@@ -30,10 +32,10 @@ metaData <- read.table(system.file(file.path('extdata/sampledata.txt'),
                          package='AnalyzAIRR'),
                          sep = "\t",
                          row.names = 1, header = TRUE)
-                         
+
 dataset1 <- readAIRRSet(fileList = l[c(1:3)],
                        cores=1L,
-                       fileFormat = "MiXCR",
+                       fileFormat = "MiAIRR",
                        chain = "TRA",
                        sampleinfo = metaData[1:3,],
                        filter.singletons = FALSE,
@@ -42,7 +44,7 @@ dataset1 <- readAIRRSet(fileList = l[c(1:3)],
 
 dataset2 <- readAIRRSet(fileList = l[c(4:8)],
                        cores=1L,
-                       fileFormat = "MiXCR",
+                       fileFormat = "MiAIRR",
                        chain = "TRA",
                        sampleinfo = metaData[4:8,],
                        filter.singletons = FALSE,

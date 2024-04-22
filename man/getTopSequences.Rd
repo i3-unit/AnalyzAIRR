@@ -6,7 +6,7 @@
 \usage{
 getTopSequences(
   x,
-  level = c("clone", "clonotype", "CDR3aa", "CDR3nt"),
+  level = c("aaClone", "ntClone", "aaCDR3", "ntCDR3"),
   group = NULL,
   prop = 0.01
 )
@@ -14,23 +14,27 @@ getTopSequences(
 \arguments{
 \item{x}{an object of class \code{\linkS4class{RepSeqExperiment}}}
 
-\item{level}{a character specifying the level of the repertoire to be taken into account. Should be one of clone","clonotype", "CDR3nt" or "CDR3aa".}
+\item{level}{a character specifying the level of the repertoire to be taken
+into account. Should be one of aaClone","ntClone", "ntCDR3" or "aaCDR3".}
 
-\item{group}{character, column name in sData. Must be of class factor. Default is NULL, the threshold is calculated across all the samples within the dataset.}
+\item{group}{character, column name in mData indicating the group on which
+the extraction will be applied. Must be of class factor. Default is NULL.}
 
-\item{prop}{a numeric between 0 and 1 indicating the proportion of top sequences to extract.}
+\item{prop}{a numeric between 0 and 1 indicating the proportion of top
+sequences to extract.}
 }
 \value{
 an object of class \code{\linkS4class{RepSeqExperiment}}
 }
 \description{
-This function extracts the top n sequences within all samples or a group of samples.
+This function extracts the top n sequences within all samples
+or a group of samples.
 }
 \examples{
 
 data(RepSeqData)
 topClones <- getTopSequences(x = RepSeqData,
-                          level = "clone",
+                          level = "aaClone",
                           group = c("cell_subset", "amTreg"), prop = 0.1)
 
 

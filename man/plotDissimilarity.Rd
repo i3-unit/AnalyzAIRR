@@ -6,7 +6,7 @@
 \usage{
 plotDissimilarity(
   x,
-  level = c("clone", "clonotype", "V", "J", "VJ", "CDR3nt", "CDR3aa"),
+  level = c("aaClone", "ntClone", "V", "J", "VJ", "ntCDR3", "aaCDR3"),
   method = c("manhattan", "euclidean", "canberra", "clark", "bray", "kulczynski",
     "jaccard", "gower", "altGower", "morisita", "horn", "mountford", "raup", "binomial",
     "chao", "cao", "mahalanobis"),
@@ -21,7 +21,7 @@ plotDissimilarity(
 \arguments{
 \item{x}{an object of class \code{\linkS4class{RepSeqExperiment}}}
 
-\item{level}{a character specifying the level of the repertoire on which the indices are computed. Should be one of "clone","clonotype", "V", "J", "VJ", "CDR3nt" or "CDR3aa".}
+\item{level}{a character specifying the level of the repertoire on which the indices are computed. Should be one of "aaClone","ntClone", "V", "J", "VJ", "ntCDR3" or "aaCDR3".}
 
 \item{method}{a character specifying the distance method to be computed. Should be one of the following: "manhattan", "euclidean", "canberra", "clark", "bray", "kulczynski", "jaccard", "gower", "altGower", "morisita", "horn", "mountford", "raup", "binomial", "chao", "cao", "mahalanobis."}
 
@@ -55,5 +55,6 @@ data(RepSeqData)
 
 plotDissimilarity(x = RepSeqData, level = "V", method = "euclidean", colorBy="sex", plot="MDS")
 
-plotDissimilarity(x = RepSeqData, level = "V", method = "euclidean", colorBy="sex", plot="Heatmap")
+plotDissimilarity(x = RepSeqData, level = "aaCDR3", method = "jaccard", 
+                  colorBy=c("sex","cell_subset"), plot="Heatmap")
 }

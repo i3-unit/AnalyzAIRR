@@ -12,20 +12,12 @@ parseMiXCR(path, chain = c("TRA", "TRB", "TRG", "TRD", "IGH", "IGK", "IGL"))
 \item{chain}{character, the TCR chain to be analyzed. One of \code{A} or \code{B}. Default value is \code{A}.}
 }
 \value{
-a data.table of 9 columns: \code{sample_id} name, \code{V} V gene, \code{J} J gene, \code{CDR3aa} amino acid CDR3 sequence, \code{CDR3nt} nucleotide CDR3 sequence, \code{clone} full clonotype sequence, \code{VJ} V-J gene combinations, \code{score} mapq quality score, \code{count} clonotype count. Clonotypes are eliminated if a STOP codon (*) is detected in CDR3aa chain, if the CDR3nt length is not divisible by 3 or if the CDR3nt sequence is ambiguous (contains a "N" base).
+a data.table of 9 columns: \code{sample_id} name, \code{V} V gene, \code{J} J gene,\code{VJ} V-J gene combinations, \code{aaCDR3} amino acid CDR3 sequence, \code{ntCDR3} nucleotide CDR3 sequence, \code{ntClone} full clone sequence in nucleotide, \code{aaClone} full clone sequence in amino acid, \code{count} clone count. Clones are eliminated if a STOP codon (*) is detected in aaCDR3 chain, if the ntCDR3 length is not divisible by 3 or if the ntCDR3 sequence is ambiguous (contains a "N" base).
 }
 \description{
 parse clonotype tables from MiXCR
 }
 \details{
 function imports clonotype tables produced by the MiXCR aligner.
-}
-\examples{
-l <- list.files(system.file(file.path('extdata/mixcr'),
-                     package = 'AnalyzAIRR'),
-                     full.names = TRUE)
-path <- l[1]
-mixcr_table <- parseMiXCR(path = path, chain = "TRA")
-
 }
 \keyword{internal}

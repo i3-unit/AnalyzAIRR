@@ -6,7 +6,7 @@
 \usage{
 readAIRR(
   path,
-  fileFormat = c("MiXCR", "immunoseq", "AIRR-C"),
+  fileFormat = c("MiXCR", "immunoseq", "MiAIRR"),
   chain = c("TRA", "TRB", "TRG", "TRD", "IGH", "IGK", "IGL"),
   keep.ambiguous = FALSE,
   keep.unproductive = FALSE,
@@ -17,13 +17,13 @@ readAIRR(
 \arguments{
 \item{path}{a path to an output file of the supported aligners.}
 
-\item{fileFormat}{a character, the name of the aligner. Should be one of "immunoseq" or "MiXCR". Default is MiXCR.}
+\item{fileFormat}{a character, the name of the aligner. Should be one of "immunoseq", "MiXCR" or "MiAIRR". Default is MiXCR.}
 
 \item{chain}{a character, indicates which TCR chain to import: \code{A} for the alpha chain and \code{B} for the beta chain. Default is \code{A}.}
 
-\item{keep.ambiguous}{a boolean, whether ambiguous clonotypes (containing a STOP codon) should be kept. Default is \code{FALSE}.}
+\item{keep.ambiguous}{a boolean, whether ambiguous sequences (containing a STOP codon) should be kept. Default is \code{FALSE}.}
 
-\item{keep.unproductive}{a boolean, whether unproductive clonotypes (Euclidean dividion of aa length by 3 > 0) should be kept. Default is \code{FALSE}.}
+\item{keep.unproductive}{a boolean, whether unproductive sequences (Euclidean dividion of aa length by 3 > 0) should be kept. Default is \code{FALSE}.}
 
 \item{aa.th}{an interger, indicates the maximum number of amino acids deviating from the mean length to tolerate. Default is NULL.}
 
@@ -36,17 +36,17 @@ a filtered clonotype table.
 parse and filter clonotype tables.
 }
 \details{
-this function is a wrapper of parse functions & filterClonotypes
+this function is a wrapper of parse functions & filterClones
 }
 \examples{
 
-l <- list.files(system.file(file.path('extdata/mixcr'),
+l <- list.files(system.file(file.path('extdata/MiAIRR'),
                      package = 'AnalyzAIRR'),
                      full.names = TRUE)
 
 
 dataset <- readAIRR(path = l[1],
-                          fileFormat = "MiXCR",
+                          fileFormat = "MiAIRR",
                           chain = "TRA",
                           keep.ambiguous = FALSE,
                           keep.unproductive = FALSE,

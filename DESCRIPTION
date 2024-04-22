@@ -1,6 +1,6 @@
 Package: AnalyzAIRR
 Title: R package developed to analyze bulk Ig/TCR repertoire datasets
-Version: 1.0.0
+Version: 1.1.0
 Description: AnalyzAIRR allows a general data exploration to evaluate the homogeneity 
  within defined groups, identify outliers and filter them out. AnalyzAIRR also proposes
  a set of diversity measures and statistical metrics applicable at any level of granularity. Thus, single-sample repertoire explorations or in-depth cross-comparisons of AIRR datasets 
@@ -14,13 +14,14 @@ Depends: R (>= 4.2.0), data.table
 Imports: pbapply, parallel, utils, stats, methods, graphics, ggplot2, 
 	 lemon, DESeq2, ade4, limma, scales, rmdformats, kableExtra, 
 	 vegan, naturalsort, RColorBrewer, dplyr, ggVennDiagram, gridExtra,
-	 plyr, grDevices,reshape2, ggprism, rstatix, ggpubr, stringr,
-	 ggpmisc, tidyr, ggrepel, car, circlize, ComplexHeatmap, MESS
+	 plyr, grDevices,reshape2, ggprism, rstatix, ggpubr, stringr, tidyselect,
+	 ggpmisc, tidyr, ggrepel, car, circlize, ComplexHeatmap, MESS, rlang, tibble
 Suggests: BiocStyle, knitr, rmarkdown
 License: GPL-3 + file LICENSE
 URL: https://github.com/vanessajmh/AnalyzAIRR
 BugReports: https://github.com/vanessajmh/AnalyzAIRR/issues
 LazyData: true
+LazyDataCompression: xz
 VignetteBuilder: knitr
 Encoding: UTF-8
 RoxygenNote: 7.2.3

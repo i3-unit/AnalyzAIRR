@@ -8,5 +8,6 @@ theme_RepSeq()
 }
 \description{
 A unique plot theme used in all the visualization plots.
-As this function is generated using the ggplot2 package, users can easily customize all of the generated plots using ggplot2 arguments.
+As this function is generated using the ggplot2 package, users can easily
+customize all of the generated plots using ggplot2 arguments.
 }

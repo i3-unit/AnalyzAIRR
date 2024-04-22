@@ -16,7 +16,7 @@ plotIndGeneUsage(
 
 \item{sampleName}{a character specifying the sample_id to analyze. Default is NULL, which plots the first sample in the dataset.}
 
-\item{level}{a character specifying the level of the repertoire to be taken into account when calculating the gene usages. Should be one of clone" or "clonotype".}
+\item{level}{a character specifying the level of the repertoire to be taken into account when calculating the gene usages. Should be one of "aaClone" or "ntClone".}
 
 \item{scale}{a character specifying whether to plot the gene usage in "count" or "frequency".}
 }
@@ -30,5 +30,5 @@ snames <- rownames(mData(RepSeqData))
 
 plotIndGeneUsage(x = RepSeqData, level = "V", sampleName = snames[1], scale = "count")
 
-plotIndGeneUsage(x = RepSeqData, level = "V", sampleName = snames[2], scale = "frequency")
+plotIndGeneUsage(x = RepSeqData, level = "J", sampleName = NULL, scale = "frequency")
 }

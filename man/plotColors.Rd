@@ -10,11 +10,14 @@ plotColors(x)
 \item{x}{an object of class \code{\linkS4class{RepSeqExperiment}}}
 }
 \value{
-a list of distinct colors assigned to each sample/group in the metadata.
+a list of distinct colors assigned to each sample/group in the mData.
 }
 \description{
-This function allows an automatic color assigning, chosen from color-blinded friendly palettes, to every sample and experimental group in the metadata.
-As such, each sample/group will be assigned the same color in all the visualization functions.
+This function allows an automatic color assigning, chosen from
+color-blinded friendly palettes, to every sample and experimental group in
+the metadata.
+As such, each sample/group will be assigned the same color in all the
+visualization functions.
 }
 \examples{
 

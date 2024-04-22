@@ -7,9 +7,9 @@ utils::globalVariables(c("Log2FC", "sdata"))
 #'
 #' @param x an object of class \code{\linkS4class{RepSeqExperiment}}
 #' @param colGrp a vector of character specifying the column names in the mData slot corresponding to the experimental condition to be analyzed.
-#' @param level a character specifying the level of the repertoire to be compared. Should be one of "clone","clonotype", "V", "J", "VJ", "CDR3nt" or "CDR3aa".
+#' @param level a character specifying the level of the repertoire to be compared. Should be one of "aaClone","ntClone", "V", "J", "VJ", "ntCDR3" or "aaCDR3".
 #' @param group a vector of character indicating the column name in the mData slot, as well as the two groups to be compared.
-#' @details  This function uses the DESeq2 package: https://www.rdocumentation.org/packages/DESeq2/versions/1.12.3/topics/DESeq
+#' @details  This function uses the \href{https://www.rdocumentation.org/packages/DESeq2/versions/1.12.3/topics/DESeq}{DESeq2} package.
 #' Briefly, it estimates the size factors using the poscounts method which deals with zero counts.
 #' It then performs a default analysis by estimating the dispersion using a local regression of log dispersions over log base mean.
 #' Finally, a generalized linear model is fitted using a Negative Binomial distribution and Wald statistics.
@@ -26,7 +26,7 @@ utils::globalVariables(c("Log2FC", "sdata"))
 #'
 #'
 diffExpGroup <- function(x, colGrp,
-                         level = c("clone","clonotype", "V", "J", "VJ", "CDR3nt","CDR3aa"),
+                         level = c("aaClone","ntClone", "V", "J", "VJ", "ntCDR3","aaCDR3"),
                          group) {
     if (any(grepl(paste(c("\\+","\\-"), collapse="|"),group[-1]))) stop("Subgroups should not contain (-) or (+).")
 
@@ -43,17 +43,17 @@ diffExpGroup <- function(x, colGrp,
 #'
 #' @description Differential expression analysis using DESeq2
 #'
-#' @details function compares the expression level of a gene segment or a clonotype using the DESEq2 package.
+#' @details function compares the expression level of a gene segment or a clone using the DESEq2 package.
 #'
 #' @param x an object of class \code{\linkS4class{RepSeqExperiment}}
 #' @param colGrp a vector of character, specify the groups to be compared.
-#' @param level character, the level of the repertoire to estimate. Should be one of "clone", "V", "J", "VJ" or "CDR3aa".
+#' @param level character, the level of the repertoire to estimate. Should be one of "aaClone", "V", "J", "VJ" or "aaCDR3".
 #'
 #' @export
 #' @keywords internal
 #' @return a DESeqDataSet object
 #'
-.toDESeq2 <- function(x, colGrp, level = c("clone","clonotype", "V", "J", "VJ", "CDR3nt","CDR3aa")) {
+.toDESeq2 <- function(x, colGrp, level = c("aaClone","ntClone", "V", "J", "VJ", "ntCDR3","aaCDR3")) {
 
   if (missing(x)) stop("x is missing. An object of class RepSeqExperiment is epxected.")
   if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected.")
@@ -80,13 +80,13 @@ diffExpGroup <- function(x, colGrp,
 # function
 #
 # @param x an object of class RepSeqExperiment
-# @param level level of repertoire to analyze \code{clone, VJ, V, J, CDR3aa}.
+# @param level level of repertoire to analyze \code{aaClone, VJ, V, J, aaCDR3}.
 # @param method normaliztion method used for size factor computation.
 # @param UsePseudoRef a boolean indicating if Chao indices will be computed according to a reference repertoire (geometric mean repertoire across all samples).
 # @return a vector of normalized size factors
 # @export
 # @examples
-# estimateSF <- function(x, level=c("clone", "CDR3aa"), method=c("Chao", "iChao", "worChao", "Chao.gmmean", "Chao.median"), UsePseudoRef=TRUE) {
+# estimateSF <- function(x, level=c("aaClone", "aaCDR3"), method=c("Chao", "iChao", "worChao", "Chao.gmmean", "Chao.median"), UsePseudoRef=TRUE) {
 #     if (missing(x)) stop("x is missing.")
 #     if (!is.RepSeqExperiment(x)) stop("a RepSeqCount object is expected.")
 #     chaoest <- function(x) {
@@ -186,7 +186,7 @@ named.contr.sum <- function(x, ...) {
 #     choice <- match.arg(method)
 #     dat <- data.table::copy(assay(x))
 #     sampleinfo <- sData(x)
-#     sf <- estimateSF(x, level="clone", method=choice, UsePseudoRef=UsePseudoRef)
+#     sf <- estimateSF(x, level="aaClone", method=choice, UsePseudoRef=UsePseudoRef)
 #     dat[, freq:=count/rep(sf, table(dat$sample_id))]
 #     sampleinfo$sf <- sf
 #     x.hist <- data.frame(rbind(History(x), history = paste0("normalizedCounts; x=", deparse(substitute(x)), "; method=", choice, "; UsePseudoRef=", UsePseudoRef)), stringsAsFactors = FALSE)
@@ -198,7 +198,7 @@ named.contr.sum <- function(x, ...) {
 
 #' @title Calculation of the perturbation score
 #'
-#' @description This function computes the perturbation scores of the CDR3aa length distribution within each V gene.
+#' @description This function computes the perturbation scores of the aaCDR3 length distribution within each V gene.
 #'
 #' Scores are calculated as a distance between each repertoire and the mean of the control group using the ISEApeaks method (Colette and Six., 2002).
 #'
@@ -224,14 +224,14 @@ perturbationScore <- function(x, ctrl.names, distance = c("manhattan", "euclidea
     if (missing(ctrl.names)) stop("ctrl.names is missing. A vector of characters containing the names of control samples is expected.")
     if (!any(ctrl.names %in% snames)) stop("all sample names in ctrl.names are not found in sampleData.")
     cts <- data.table::copy(assay(x))
-    cts[, CDR3aa.length:=nchar(CDR3aa)]
-    spectratype <- cts[, .(count=sum(count)), by=.(sample_id, V, CDR3aa.length)]
+    cts[, aaCDR3.length:=nchar(aaCDR3)]
+    spectratype <- cts[, .(count=sum(count)), by=.(sample_id, V, aaCDR3.length)]
     spectratype[,pct:=prop.table(count), by=.(sample_id, V)]
-    spectratypew <- data.table::dcast(spectratype, V+CDR3aa.length~sample_id, value.var="pct", fill=0)
-    setkey(spectratypew, V, CDR3aa.length)
+    spectratypew <- data.table::dcast(spectratype, V+aaCDR3.length~sample_id, value.var="pct", fill=0)
+    setkey(spectratypew, V, aaCDR3.length)
     spectratypew[, ctrl.mean:=rowMeans(.SD), .SDcols=ctrl.names]
-    spectratypew[, ID:=paste0(V, "_", CDR3aa.length)]
-    spectratypem <- data.table::melt(spectratypew, id.vars=c("ID", "V", "CDR3aa.length", "ctrl.mean"), variable.name = "sample_id", value.name = "pct")
+    spectratypew[, ID:=paste0(V, "_", aaCDR3.length)]
+    spectratypem <- data.table::melt(spectratypew, id.vars=c("ID", "V", "aaCDR3.length", "ctrl.mean"), variable.name = "sample_id", value.name = "pct")
 
     d <- tolower(match.arg(distance))
     ctrl.dist <- switch(d,
@@ -263,7 +263,7 @@ perturbationScore <- function(x, ctrl.names, distance = c("manhattan", "euclidea
 #'
 #' @param x an object of class \code{\linkS4class{RepSeqExperiment}}
 #' @param sampleNames a vector of character with the sample_ids of the repertoires to drop from the RepSeqExperiment object.
-#' @param level a character specifying the repertoire level to be analyzed. Should be one of "clone","clonotype","CDR3aa","CDR3nt","V", "J",or "VJ".
+#' @param level a character specifying the repertoire level to be analyzed. Should be one of "aaClone","ntClone","aaCDR3","ntCDR3","V", "J",or "VJ".
 #' @param scale a character specifying the type of occurrence to take into account: "count" or "frequency".
 #' @param th the lof2FC threshold to be used
 #' @param remove.zeros a boolean indicating whether or not repertoire levels that are completely absent in one of the two compared samples should be to take into account in the calculation.
@@ -279,7 +279,7 @@ perturbationScore <- function(x, ctrl.names, distance = c("manhattan", "euclidea
 #'                               sampleNames = c("tripod-30-813","tripod-30-815"), 
 #'                               remove.zeros = FALSE)
 #'
-diffExpInd <- function(x,  sampleNames = NULL, level = c("clone","clonotype", "V", "J", "VJ", "CDR3nt","CDR3aa"),
+diffExpInd <- function(x,  sampleNames = NULL, level = c("aaClone","ntClone", "V", "J", "VJ", "ntCDR3","aaCDR3"),
                     scale = c("frequency", "count"), th=1.5, remove.zeros=TRUE) {
   if (missing(x)) stop("x is missing.")
   if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected.")

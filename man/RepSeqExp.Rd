@@ -7,7 +7,7 @@
 RepSeqExp(clonotypetab, sampleinfo = NULL)
 }
 \arguments{
-\item{clonotypetab}{a single clonotype table containnig the previously cited columns}
+\item{clonotypetab}{a single clonotype table containing the previously cited columns}
 
 \item{sampleinfo}{a data frame containing:
 
@@ -29,35 +29,19 @@ This function can be used to build a RepSeqExperiment object using aligned files
 
  - J: Joining gene name
 
- - CDR3aa: CDR3 amino acid sequence
+ - aaCDR3: amino acid CDR3 sequence
 
- - CDR3nt: CDR3 nucleotide sequence
+ - ntCDR3: nucleotide CDR3 sequence
 
- - clone: Full clonotype sequence including the V gene, the amino acid CDR3 sequence and the J gene
+ - aaClone: Full clone sequence including the V gene, the amino acid CDR3 sequence and the J gene
  
  - VJ: V-J gene combination using V and J gene names
 
- - score: the alignment score communicated by the alignment tool
+ - ntClone: Full clone sequence including the V gene, the nucleotide CDR3 sequence and the J gene
 
- - count: the occurrence of the clonotype, i.e the clone sequence
+ - count: the occurrence of the clone
 
 Clonotype tables must only contain a single chain. No paired-chain analysis are provided by the AnalyzAIRR package.
-Pre-filtered files obtained using the \code{\link{filterClonotypes}} function can be used as input.
-}
-\examples{
-l <- list.files(system.file(file.path('extdata/mixcr'),
-                     package = 'AnalyzAIRR'),
-                     full.names = TRUE)
-
-dataset <- readAIRR(path = l[1],
-                          fileFormat = "MiXCR",
-                          chain = "TRA",
-                          keep.ambiguous = FALSE,
-                          keep.unproductive = FALSE,
-                          outFiltered = FALSE,
-                          aa.th = 8)
-
-repseqexp_object <- RepSeqExp(clonotypetab = dataset)
-
+Pre-filtered files obtained using the \code{\link{filterClones}} function can be used as input.
 }
 \keyword{internal}

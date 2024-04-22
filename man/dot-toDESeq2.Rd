@@ -7,7 +7,7 @@
 .toDESeq2(
   x,
   colGrp,
-  level = c("clone", "clonotype", "V", "J", "VJ", "CDR3nt", "CDR3aa")
+  level = c("aaClone", "ntClone", "V", "J", "VJ", "ntCDR3", "aaCDR3")
 )
 }
 \arguments{
@@ -15,7 +15,7 @@
 
 \item{colGrp}{a vector of character, specify the groups to be compared.}
 
-\item{level}{character, the level of the repertoire to estimate. Should be one of "clone", "V", "J", "VJ" or "CDR3aa".}
+\item{level}{character, the level of the repertoire to estimate. Should be one of "aaClone", "V", "J", "VJ" or "aaCDR3".}
 }
 \value{
 a DESeqDataSet object
@@ -24,6 +24,6 @@ a DESeqDataSet object
 Differential expression analysis using DESeq2
 }
 \details{
-function compares the expression level of a gene segment or a clonotype using the DESEq2 package.
+function compares the expression level of a gene segment or a clone using the DESEq2 package.
 }
 \keyword{internal}

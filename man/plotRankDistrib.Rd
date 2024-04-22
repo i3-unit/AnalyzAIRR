@@ -6,23 +6,26 @@
 \usage{
 plotRankDistrib(
   x,
-  level = c("clone", "clonotype", "CDR3nt", "CDR3aa"),
+  level = c("aaClone", "ntClone", "ntCDR3", "aaCDR3"),
   scale = c("count", "frequency"),
-  colorBy = NULL,
   grouped = FALSE,
+  colorBy = NULL,
+  facetBy = NULL,
   label_colors = NULL
 )
 }
 \arguments{
 \item{x}{an object of class \code{\linkS4class{RepSeqExperiment}}}
 
-\item{level}{a character specifying the level of the repertoire to be taken into account to plot the clonal distribution. Should be one of "clone", "clonotype", "CDR3nt" or "CDR3aa".}
+\item{level}{a character specifying the level of the repertoire to be taken into account to plot the clonal distribution. Should be one of "aaClone", "ntClone", "ntCDR3" or "aaCDR3".}
 
 \item{scale}{a character specifying whether to plot the clonal abundance in "count" or "frequency".}
 
-\item{colorBy}{a character indicating a column name in mData. Colors are thus attributed to the different groups within this column. The chosen column must be of class factor.}
+\item{grouped}{a boolean indicating whether or not the mean and se of samples belonging to the same experimental group specified in the ColorBy parameter should be computed. Grouping is performed on the chosen groupe in colorBy. Default is FALSE.}
 
-\item{grouped}{a boolean indicating whether or not the mean and se of samples belonging to the same experimental group specified in the ColorBy parameter should be computed. Default is FALSE. The area under the curve (AUC) is calculated for each sample and compared between chosen groups using a Wilcoxon test with Holm's correction.}
+\item{colorBy}{a character indicating one column name in mData. Colors are thus attributed to the different groups within this column. The chosen column must be of class factor.}
+
+\item{facetBy}{a vector of character indicating one or two column names in mData to apply a facet on.}
 
 \item{label_colors}{a list of colors for each variable in ColorBy. See \code{\link{plotColors}}. If NULL, default colors are used.}
 }
@@ -35,9 +38,13 @@ For instance, the most frequent sequence is attributed a rank of 1, and its rela
 
 data("RepSeqData")
 
-plotRankDistrib(x = RepSeqData, level="clone",colorBy = "sex", scale = "count")
+plotRankDistrib(x = RepSeqData, level="ntClone", colorBy = "sample_id", 
+                facetBy="sex", scale = "count")
 
-plotRankDistrib(x = RepSeqData,level="clonotype", colorBy = "cell_subset", scale = "frequency")
+plotRankDistrib(x = RepSeqData, level="aaClone", colorBy = "cell_subset", 
+                grouped=TRUE, scale = "frequency")
 
+plotRankDistrib(x = RepSeqData,level="ntCDR3", colorBy = "cell_subset", facetBy="sex", 
+                grouped=TRUE,  scale = "frequency")
 
 }

@@ -23,16 +23,16 @@ readInFormat(
 \item{keep.unproductive}{a boolean, whether unproductive sequences should be left in. Default is \code{FALSE}.
 Unproductive sequences include:
 
-- out-of-frame sequences: sequences with frame shifts based on the number of nucleotides in the CDR3nt column
+- out-of-frame sequences: sequences with frame shifts based on the number of nucleotides in the ntCDR3 column
 
-- sequences containing stop codons: CDR3aa sequences with a "*" or "~" symbols.should be kept. Default is \code{FALSE}.}
+- sequences containing stop codons: aaCDR3 sequences with a "*" or "~" symbols.should be kept. Default is \code{FALSE}.}
 
 \item{aa.th}{an interger, indicates the maximum number of amino acids deviating from the mean length to tolerate. Default is 8. In this case, all amino acid CDR3s sequences with length falling outside the range of mean+- 8 are filtered out.}
 
 \item{outFiltered}{write in the directory path a data frame containing the filtered out reads. Default path is getwd().}
 }
 \value{
-a data.table of 9 columns: \code{sample_id} name, \code{V} V gene, \code{J} J gene, \code{CDR3aa} amino acid CDR3 sequence, \code{CDR3nt} nucleotide CDR3 sequence, \code{clone} full clonotype sequence, \code{VJ} V-J gene combinations, \code{score} mapq quality score, \code{count} clonotype count. Clonotypes are eliminated if a STOP codon (*) is detected in CDR3aa chain, if the CDR3nt length is not divisible by 3 or if the CDR3nt sequence is ambiguous (contains a "N" base).
+a data.table of 9 columns: \code{sample_id} name, \code{V} V gene, \code{J} J gene,\code{VJ} V-J gene combinations, \code{aaCDR3} amino acid CDR3 sequence, \code{ntCDR3} nucleotide CDR3 sequence, \code{ntClone} full clone sequence in nucleotide, \code{aaClone} full clone sequence in amino acid, \code{count} clone count. Clones are eliminated if a STOP codon (*) is detected in aaCDR3 chain, if the ntCDR3 length is not divisible by 3 or if the ntCDR3 sequence is ambiguous (contains a "N" base).
 }
 \description{
 alternative

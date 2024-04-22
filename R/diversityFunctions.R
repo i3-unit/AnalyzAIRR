@@ -2,26 +2,39 @@ utils::globalVariables(c("ranks", "exp_shannon"))
 
 #' @title Calculation of diversity indices
 #'
-#' @description This function computes a set of diversity indices of a repertoire level for each sample.
+#' @description This function computes a set of diversity indices of a
+#' repertoire level for each sample.
 #'
 #' The calculated indices are the following:
 #'
-#' - Shannon index: Calculates the proportional abundance of species in a repertoire (Shannon, 1948).
+#' - Shannon index: Calculates the proportional abundance of species in a
+#' repertoire (Shannon, 1948).
 #'
-#' - Simpson index: Takes into account the number of species present as well as their abundance. It gives relatively little weight to the rare species and more weight to the frequent ones (Simpson, 1949).
+#' - Simpson index: Takes into account the number of species present as well as
+#' their abundance. It gives relatively little weight to the rare species and
+#' more weight to the frequent ones (Simpson, 1949).
 #'
-#' - Inverse Simpson index: Is the effective number of species that is obtained when the weighted arithmetic mean is used to quantify average proportional abundance of species.
+#' - Inverse Simpson index: Is the effective number of species that is obtained
+#' when the weighted arithmetic mean is used to quantify average proportional
+#' abundance of species.
 #'
-#' - Berger-Parker index: Expresses the proportional importance of the most abundant species. This metric is highly biased by sample size and richness (Berger and Parker 1970).
-#' 
-#' - Gini coefficient: Measures the degree of inequality in a distribution of abundances (Gini, 1921).
+#' - Berger-Parker index: Expresses the proportional importance of the most
+#' abundant species. This metric is highly biased by sample size and richness
+#' (Berger and Parker 1970).
 #'
-#' - Chao1: Estimates undetected species using the information on the rarest species (the numbers of singletons and doubletons) (Chao, 1984).
+#' - Gini coefficient: Measures the degree of inequality in a distribution of
+#' abundances (Gini, 1921).
 #'
-#' - Improved Chao1: an extension of Chao1 which uses additional information, namely, the numbers of tripletons and quadrupletons (Chiu et al., 2014).
+#' - Chao1: Estimates undetected species using the information on the rarest
+#' species (the numbers of singletons and doubletons) (Chao, 1984).
+#'
+#' - Improved Chao1: an extension of Chao1 which uses additional information,
+#' namely, the numbers of tripletons and quadrupletons (Chiu et al., 2014).
 #'
 #' @param x an object of class \code{\linkS4class{RepSeqExperiment}}
-#' @param level a character specifying the level of the repertoire on which the diversity should be estimated. Should be one of "clone","clonotype", "V", "J", "VJ", "CDR3nt" or "CDR3aa".
+#' @param level a character specifying the level of the repertoire on which the
+#' diversity should be estimated. Should be one of "aaClone","ntClone", "V",
+#' "J", "VJ", "ntCDR3" or "aaCDR3".
 #' @return a data table with the diversity indices calculated for each sample.
 #' @export
 #' @examples
@@ -29,7 +42,7 @@ utils::globalVariables(c("ranks", "exp_shannon"))
 #' data(RepSeqData)
 #' diversityIndices(RepSeqData, level="V")
 #'
-diversityIndices <- function(x,  level = c("clone","clonotype", "V", "J", "VJ", "CDR3nt","CDR3aa")) {
+diversityIndices <- function(x,  level = c("aaClone","ntClone", "V", "J", "VJ", "ntCDR3","aaCDR3")) {
     if (missing(x)) stop("x is missing. An object of class RepSeqExperiment is expected.")
     if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected.")
     levelChoice <- match.arg(level)
@@ -70,13 +83,19 @@ diversityIndices <- function(x,  level = c("clone","clonotype", "V", "J", "VJ", 
 #'
 #' @description calculate a sublist of diversity indices on gene segments.
 #'
-#' @details function computes the diversity indices for level \code{VJ}, \code{V} or \code{J} only.
+#' @details function computes the diversity indices for level \code{VJ},
+#' \code{V} or \code{J} only.
 #'
 #' @param x an object of class [\code{\linkS4class{RepSeqExperiment}}]
-#' @param index character, the diversity index to calculate. Should be one of "chao1.se", "chaowor","shannon","invsimpson","simpson" or "gini".
-#' @param level character, the level of the repertoire to estimate. Should be one of "V", "J" or "VJ".
-#' @param norm boolean, whether to compute the normalized diversity index, which divides the computed value by the log(S), S being the number of observed species in the repetoire. Default is TRUE.
-#' @param base a positive or complex number, the base with respect to which logarithms are computed. Default is e=exp(1).
+#' @param index character, the diversity index to calculate. Should be one of
+#' "chao1.se", "chaowor","shannon","invsimpson","simpson" or "gini".
+#' @param level character, the level of the repertoire to estimate. 
+#' Should be one of "V", "J" or "VJ".
+#' @param norm boolean, whether to compute the normalized diversity index,
+#' which divides the computed value by the log(S), S being the number of
+#' observed species in the repetoire. Default is TRUE.
+#' @param base a positive or complex number, the base with respect to which
+#' logarithms are computed. Default is e=exp(1).
 #' @return a data.table
 #' @export
 #' @keywords internal
@@ -133,18 +152,29 @@ divLevel <- function(x, index = c("shannon", "simpson", "invsimpson"), level = c
 
 #' @title Computation of the Renyi index
 #'
-#' @description This function computes the Renyi values at any repertoire level for all the samples in the RepSeqExperiment object.
+#' @description This function computes the Renyi values at any repertoire level
+#' for all the samples in the RepSeqExperiment object.
 #'
-#' The alpha values for which the Renyi is to be estimated can be personalized, thus allowing to focus on certain indices such as the Shannon index for alpha=1 or the Simpson index for alpha=2.
+#' The alpha values for which the Renyi is to be estimated can be personalized,
+#' thus allowing to focus on certain indices such as the Shannon index for
+#' alpha=1 or the Simpson index for alpha=2.
 #'
 #' @param x an object of class RepSeqExperiment
-#' @param alpha a numerical vector specifying the alpha values to compute. If not specified, the following values are estimated: c(0, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, Inf).
-#' @param level a character specifying the level of the repertoire to be taken into account when calculate VJ usages. Should be one of clone","clonotype", "V", "J", "VJ", "CDR3nt" or "CDR3aa".
-#' @return a data.table with the Renyi values calculated for all alpha in each sample.
-#' @details The Renyi index is a generalization of the Shannon index. It represents the distribution of clonal expansions
-#' as a function of the parameter alpha. At alpha=0, it equally considers all species including the rare ones,
-#' whereas it up-weighs the abundant species with an increasing value of alpha. Alpha =1 is an approximation of the Shannon index; 
-#' alpha = 2 corresponds to the Simpson index and alpha=Inf corresponds to the Berger-Parker index. The latter expresses the proportional importance of the most abundant species.
+#' @param alpha a numerical vector specifying the alpha values to compute. If
+#' not specified, the following values are estimated: c(0, 0.25, 0.5, 1, 2, 4,
+#' 8, 16, 32, 64, Inf).
+#' @param level a character specifying the level of the repertoire to be taken
+#' into account when calculate VJ usages. Should be one of "aaClone","ntClone",
+#' "V", "J", "VJ", "ntCDR3" or "aaCDR3".
+#' @return a table with Renyi values calculated for all alpha in each sample.
+#' @details The Renyi index is a generalization of the Shannon index.
+#' It represents the distribution of clonal expansions
+#' as a function of the parameter alpha. At alpha=0, it equally considers all
+#' species including the rare ones, whereas it up-weighs the abundant species
+#' with an increasing value of alpha. Alpha =1 is an approximation of
+#' the Shannon index; alpha = 2 corresponds to the Simpson index and alpha=Inf
+#' corresponds to the Berger-Parker index. The latter expresses the proportional
+#' importance of the most abundant species.
 #'
 #' @export
 #' @examples
@@ -153,7 +183,7 @@ divLevel <- function(x, index = c("shannon", "simpson", "invsimpson"), level = c
 #'
 #' renyiIndex(RepSeqData, level = "V", alpha = 1)
 #'
-renyiIndex <- function(x, alpha = c(0, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, Inf),  level = c("clone","clonotype", "V", "J", "VJ", "CDR3nt","CDR3aa")) {
+renyiIndex <- function(x, alpha = c(0, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, Inf),  level = c("aaClone","ntClone", "V", "J", "VJ", "ntCDR3","aaCDR3")) {
     if (missing(x)) stop("x is missing.")
     if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is exprected.")
     levelChoice <- match.arg(level)
@@ -199,9 +229,9 @@ renyiIndex <- function(x, alpha = c(0, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, Inf), 
 #'
 #' @description calculate the improved Chao1 index
 #'
-#' @details function computes the improved version of Chao1, Chao and Lin Chao, A. and Lin, C.-W. (2012).
+#' @details function computes the improved version of Chao1 (Chao and Lin, 2012)
 #'
-#' @param x a vector of count. Can be the list clonotype counts within a given sample.
+#' @param x a vector of count. Can be a list clone counts within a given sample.
 #' @return the computed iChao1 value
 #' @export
 #' @keywords internal
@@ -226,9 +256,10 @@ iChao <- function(x) {
 #'
 #' @description calculate the adjusted Chao1 index
 #'
-#' @details function computes the adjusted Chao1 index for sampling without replacement
+#' @details function computes the adjusted Chao1 index for sampling without
+#' replacement
 #'
-#' @param x a vector of count. Can be the list clonotype counts within a given sample.
+#' @param x a vector of count. Can be a list clone counts within a given sample.
 #' @return the computed Chao1 value
 #' @export
 #' @keywords internal
@@ -248,7 +279,7 @@ chaoWor <- function(x) {
     return(est)
 }
 
-# rarefaction curve https://dave-clark.github.io/post/speeding-up-rarefaction-curves-for-microbial-community-ecology/
+# @title Rarefaction curve
 # compute rarefaction data
 #
 # function compute
@@ -278,10 +309,15 @@ rarefyDT <- function(x) {
 #'
 #' @description This function computes rarefaction values for each sample.
 #'
-#' Rarefaction is a measure of species richness. It assesses the number of observed clonotypes for sets of N of sequences in a sample by randomly re-sampling a number of sequences multiple times and calculating the mean number of observed clonotypes.
+#' Rarefaction is a measure of species richness. It assesses the number of
+#' observed clones for sets of N of sequences in a sample by randomly
+#' re-sampling a number of sequences multiple times and calculating the mean
+#' number of observed clones.
 #'
 #' @param x an object of class \code{\linkS4class{RepSeqExperiment}}
-#' @return a data.table of values that can be represented graphically as rarefaction curves. The function \code{\link{plotRarefaction}} can be used for that purpose.
+#' @return a data.table of values that can be represented graphically as
+#' rarefaction curves. The function \code{\link{plotRarefaction}} can be used
+#' for that purpose.
 #' @export
 #' @examples
 #'
@@ -299,27 +335,37 @@ rarefactionTab <- function(x) {
 
 #' @title Down-sampling of repertoires
 #'
-#' @description This function down-samples all repertoires within the dataset to the same size.
+#' @description This function downsamples all repertoires in the dataset.
 #'
-#' Users can choose the value to which all the samples are down-sampled. If not specified, the lowest number of sequences across all samples within the dataset will be used.
+#' Users can choose the value to which all the samples are down-sampled.
+#' If not specified, the lowest number of sequences across all samples within
+#' the dataset will be used.
 #'
-#' This strategy can be applied when studying different cell subsets with significant differences in their repertoire sizes.
+#' This strategy can be applied when studying different cell subsets with
+#' significant differences in their repertoire sizes.
 #'
 #' @param x an object of class \code{\linkS4class{RepSeqExperiment}}
-#' @param sample.size an integer indicating the desired down-sampled size. The default is the smallest repertoire size among all samples of the dataset.
+#' @param sample.size an integer indicating the desired down-sampled size.
+#' The default is the smallest repertoire size among all samples of the dataset.
 #' @param rngseed a integer used as seed for a reproducible result.
-#' @param replace a boolean indicating if the resampling should be performed with or without replacement. Default is TRUE.
-#' @param verbose a boolean indicating whether or not to show the details of every computation step within the function. Default is TRUE.
-#' @return a new \code{\linkS4class{RepSeqExperiment}} object with the downsized data.
+#' @param replace a boolean indicating if the resampling should be performed
+#' with or without replacement. Default is TRUE.
+#' @param verbose a boolean indicating whether or not to show the details of
+#' every computation step within the function. Default is TRUE.
+#' @return a new \code{\linkS4class{RepSeqExperiment}}  with the downsized data.
 #'
 #' @export
 #' @examples
 #'
 #' data(RepSeqData)
 #'
-#' RepSeqData_ds<- sampleRepSeqExp(x = RepSeqData, rngseed = 1234, replace = TRUE)
+#' RepSeqData_ds<- sampleRepSeqExp(x = RepSeqData,
+#'                                 rngseed = 1234,
+#'                                 replace = TRUE)
 #'
-#' RepSeqData_ds<- sampleRepSeqExp(x = RepSeqData, rngseed = FALSE, replace = FALSE)
+#' RepSeqData_ds<- sampleRepSeqExp(x = RepSeqData,
+#'                                 rngseed = FALSE,
+#'                                 replace = FALSE)
 #'
 sampleRepSeqExp <- function(x, sample.size = min(mData(x)$nSequences), rngseed = FALSE, replace = TRUE, verbose = TRUE) {
     if (missing(x)) stop("x is missing, an object of class RepSeqExperiment is expected")
@@ -375,8 +421,8 @@ sampleRepSeqExp <- function(x, sample.size = min(mData(x)$nSequences), rngseed =
                    list(rarevec=rareout)}, by = sample_id]
     }
     cts <- cts[count>0]
-    stats <- data.frame(cts[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols = c("CDR3nt", "CDR3aa", "V", "J", "VJ","clone","clonotype"), by = "sample_id"], row.names = 1)
-    sampleinfo <- data.frame(merge(sampleinfo[, setdiff(colnames(sampleinfo), colnames(stats))], stats, by = 0, sort=F), row.names = 1)
+    stats <- data.frame(cts[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols = c("ntCDR3", "aaCDR3", "V", "J", "VJ","aaClone","ntClone"), by = "sample_id"], row.names = 1)
+    sampleinfo <- data.frame(merge(sampleinfo[, setdiff(colnames(sampleinfo), colnames(stats))], stats, by = 0, sort=FALSE), row.names = 1)
 
     
 	x.hist <- paste("A down-sampling to", sample.size , "with replacement set to", replace, "was performed")
@@ -393,16 +439,21 @@ sampleRepSeqExp <- function(x, sample.size = min(mData(x)$nSequences), rngseed =
 
 #' @title Shannon normalization of repertoires
 #'
-#' @description This function allows to normalize repertoires using the Shannon entropy as a threshold, thus eliminating rare sequences.
+#' @description This function allows to normalize repertoires using the Shannon
+#' entropy as a threshold, thus eliminating rare sequences.
 #'
-#' It is described in (Chaara et al., 2018) and is used to eliminate “uninformative” sequences resulting from experimental noise.
+#' It is described in (Chaara et al., 2018) and is used to eliminate
+#' “uninformative” sequences resulting from experimental noise.
 #'
-#' It is particularly efficient when applied on small samples as it corrects altered count distributions caused by a high-sequencing depth.
+#' It is particularly efficient when applied on small samples as it corrects
+#' altered count distributions caused by a high-sequencing depth.
 #'
-#' Sequences that are eliminated with this method are stored in the \code{oData} slot.
+#' Sequences that are eliminated with this method are stored in the \code{oData}
+#' slot.
 #'
 #' @param x an object of class \code{\linkS4class{RepSeqExperiment}}
-#' @return a new \code{\linkS4class{RepSeqExperiment}} object with the normalized data.
+#' @return a new \code{\linkS4class{RepSeqExperiment}} object with the
+#' normalized data.
 #' @export
 #' @examples
 #'
@@ -415,13 +466,13 @@ ShannonNorm <- function(x) {
   if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected")
   sampleinfo <- mData(x)
 
-  out <- copy(assay(x))[, .(count = sum(count)), by=c("sample_id", "clonotype")][, ranks := lapply(.SD, frankv, ties.method = "min", order=-1L), by = "sample_id", .SDcols = "count"]
-  out2 <- out[, .(count=sum(count)), by=c("sample_id", "clonotype", "ranks")][, exp_shannon :=lapply(1, function(y) .renyiCal(count, y, hill = TRUE)), by="sample_id"]
+  out <- copy(assay(x))[, .(count = sum(count)), by=c("sample_id", "ntClone")][, ranks := lapply(.SD, frankv, ties.method = "min", order=-1L), by = "sample_id", .SDcols = "count"]
+  out2 <- out[, .(count=sum(count)), by=c("sample_id", "ntClone", "ranks")][, exp_shannon :=lapply(1, function(y) .renyiCal(count, y, hill = TRUE)), by="sample_id"]
   keep <- out2[out2[, .I[ranks %in% seq_len(exp_shannon)], by = "sample_id" ]$V1]
-  res <- copy(assay(x))[keep, on = c("clonotype", "sample_id")][, c("exp_shannon", "ranks","i.count") := NULL]
+  res <- copy(assay(x))[keep, on = c("ntClone", "sample_id")][, c("exp_shannon", "ranks","i.count") := NULL]
 
-  stats <- data.frame(res[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols = c("CDR3nt", "CDR3aa", "V", "J", "VJ","clone","clonotype"), by = "sample_id"], row.names = 1)
-  sampleinfo <- data.frame(merge(sampleinfo[, setdiff(colnames(sampleinfo), colnames(stats))], stats, by = 0, sort=F), row.names = 1)
+  stats <- data.frame(res[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols = c("ntCDR3", "aaCDR3", "V", "J", "VJ","aaClone","ntClone"), by = "sample_id"], row.names = 1)
+  sampleinfo <- data.frame(merge(sampleinfo[, setdiff(colnames(sampleinfo), colnames(stats))], stats, by = 0, sort=FALSE), row.names = 1)
 
   x.hist <- "A Shannon-based normalization was performed"
   filtered=  out2[out2[, .I[!ranks %in% seq_len(exp_shannon)], by = "sample_id" ]$V1]

@@ -8,20 +8,26 @@ plotGeneUsage(
   x,
   level = c("V", "J"),
   scale = c("count", "frequency"),
-  groupBy = NULL,
-  label_colors = NULL
+  colorBy = NULL,
+  facetBy = NULL,
+  label_colors = NULL,
+  show_stats = FALSE
 )
 }
 \arguments{
 \item{x}{an object of class  \code{\linkS4class{RepSeqExperiment}}}
 
-\item{level}{a character specifying the level of the repertoire to be taken into account when calculating the gene usages. Should be one of clone" or "clonotype".}
+\item{level}{a character specifying the level of the repertoire to be taken into account when calculating the gene usages. Should be one of "aaClone" or "ntClone".}
 
 \item{scale}{a character specifying whether to plot the gene usage in "count" or "frequency".}
 
-\item{groupBy}{character indicating the groups to be compared. If not specified, no comparative statistical tests will be performed, and calculated values for each sample_id will be represented.}
+\item{colorBy}{a character indicating a column name in mData. Colors are thus attributed to the different groups within this column. The chosen column must be of class factor.}
+
+\item{facetBy}{a vector of character indicating one or two column names in mData to apply a facet on.}
 
 \item{label_colors}{a list of colors for each variable in ColorBy. See \code{\link{plotColors}}. If NULL, default colors are used.}
+
+\item{show_stats}{whether to statistically compare groups}
 }
 \description{
 This function compares the V or J gene usages between given groups.
@@ -30,8 +36,8 @@ This function compares the V or J gene usages between given groups.
 
 data(RepSeqData)
 
-plotGeneUsage(x = RepSeqData, level = "J", scale = "count", groupBy = "cell_subset")
+plotGeneUsage(x = RepSeqData, level = "J", scale = "count", colorBy = "cell_subset", show_stats=TRUE )
 
-
+plotGeneUsage(x = RepSeqData, level = "V", scale = "count", colorBy = "cell_subset", facetBy="sex")
 
 }
