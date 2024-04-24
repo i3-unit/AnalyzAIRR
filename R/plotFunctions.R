@@ -801,6 +801,7 @@ plotDissimilarity <- function(x, level = c("aaClone","ntClone", "V", "J", "VJ", 
 #' @param scale a character specifying whether to plot the clonal abundance in "count" or "frequency".
 #' @param colorBy a character indicating one column name in mData. Colors are thus attributed to the different groups within this column. The chosen column must be of class factor.
 #' @param facetBy a vector of character indicating one or two column names in mData to apply a facet on.
+#' @param ranks an integer specifying the number of top ranks to be plotted. Default is NULL, which plots all ranks.
 #' @param grouped a boolean indicating whether or not the mean and se of samples belonging to the same experimental group specified in the ColorBy parameter should be computed. Grouping is performed on the chosen groupe in colorBy. Default is FALSE.
 #' @param label_colors a list of colors for each variable in ColorBy. See \code{\link{plotColors}}. If NULL, default colors are used.
 #' @export
@@ -819,6 +820,7 @@ plotDissimilarity <- function(x, level = c("aaClone","ntClone", "V", "J", "VJ", 
 #'
 plotRankDistrib <- function(x, level = c("aaClone","ntClone", "ntCDR3","aaCDR3"),
                             scale=c("count","frequency"),
+                            ranks=NULL,
                             grouped=FALSE,
                             colorBy=NULL, 
                             facetBy=NULL,
@@ -827,16 +829,16 @@ plotRankDistrib <- function(x, level = c("aaClone","ntClone", "ntCDR3","aaCDR3")
   if (missing(x)) stop("x is missing.")
   if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected.")
   if(is.null(colorBy)) stop("need to specify a column from mData. Can be the sample_id column")
+  if(colorBy=="sample_id" & grouped==TRUE) stop("grouped cannot be used when colorBy is set to sample_id")
   if (is.null(label_colors)) {
     label_colors= oData(x)$label_colors 
   }
   
   scl <- match.arg(scale)
   levelChoice <- match.arg(level)
-  
+    
   sName <- rownames(mData(x))
   sdata <- mData(x)
-
   
   lookup <- c("colors" = colorBy,"facet1" = facetBy[1],"facet2" = facetBy[2])
   lookup2<- c(colorBy,facetBy[1],facetBy[2])[!is.na(c(colorBy,facetBy[1],facetBy[2]))]
@@ -847,8 +849,7 @@ plotRankDistrib <- function(x, level = c("aaClone","ntClone", "ntCDR3","aaCDR3")
   counts<- merge(counts, sdata[,c(lookup2, "sample_id","nSequences")],by="sample_id")
   counts<- counts %>% dplyr::select(-nSequences) %>% dplyr::rename_at(dplyr::vars(lookup2), ~ names(lookup)[!is.na(lookup)]) 
             
-  if (colorBy=="sample_id")  counts<- counts %>% dplyr::select(-`sample_id.1`)
-  
+  if (colorBy=="sample_id")  counts<- counts %>% dplyr::rename(sample_id=`sample_id.1`)
   
   if (grouped) {
     # aucs <- counts %>%
@@ -874,6 +875,7 @@ plotRankDistrib <- function(x, level = c("aaClone","ntClone", "ntCDR3","aaCDR3")
     # auc_test <- data.frame(aucs) %>%
     #   rstatix::wilcox_test(formula = AUC ~ group) %>%
     #   rstatix::adjust_pvalue(method="holm")
+    if(!is.null(ranks)) counts<- counts %>% filter(rank<=ranks)
     
     p <- ggplot2::ggplot(counts, ggplot2::aes(x = rank, y = mean, colour = colors)) +
       ggplot2::geom_point(data=counts[counts$rank==1,],shape=21) +
@@ -906,11 +908,13 @@ plotRankDistrib <- function(x, level = c("aaClone","ntClone", "ntCDR3","aaCDR3")
   } else {
     
     if (scl == "frequency"){
-      counts <- counts %>% dplyr::group_by(dplyr::across(tidyselect::all_of(names(lookup)[!is.na(lookup)]))) %>% dplyr::mutate(count = count/sum(count))
+      counts <- counts %>% dplyr::group_by(sample_id) %>% dplyr::mutate(count = count/sum(count))
       counts <- data.table::setDT(counts)
     } else {
-      counts <- counts
+      counts <- counts 
     }
+    
+    if(!is.null(ranks)) counts<- counts %>% filter(rank<=ranks)
     
     p <-  ggplot2::ggplot(counts, ggplot2::aes(x = rank, y = count, colour =colors)) +
       ggplot2::geom_point(data=counts[counts$rank==1,], shape=21) +
@@ -922,11 +926,11 @@ plotRankDistrib <- function(x, level = c("aaClone","ntClone", "ntCDR3","aaCDR3")
      {if(length(facetBy)==2)list(ggplot2::facet_grid(facet1~facet2,scales="free"))} +
       ggplot2::scale_x_log10()+
      theme_RepSeq()+
-     ggplot2::theme(  axis.text.x = ggplot2::element_text(angle = 40, hjust = 1))+
+     ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 40, hjust = 1))+
      {if(colorBy=="sample_id") ggplot2::theme( legend.position = "none") else ggplot2::theme( legend.position = "right")}+
      ggplot2::ylab(paste(scl))
 }
-  return(p)
+  return(p) 
 }
 
 
@@ -1040,8 +1044,8 @@ plotScatter <- function(x, sampleNames = NULL,
   formulas <- y ~ x
   
   p <- ggplot2::ggplot(data2plot, ggplot2::aes_string(x = sampleNames[1], y = sampleNames[2])) +
-    ggplot2::geom_count(size = 1.5, shape=21, alpha=.5) +
-    ggplot2::geom_smooth(method="lm", se=FALSE, linetype="dashed", color="red")+
+    ggplot2::geom_count(size = 2, shape=21, alpha=.5) +
+    ggplot2::geom_smooth(method="lm", se=FALSE, linetype="dashed",linewidth=0.5, color="red")+
     theme_RepSeq()+
     ggpmisc::stat_poly_eq(ggplot2::aes(label=paste(ggplot2::after_stat(adj.rr.label),ggplot2::after_stat(p.value.label),sep = "~~~~")),
                           formula=formulas,
@@ -1320,6 +1324,7 @@ plotIntervals <- function(x, level = c("aaClone","ntClone", "ntCDR3","aaCDR3"),
 
   if(fractions=="count"){
     ff<- data.frame(interval=c("1","]1, 10]","]10, 100]", "]100, 1000]","]1000, 10000]","]10000, Inf]"))
+    ff$interval<- factor(ff$interval, levels=c("1","]1, 10]","]10, 100]", "]100, 1000]","]1000, 10000]","]10000, Inf]"))
     colorBreaks <-  c("1"="#1F77B4B2","]1, 10]"="#FF7F0EB2","]10, 100]"="#2CA02CB2", 
                       "]100, 1000]"="#D62728B2" ,"]1000, 10000]"="#9467BDB2",
                       "]10000, Inf]"="#8C564BB2")
@@ -1334,6 +1339,7 @@ plotIntervals <- function(x, level = c("aaClone","ntClone", "ntCDR3","aaCDR3"),
   } else if(fractions=="frequency"){
     ff<- data.frame(interval=c("]0, 0.000001]","]0.000001, 0.00001]","]0.00001, 0.0001]",
                                "]0.0001, 0.001]","]0.001, 0.01]","]0.01, 1]"))
+    ff$interval<- as.factor(ff$interval)
     colorBreaks <-  c("]0, 0.000001]"="#1F77B4B2","]0.000001, 0.00001]"="#FF7F0EB2",
                       "]0.00001, 0.0001]"="#2CA02CB2",  "]0.0001, 0.001]"="#D62728B2" , 
                       "]0.001, 0.01]"="#9467BDB2", "]0.01, 1]" ="#8C564BB2")
@@ -1371,6 +1377,7 @@ plotIntervals <- function(x, level = c("aaClone","ntClone", "ntCDR3","aaCDR3"),
   additions<- additions %>% dplyr::select(-aaClone) %>% dplyr::rename_at(dplyr::vars(lookup2), ~ names(lookup)[!is.na(lookup)])
   
   data2plot <- setDT(data2plot)
+  data2plot$interval<- factor(data2plot$interval, levels=ff$interval[ff$interval %in% data2plot$interval])
   breaks <- ff$interval
   
   if (is.null(label_colors)) {
@@ -1383,8 +1390,8 @@ if(grouped){
       additions<- reshape2::melt(additions, id.vars=c("interval","colors","sample_id"))
       
       data2plot<- reshape2::melt(data2plot, id.vars=c("interval","colors","sample_id"))
-      lev <- unique(data2plot$interval)[unique(data2plot$interval) %in% ff$interval]
-      data2plot$interval=factor(data2plot$interval, levels=lev)
+      #lev <- unique(data2plot$interval)[unique(data2plot$interval) %in% ff$interval]
+      #data2plot$interval=factor(data2plot$interval, levels=lev)
       
       grps<- data2plot %>%
         dplyr::group_by(dplyr::across(tidyselect::all_of(names(lookup)[!is.na(lookup)])), interval, variable) %>% 
@@ -1400,8 +1407,8 @@ if(grouped){
       additions<- reshape2::melt(additions, id.vars=c("interval","colors","facet1","sample_id"))
       
       data2plot<- reshape2::melt(data2plot, id.vars=c("interval","colors","facet1","sample_id"))
-      lev <- unique(data2plot$interval)[unique(data2plot$interval) %in% ff$interval]
-      data2plot$interval=factor(data2plot$interval, levels=lev)
+      #lev <- unique(data2plot$interval)[unique(data2plot$interval) %in% ff$interval]
+      #data2plot$interval=factor(data2plot$interval, levels=lev)
       
       grps<- data2plot %>% 
                 dplyr::group_by(dplyr::across(tidyselect::all_of(names(lookup)[!is.na(lookup)])), interval,variable) %>% 
@@ -1418,9 +1425,7 @@ if(grouped){
       additions<- reshape2::melt(additions, id.vars=c("interval","colors","facet1","facet2","sample_id"))
       
       data2plot<- reshape2::melt(data2plot, id.vars=c("interval","colors","facet1","facet2","sample_id"))
-      lev <- unique(data2plot$interval)[unique(data2plot$interval) %in% ff$interval]
-      data2plot$interval=factor(data2plot$interval, levels=lev)
-      
+
       grps<- data2plot %>% 
         dplyr::group_by(dplyr::across(tidyselect::all_of(names(lookup)[!is.na(lookup)])), interval,variable) %>% 
         dplyr::summarize(count=dplyr::n()) %>% 
@@ -1437,34 +1442,34 @@ if(grouped){
     if(nrow(interv)==0){
       rown <- 0
     } else {
-      rown <- which(ff$interval==interv$interval)
+      rown <- which(ff$interval==as.character(interv$interval))
     }
     
-   
+   if(show_stats==TRUE){
     if(is.null(facetBy)){
       stat.test1 <- data2plot %>%
         dplyr::filter(variable ==  "percent") %>%
-        dplyr::filter(if(nrow(interv)>0) interval != grps$interval[is.na(grps$keep)] else TRUE) %>%
+        dplyr::filter(if(nrow(interv)>0) interval != unique(interv$interval) else TRUE) %>%
         dplyr::group_by(interval) %>%
         rstatix::wilcox_test(value  ~ colors) %>%
         rstatix::adjust_pvalue() %>%
         rstatix::add_significance() %>% 
-        rstatix::add_xy_position(x="interval") %>%
-        dplyr::mutate(x=x+rown) %>%
-        dplyr::mutate(xmin=xmin+rown) %>%
-        dplyr::mutate(xmax=xmax+rown)
+        rstatix::add_xy_position(x="interval") #%>%
+        # dplyr::mutate(x=x+rown) %>%
+        # dplyr::mutate(xmin=xmin+rown) %>%
+        # dplyr::mutate(xmax=xmax+rown)
       
       stat.test2 <- data2plot %>%
         dplyr::filter(variable ==  "freq") %>%
-        dplyr::filter(if(nrow(interv)>0) interval != grps$interval[is.na(grps$keep)] else TRUE) %>%
+        dplyr::filter(if(nrow(interv)>0) interval != unique(interv$interval) else TRUE) %>%
         dplyr::group_by(interval) %>%
         rstatix::wilcox_test(value  ~ colors) %>%
         rstatix::adjust_pvalue() %>%
         rstatix::add_significance() %>% 
-        rstatix::add_xy_position(x="interval") %>%
-        dplyr::mutate(x=x+rown) %>%
-        dplyr::mutate(xmin=xmin+rown) %>%
-        dplyr::mutate(xmax=xmax+rown)
+        rstatix::add_xy_position(x="interval") #%>%
+        # dplyr::mutate(x=x+rown) %>%
+        # dplyr::mutate(xmin=xmin+rown) %>%
+        # dplyr::mutate(xmax=xmax+rown)
 
       
     } else {
@@ -1478,10 +1483,10 @@ if(grouped){
         rstatix::wilcox_test(value  ~ colors) %>%
         rstatix::adjust_pvalue() %>%
         rstatix::add_significance() %>% 
-        rstatix::add_xy_position(x="interval") %>%
-        dplyr::mutate(x=x+rown) %>%
-        dplyr::mutate(xmin=xmin+rown) %>%
-        dplyr::mutate(xmax=xmax+rown)
+        rstatix::add_xy_position(x="interval") #%>%
+        # dplyr::mutate(x=x+rown) %>%
+        # dplyr::mutate(xmin=xmin+rown) %>%
+        # dplyr::mutate(xmax=xmax+rown)
       
     
       stat.test2 <- data2plot %>%
@@ -1493,23 +1498,23 @@ if(grouped){
         rstatix::wilcox_test(value  ~ colors) %>%
         rstatix::adjust_pvalue() %>%
         rstatix::add_significance() %>% 
-        rstatix::add_xy_position(x="interval") %>%
-        dplyr::mutate(x=x+rown) %>%
-        dplyr::mutate(xmin=xmin+rown) %>%
-        dplyr::mutate(xmax=xmax+rown)
+        rstatix::add_xy_position(x="interval") #%>%
+        # dplyr::mutate(x=x+rown) %>%
+        # dplyr::mutate(xmin=xmin+rown) %>%
+        # dplyr::mutate(xmax=xmax+rown)
 
     }
+   }
 
     data2plot<- rbind(data2plot, additions)
-    lev <- unique(data2plot$interval)[unique(data2plot$interval) %in% ff$interval]
-    data2plot$interval=factor(data2plot$interval, levels=lev)
+
     
     p1 <-  ggplot2::ggplot(data = data2plot[data2plot$variable == "percent",],
                          ggplot2::aes(x = factor(interval, levels=plotBreaks),
                                       y = .data[["value"]]), alpha=.7) +
       ggplot2::geom_boxplot(ggplot2::aes(fill=.data[["colors"]]),outlier.shape = NA, position=ggplot2::position_dodge(width=.8)) +
-      ggplot2::geom_point(ggplot2::aes(fill=.data[["colors"]]),shape = 21, position=ggplot2::position_dodge(width=.8)) +
-      {if(length(facetBy)==1)list(ggplot2::facet_grid(~facet1, scales="free"))} +
+      ggplot2::geom_jitter(ggplot2::aes(fill=.data[["colors"]]),shape=21,position=ggplot2::position_jitterdodge() )+
+       {if(length(facetBy)==1)list(ggplot2::facet_grid(~facet1, scales="free"))} +
       {if(length(facetBy)==2)list(ggplot2::facet_grid(facet1~facet2, scales="free"))} +
       ggplot2::labs(subtitle = "Cumulative frequency", x=NULL)+
       ggplot2::xlab("")+ggplot2::ylab("proportion")+
@@ -1519,7 +1524,7 @@ if(grouped){
       ggplot2::theme(plot.margin=ggplot2::unit(c(-0.1,.5,.1,.5),"cm"),
                       legend.position = "none",
                       plot.subtitle=ggplot2::element_text(size=10),
-                     axis.text.x = ggplot2::element_text( vjust = 1, angle = 40, hjust = 1,size=8),
+                     axis.text.x = ggplot2::element_text(  angle = 0,size=8),
                      axis.text.y = ggplot2::element_text(size=8))+
       {if(show_stats==TRUE) ggpubr::stat_pvalue_manual(stat.test1, label = "p.adj.signif",
                             tip.length = 0, size=3)}
@@ -1528,7 +1533,7 @@ if(grouped){
                           ggplot2::aes(x = factor(interval, levels=plotBreaks),
                                        y = .data[["value"]]), alpha=.7) +
       ggplot2::geom_boxplot(ggplot2::aes(fill=.data[["colors"]]),outlier.shape = NA) +
-      ggplot2::geom_point(ggplot2::aes(fill=.data[["colors"]]),shape = 21, position=ggplot2::position_dodge(width=.8)) +
+      ggplot2::geom_jitter(ggplot2::aes(fill=.data[["colors"]]),shape=21,position=ggplot2::position_jitterdodge() )+
       {if(length(facetBy)==1)list(ggplot2::facet_grid(~facet1, scales="free"))} +
       {if(length(facetBy)==2)list(ggplot2::facet_grid(facet1~facet2, scales="free"))} +
       ggplot2::labs(subtitle = "Distribution")+
@@ -1540,7 +1545,7 @@ if(grouped){
                      legend.position = "right",
                      legend.direction = "vertical",
                      plot.subtitle=ggplot2::element_text(size=10),
-                     axis.text.x = ggplot2::element_text( vjust = 1, size=8,angle = 40, hjust = 1),
+                     axis.text.x = ggplot2::element_text(  size=8,angle = 0),
                      axis.text = ggplot2::element_text(size=8),
                      legend.background = ggplot2::element_blank(),
                      legend.text = ggplot2::element_text(size=8),
@@ -1574,7 +1579,7 @@ if(grouped){
       {if(length(facetBy)==1)list(ggplot2::facet_grid(~facet1, scales="free"))} +
       {if(length(facetBy)==2)list(ggplot2::facet_grid(facet1~facet2, scales="free"))} +
       theme_RepSeq()+
-      ggplot2::theme( axis.text.x = ggplot2::element_text( size=5,angle = 45, hjust=1),
+      ggplot2::theme( axis.text.x = ggplot2::element_text( size=5,angle = 0),
                       axis.text = ggplot2::element_text(size=6),
                       legend.position = "none",
                       strip.text.x = ggplot2::element_text( size = 7),
@@ -1590,7 +1595,7 @@ if(grouped){
       {if(length(facetBy)==1)list(ggplot2::facet_grid(~facet1, scales="free"))} +
       {if(length(facetBy)==2)list(ggplot2::facet_grid(facet1~facet2, scales="free"))} +
       theme_RepSeq()+
-      ggplot2::theme( axis.text.x = ggplot2::element_text(size=5, angle = 45, hjust=1),
+      ggplot2::theme( axis.text.x = ggplot2::element_text(size=5, angle = 0),
                       axis.text = ggplot2::element_text(size=6),
                       legend.position = "right",
                       strip.text.x = ggplot2::element_text( size = 7),
@@ -1730,8 +1735,8 @@ plotStatistics <- function(x, stat = c("nSequences", "aaClone", "ntClone","V", "
       ggplot2::geom_bar(stat="identity", linewidth=.5, color="black") +
       ggplot2::xlab("")+
       ggplot2::ylab(paste(stat))+
-      {if(length(facetBy)==1)list(ggplot2::facet_grid(~facet1, scales="free"))} +
-      {if(length(facetBy)==2)list(ggplot2::facet_grid(facet1~facet2,scales="free"))} +
+      {if(length(facetBy)==1)list(ggplot2::facet_wrap(~facet1, scales="free"))} +
+      {if(length(facetBy)==2)list(ggplot2::facet_wrap(facet1~facet2,scales="free"))} +
       ggplot2::scale_fill_manual(values=label_colors[[colors]])+
       theme_RepSeq()+
       ggplot2::theme(  axis.text.x = ggplot2::element_text(angle = 40, hjust = 1))+

@@ -116,7 +116,7 @@ This guide provides an overview of the pipeline proposed in **AnalyzAIRR**.
 The latest release of **AnalyzAIRR** can be installed from Github using **devtools**:
 ```{r github1, echo = TRUE, eval = FALSE}
 install.packages("devtools")  
-devtools::install_github("vanessajmh/AnalyzAIRR")
+devtools::install_github("i3-unit/AnalyzAIRR")
 ```
 
 Load the **AnalyzAIRR** package
@@ -631,10 +631,10 @@ plotIntervals(x=RepSeqData, level="aaClone", fractions="frequency", facetBy = "c
 + **Clonal Distribution per decreasing rank**
 
  Another way to assess the clonal distribution is by visualizing the distribution as a function of the ranks.
- Samples can be colored by **sample_id** as well as by any group column from the `mData()` slot.
+ Samples can be colored by **sample_id** as well as by any group column from the `mData()` slot. The `ranks` parameters allows to plot only the top X ranks within the repertoires.
 
 ```{r plot clone distri, echo = TRUE, warning=FALSE,fig.width=8, fig.height =4,fig.align="center"}
-plotRankDistrib(x=RepSeqData,level="aaClone", colorBy="sample_id", scale="frequency", grouped=F)
+plotRankDistrib(x=RepSeqData,level="aaClone", colorBy="sample_id", scale="frequency", ranks=1000, grouped=F)
 ```
 <figcaption align = "center"><em class="special">Figure 8: Clonal distribution as a function of the occurrence rank for each sample.</em></figcaption>
 <div>

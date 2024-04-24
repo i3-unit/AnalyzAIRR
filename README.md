@@ -14,7 +14,7 @@ AnalyzAIRR is an R package developed to analyze bulk Ig/TCR repertoire datasets.
 The latest release of **AnalyzAIRR** can be installed from Github using **devtools**:
 ```r
 #install.packages("devtools")  
-#devtools::install_github("vanessajmh/AnalyzAIRR@v1.0.0")
+#devtools::install_github("i3-unit/AnalyzAIRR")
 library(AnalyzAIRR)
 ```
 ## Docker

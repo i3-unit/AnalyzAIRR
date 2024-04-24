@@ -8,6 +8,7 @@ plotRankDistrib(
   x,
   level = c("aaClone", "ntClone", "ntCDR3", "aaCDR3"),
   scale = c("count", "frequency"),
+  ranks = NULL,
   grouped = FALSE,
   colorBy = NULL,
   facetBy = NULL,
@@ -20,6 +21,8 @@ plotRankDistrib(
 \item{level}{a character specifying the level of the repertoire to be taken into account to plot the clonal distribution. Should be one of "aaClone", "ntClone", "ntCDR3" or "aaCDR3".}
 
 \item{scale}{a character specifying whether to plot the clonal abundance in "count" or "frequency".}
+
+\item{ranks}{an integer specifying the number of top ranks to be plotted. Default is NULL, which plots all ranks.}
 
 \item{grouped}{a boolean indicating whether or not the mean and se of samples belonging to the same experimental group specified in the ColorBy parameter should be computed. Grouping is performed on the chosen groupe in colorBy. Default is FALSE.}
 
