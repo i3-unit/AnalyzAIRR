@@ -875,7 +875,7 @@ plotRankDistrib <- function(x, level = c("aaClone","ntClone", "ntCDR3","aaCDR3")
     # auc_test <- data.frame(aucs) %>%
     #   rstatix::wilcox_test(formula = AUC ~ group) %>%
     #   rstatix::adjust_pvalue(method="holm")
-    if(!is.null(ranks)) counts<- counts %>% filter(rank<=ranks)
+    if(!is.null(ranks)) counts<- counts %>% dplyr::filter(rank<=ranks)
     
     p <- ggplot2::ggplot(counts, ggplot2::aes(x = rank, y = mean, colour = colors)) +
       ggplot2::geom_point(data=counts[counts$rank==1,],shape=21) +
@@ -914,7 +914,7 @@ plotRankDistrib <- function(x, level = c("aaClone","ntClone", "ntCDR3","aaCDR3")
       counts <- counts 
     }
     
-    if(!is.null(ranks)) counts<- counts %>% filter(rank<=ranks)
+    if(!is.null(ranks)) counts<- counts %>% dplyr::filter(rank<=ranks)
     
     p <-  ggplot2::ggplot(counts, ggplot2::aes(x = rank, y = count, colour =colors)) +
       ggplot2::geom_point(data=counts[counts$rank==1,], shape=21) +

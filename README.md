@@ -1,3 +1,5 @@
+[![](https://img.shields.io/static/v1?label=AIRR-C%20sw-tools%20v1&message=compliant&color=008AFF&labelColor=000000&style=plastic)](https://docs.airr-community.org/en/stable/swtools/airr_swtools_standard.html)
+
 # AnalyzAIRR
 
 AnalyzAIRR is an R package developed to analyze bulk Ig/TCR repertoire datasets.
@@ -42,5 +44,3 @@ The application can be either download from the [Github repository](https://gith
 # Support
 
 For any questions regarding the installation of AnalyzAIRR, bug reports or feature requests, please submit an issue.
-
-

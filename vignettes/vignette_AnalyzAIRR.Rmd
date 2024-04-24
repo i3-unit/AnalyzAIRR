@@ -1,5 +1,5 @@
 ---
-title: "AnalyzAIRR"
+title: "AnalyzAIRR" 
 author:
 - name: V. Mhanna, G. Pires, G. Bohl, K. El Soufi, <br> N. Tchitchek, D. Klatzmann, A. Six, E. Mariotti-Ferrandiz
   affiliation: Sorbonne Université, INSERM, Immunology-Immunopathology-Immunotherapy (i3), Paris, France
@@ -22,6 +22,11 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+<div id="badge">
+  <a href="https://docs.airr-community.org/en/stable/swtools/airr_swtools_standard.html">
+    <img src="https://img.shields.io/static/v1?label=AIRR-C%20sw-tools%20v1&message=compliant&color=008AFF&labelColor=000000&style=plastic">
+  </a>
+</div>
 
 <style type="text/css">
 <!-- div#TOC li { -->
@@ -87,6 +92,11 @@ font-weight: normal; font-style: italic; font-size: 0.9em;
 }
 em.special { 
 color: grey; 
+}
+#badge {
+  position: fixed;
+  top: 10px;
+  right: 10px;
 }
 </style>
 
