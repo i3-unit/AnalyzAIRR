@@ -61,7 +61,7 @@ countFeatures <- function(x,
   if (scl == "count"){
     out <- data.table::dcast(cts, as.formula(paste0(levelChoice,"~ sample_id")), value.var="count", fun=sum)
   } else {
-    cts <- cts[, .(count = sum(count)), by=c("sample_id", levelChoice)][, prop := count/sum(count), by = "sample_id"]
+    cts <- cts[, .(count = sum(count)), by=c("sample_id", levelChoice)][, prop := round(count/sum(count),2), by = "sample_id"]
     out <- data.table::dcast(cts, as.formula(paste0(levelChoice, "~sample_id")), value.var = "prop", fill = 0)
   }
     return(out)

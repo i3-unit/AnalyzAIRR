@@ -110,6 +110,9 @@ knitr::opts_chunk$set(
 ```
 # Introduction
 
+![](/Users/vanessamhanna/Github/generate-AnalyzAIRR/vignettes/graphical.png)
+
+
 **AnalyzAIRR** is an R package developed to analyze bulk Ig/TCR repertoire datasets. 
 
 * It can be used by both biologists and bioinformaticians.
@@ -614,7 +617,7 @@ knitr::kable(rn) %>%
 ```
 
   Renyi's entropy values can be plotted using `plotRenyiIndex()`. If the `grouped` parameter is set to **FALSE**, a curve for each sample is plotted and colors are attributed based on the `colorBy` parameter. 
- The `facetBy` parameter can be used to separate samples based on a group column. A shape can also be assigned for each curve of groups of curves with the `shapeBy` parameter.
+ The `facetBy` parameter can be used to separate samples based on a group column.
 
 ```{r plot renyi, echo = TRUE, fig.width=8, fig.height = 4,fig.align="center"}
 plotRenyiIndex(x=RepSeqData, level="J", grouped=FALSE, colorBy = "sample_id", facetBy="cell_subset")
@@ -775,7 +778,6 @@ plotDiversity(x = RepSeqData,
 plotRenyiIndex(x = RepSeqData,
                   level = "aaClone",
                   colorBy = "cell_subset",
-                  shapeBy = "sex",
                   grouped = TRUE)
 
 ```

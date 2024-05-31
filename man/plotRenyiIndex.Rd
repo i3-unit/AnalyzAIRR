@@ -10,7 +10,6 @@ plotRenyiIndex(
   level = c("aaClone", "ntClone", "V", "J", "VJ", "ntCDR3", "aaCDR3"),
   colorBy = NULL,
   facetBy = NULL,
-  shapeBy = NULL,
   grouped = FALSE,
   label_colors = NULL
 )
@@ -25,8 +24,6 @@ plotRenyiIndex(
 \item{colorBy}{a character indicating a column name in mData. Colors are thus attributed to the different groups within this column. The chosen column must be of class factor.}
 
 \item{facetBy}{a vector of character indicating one or two column names in mData to apply a facet on.}
-
-\item{shapeBy}{a vector of character indicating one column names in mData to be used to attribute group shapes.}
 
 \item{grouped}{a boolean indicating whether or not the mean and se of samples belonging to the same experimental group specified in the ColorBy parameter should be calculated. Grouping will be performed on the group chosen in the colorBy parameter. Default is FALSE.}
 
@@ -55,5 +52,5 @@ plotRenyiIndex(x = RepSeqData, level = "J", colorBy = "cell_subset", grouped=TRU
 
 plotRenyiIndex(x = RepSeqData, level = "J", colorBy = "sex", facetBy= "cell_subset", grouped=TRUE)
 
-plotRenyiIndex(x = RepSeqData, level = "J", colorBy = "sample_id", shapeBy= "sex", grouped=FALSE)
+plotRenyiIndex(x = RepSeqData, level = "J", colorBy = "sample_id", grouped=FALSE)
 }

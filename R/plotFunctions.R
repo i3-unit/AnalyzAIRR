@@ -177,7 +177,6 @@ plotSpectratyping <- function(x, sampleName = NULL,
 #' @param grouped a boolean indicating whether or not the mean and se of samples belonging to the same experimental group specified in the ColorBy parameter should be calculated. Grouping will be performed on the group chosen in the colorBy parameter. Default is FALSE.
 #' @param label_colors a list of colors for each variable in ColorBy. See \code{\link{plotColors}}. If NULL, default colors are used.
 #' @param facetBy a vector of character indicating one or two column names in mData to apply a facet on.
-#' @param shapeBy a vector of character indicating one column names in mData to be used to attribute group shapes.
 #' 
 #' @details The Renyi index is a generalization of the Shannon index. It represents the distribution of clonal expansions
 #' as a function of the parameter alpha. At alpha=0, it equally considers all species including the rare ones,
@@ -197,13 +196,12 @@ plotSpectratyping <- function(x, sampleName = NULL,
 #' 
 #' plotRenyiIndex(x = RepSeqData, level = "J", colorBy = "sex", facetBy= "cell_subset", grouped=TRUE)
 #'
-#' plotRenyiIndex(x = RepSeqData, level = "J", colorBy = "sample_id", shapeBy= "sex", grouped=FALSE)
+#' plotRenyiIndex(x = RepSeqData, level = "J", colorBy = "sample_id", grouped=FALSE)
 
 plotRenyiIndex <- function(x, alpha = c(0, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, Inf),
                               level = c("aaClone","ntClone", "V", "J", "VJ", "ntCDR3","aaCDR3"),
                               colorBy=NULL, 
                               facetBy=NULL,
-                              shapeBy=NULL,
                               grouped=FALSE,
                               label_colors=NULL) {
   
@@ -223,10 +221,9 @@ plotRenyiIndex <- function(x, alpha = c(0, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, In
   colors<- colorBy
   facet1<- facetBy[1]
   facet2<- facetBy[2]
-  shape<- shapeBy
-  
-  lookup <- c("colors" = colors,"facet1" = facet1,"facet2" = facet2, "shapes"=shape)
-  lookup2<- c(colorBy,facetBy[1],facetBy[2], shapeBy)[!is.na(c(colorBy,facetBy[1],facetBy[2],shapeBy))]
+
+  lookup <- c("colors" = colors,"facet1" = facet1,"facet2" = facet2)
+  lookup2<- c(colorBy,facetBy[1],facetBy[2])[!is.na(c(colorBy,facetBy[1],facetBy[2]))]
   
   tmp <- renyiIndex(x, alpha = alpha, level=levelChoice)
   data2plot <- data.table::melt(data = tmp, id.vars = "variable", measure.vars = sNames, variable.name = "sample_id")
@@ -253,12 +250,9 @@ plotRenyiIndex <- function(x, alpha = c(0, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, In
   
     
       p <- ggplot2::ggplot(data = data2plot, ggplot2::aes(x = as.numeric(variable), y = mean)) +
-          {if(!is.null(shapeBy)) ggplot2::geom_line(ggplot2::aes(group = interaction(colors, shapes),color=colors), linewidth = .8) else
-            ggplot2::geom_line(ggplot2::aes(group = colors,color=colors), linewidth = .8) } +
-          {if(!is.null(shapeBy)) ggplot2::geom_point(ggplot2::aes(shape=shapes), color="black",fill="white",  size=1.5) else
-          ggplot2::geom_point(ggplot2::aes( color=colors), fill="white",  size=1.2) }+
-        {if(!is.null(shapeBy))  ggplot2::geom_ribbon( ggplot2::aes(ymin=mean-ste, ymax=mean+ste,group=interaction(colors, shapes), fill=colors), alpha = 0.3,colour=NA) else 
-          ggplot2::geom_ribbon( ggplot2::aes(ymin=mean-ste, ymax=mean+ste, fill=colors), alpha = 0.3,colour=NA)}+
+            ggplot2::geom_line(ggplot2::aes(group = colors,color=colors), linewidth = .8)  +
+          ggplot2::geom_point(ggplot2::aes( color=colors), fill="white",  size=1.2) +
+          ggplot2::geom_ribbon( ggplot2::aes(ymin=mean-ste, ymax=mean+ste, fill=colors), alpha = 0.3,colour=NA)+
           ggplot2::xlab("alpha")  +
           ggplot2::ylab("Renyi's Entropy") +
           {if(length(facetBy)==1)list(ggplot2::facet_grid(~facet1))} +
@@ -297,10 +291,8 @@ plotRenyiIndex <- function(x, alpha = c(0, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, In
     if(colorBy=="sample_id"){
       
       p<- ggplot2::ggplot(data = data2plot, ggplot2::aes(x = variable, y = value, color=colors)) +
-        {if(!is.null(shapeBy)) ggplot2::geom_line(ggplot2::aes(group = interaction( colors,shapes),color=colors), linewidth = .8) else
-          ggplot2::geom_line(ggplot2::aes(group = colors, color=colors), linewidth = .8) } +
-        {if(!is.null(shapeBy)) ggplot2::geom_point(ggplot2::aes( color=colors, shape=shapes), fill="white",  size=1.2) else
-          ggplot2::geom_point(ggplot2::aes( color=colors) ,  size=1.2) }+
+          ggplot2::geom_line(ggplot2::aes(group = colors, color=colors), linewidth = .8)  +
+          ggplot2::geom_point(ggplot2::aes( color=colors) ,  size=1.2) +
         ggplot2::xlab("alpha")+
         ggplot2::ylab("Renyi's Entropy") +
         {if(length(facetBy)==1)list(ggplot2::facet_grid(~facet1, scales="free"))} +
@@ -314,10 +306,8 @@ plotRenyiIndex <- function(x, alpha = c(0, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, In
     } else {
    
     p<- ggplot2::ggplot(data = data2plot, ggplot2::aes(x = variable, y = value, color=colors)) +
-      {if(!is.null(shapeBy)) ggplot2::geom_line(ggplot2::aes(group = interaction(sample_id, shapes),color=colors), linewidth = .8) else
-        ggplot2::geom_line(ggplot2::aes(group = sample_id, color=colors), linewidth = .8) } +
-      {if(!is.null(shapeBy)) ggplot2::geom_point(ggplot2::aes( color=colors, shape=shapes), fill="white",  size=1.2) else
-        ggplot2::geom_point(ggplot2::aes( color=colors) ,  size=1.5) }+
+        ggplot2::geom_line(ggplot2::aes(group = sample_id, color=colors), linewidth = .8) +
+        ggplot2::geom_point(ggplot2::aes( color=colors) ,  size=1.5)+
       ggplot2::xlab("alpha")+
       ggplot2::ylab("Renyi's Entropy") +
       {if(length(facetBy)==1)list(ggplot2::facet_grid(~facet1, scales="free"))} +
@@ -405,7 +395,7 @@ plotIndGeneUsage <- function(x,  sampleName = NULL, level = c("V", "J"), scale =
 #'
 
 plotGeneUsage <- function(x, level = c("V", "J"), scale = c("count", "frequency"), 
-                          colorBy=NULL,  facetBy=NULL, label_colors = NULL, show_stats=FALSE) {
+                          colorBy=NULL, facetBy=NULL, label_colors = NULL, show_stats=FALSE) {
   frequency <- NULL
   sdata<-mData(x)
   if (missing(x)) stop("x is missing.")
@@ -457,7 +447,7 @@ plotGeneUsage <- function(x, level = c("V", "J"), scale = c("count", "frequency"
   
   
   p <-ggplot2::ggplot(data2plot.summary, 
-                      ggplot2::aes(x = get(levelChoice), y = mean )) +
+                      ggplot2::aes(x = !!rlang::sym(levelChoice), y = mean )) +
        ggplot2::geom_bar(ggplot2::aes(fill=!!rlang::sym(lookup[["colors"]])), stat="identity", position = ggplot2::position_dodge()) +
       ggplot2::geom_errorbar(ggplot2::aes(ymin=mean-se, ymax=mean+se, group=!!rlang::sym(lookup[["colors"]])), width=.2,position=ggplot2::position_dodge(.9))+
     {if(length(facetBy)==1)list(ggplot2::facet_grid(as.formula(paste("~", lookup[["facet1"]])), scales="free"))} +
@@ -469,7 +459,12 @@ plotGeneUsage <- function(x, level = c("V", "J"), scale = c("count", "frequency"
     ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, hjust = 1,size=8),
                    axis.text.y = ggplot2::element_text(size=8),
                    legend.position = "top")+
-    {if (show_stats==TRUE) ggpubr::stat_compare_means(ggplot2::aes(group=!!rlang::sym(lookup[["colors"]]), label = ggplot2::after_stat(p.signif)),method="wilcox.test", hide.ns = TRUE)}
+    {if (show_stats==TRUE) ggpubr::stat_compare_means(data=data2plot, 
+                                                      ggplot2::aes(x = !!rlang::sym(levelChoice), y = !!rlang::sym(scaleChoice), 
+                                                      group=!!rlang::sym(lookup[["colors"]]),
+                                                      label = ggplot2::after_stat(p.signif)),
+                                                      method="wilcox.test",  
+                                                      hide.ns = TRUE)}
   
   return(p)
 }
@@ -1222,11 +1217,11 @@ plotRarefaction <- function(x, colorBy=NULL, label_colors=NULL){
   raretab<- rarefactionTab(x)
 
   sdata <- mData(x)
-  raretab[, group := lapply(.SD, function(x) sdata[x, colorBy] ), .SDcols = "sample_id"]
+  raretab[, groupb := lapply(.SD, function(x) sdata[x, colorBy] ), .SDcols = "sample_id"]
 
   if(colorBy=="sample_id"){
  
-  p <- ggplot2::ggplot(data = raretab, ggplot2::aes(x = x, y = y, fill = group, color = group)) +
+  p <- ggplot2::ggplot(data = raretab, ggplot2::aes(x = x, y = y, fill = groupb, color = groupb)) +
     ggplot2::geom_line(ggplot2::aes(group=sample_id)) +
     ggplot2::guides(fill = "none") +
     ggplot2::labs(
@@ -1248,7 +1243,7 @@ plotRarefaction <- function(x, colorBy=NULL, label_colors=NULL){
   #               nudge_x = -0.1, direction = "y", hjust = "left", size=3 ,ggplot2::aes(label = sample_id)) 
   } else {
     
-    p <- ggplot2::ggplot(data = raretab, ggplot2::aes(x = x, y = y, fill = group, color = group)) +
+    p <- ggplot2::ggplot(data = raretab, ggplot2::aes(x = x, y = y, fill = groupb, color = groupb)) +
       ggplot2::geom_line(ggplot2::aes(group=sample_id)) +
       ggplot2::guides(fill = "none") +
       ggplot2::labs(

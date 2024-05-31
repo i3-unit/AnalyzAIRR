@@ -329,7 +329,7 @@ rarefactionTab <- function(x) {
     if (missing(x)) stop("x is required. An object of class RepSeqExperiment is expected.")
     if (!is.RepSeqExperiment(x)) stop("An object of class RepSeqExperiment is expected")
     cts <- data.table::copy(assay(x))
-    raretab <- cts[, rarefyDT(count), by = sample_id]
+    raretab <- cts[, round(rarefyDT(count),2), by = sample_id]
     return(raretab)
 }
 
