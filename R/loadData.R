@@ -532,7 +532,7 @@ readAIRRSet <- function(fileList, fileFormat = c("MiXCR", "immunoseq",  "MiAIRR"
   cores <- min(parallel::detectCores()-1, cores)
   cat("Running on", cores, "cores...\n")
   if (length(fileList) == 0) stop("Empty list of files, please check folder path.\n")
-  if (length(fileList) != nrow(sampleinfo)) stop("The number of samples in fileList and sampleinfo do not match.\n")
+  if (!is.null(sampleinfo) && length(fileList) != nrow(sampleinfo)) stop("The number of samples in fileList and sampleinfo do not match.\n")
   
   snames <- gsub(".tsv|.txt|.gz|.zip|.tar|.csv", "", basename(fileList))
   parser <- match.arg(fileFormat)
@@ -770,7 +770,7 @@ readFormatSet <- function(fileList,
 
   sample_id = clone = V = VJ = V1 <- NULL
   if (length(fileList) == 0) stop("Empty list of files, please check folder path.\n")
-  if (length(fileList) != nrow(sampleinfo)) stop("The number of samples in fileList and sampleinfo do not match.\n")
+  if (!is.null(sampleinfo) && length(fileList) != nrow(sampleinfo)) stop("The number of samples in fileList and sampleinfo do not match.\n")
   
   snames <- gsub(".tsv|.txt|.gz|.zip|.tar|.csv", "", basename(fileList))
   ch <- match.arg(chain)
