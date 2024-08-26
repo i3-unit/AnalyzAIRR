@@ -12,7 +12,7 @@ Authors@R: c(person("Vanessa", "Mhanna", email = "vanessajmhanna@gmail.com", rol
 Maintainer: Vanessa Mhanna <vanessajmhanna@gmail.com> and Encarnita Mariotti-Ferrandiz <encarnita.mariotti@sorbonne-universite.fr>
 Depends: R (>= 4.2.0), data.table
 Imports: pbapply, parallel, utils, stats, methods, graphics, ggplot2, magrittr,
-	 lemon, DESeq2, ade4, limma, scales, rmdformats, kableExtra, packcircles, 
+	 lemon, DESeq2, ade4, limma, scales, rmdformats, kableExtra, packcircles, smplot2,
 	 vegan, naturalsort, RColorBrewer, dplyr, ggVennDiagram, gridExtra, GGally,
 	 plyr, grDevices,reshape2, ggprism, rstatix, ggpubr, stringr, tidyselect,
 	 ggpmisc, tidyr, ggrepel, car, circlize, ComplexHeatmap, MESS, rlang, tibble
