@@ -18,8 +18,7 @@ Imports: pbapply, parallel, utils, stats, methods, graphics, ggplot2, magrittr,
 	 ggpmisc, tidyr, ggrepel, car, circlize, ComplexHeatmap, MESS, rlang, tibble
 Suggests: BiocStyle, knitr, rmarkdown
 License: GPL-3 + file LICENSE
-URL: https://github.com/i3-unit/AnalyzAIRR,
-    https://i3-unit.github.io/AnalyzAIRR/
+URL: https://github.com/i3-unit/AnalyzAIRR
 BugReports: https://github.com/i3-unit/AnalyzAIRR/issues
 LazyData: true
 LazyDataCompression: xz

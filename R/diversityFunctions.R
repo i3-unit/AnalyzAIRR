@@ -463,12 +463,14 @@ ShannonNorm <- function(x) {
   if (missing(x)) stop("x is missing, an object of class RepSeqExperiment is expected")
   if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected")
   sampleinfo <- mData(x) %>% dplyr::select(-chao1 ,-iChao)
-
+  exp_shannon <- NULL
   out <- copy(assay(x))[, .(count = sum(count)), by=c("sample_id", "ntClone")]
   out[, row_number := .I]
-  out2 <- out[, exp_shannon :=lapply(1, function(y) .renyiCal(count, y, hill = TRUE)), by="sample_id"]
-  keep <- out2[order(-count), head(.SD, exp_shannon), by = c("sample_id", "exp_shannon")]
+  # out2 <- out[, exp_shannon :=lapply(1, function(y) .renyiCal(count, y, hill = TRUE)), by="sample_id"]
+  out2 <- out[, exp_shannon := .renyiCal(count, 1, hill = TRUE), by = "sample_id"]
   
+  keep <- out2[order(-count), head(.SD, exp_shannon), by = c("sample_id", "exp_shannon")]
+
   res <- copy(assay(x))[keep, on = c("ntClone", "sample_id", "count")][, c("exp_shannon","row_number") := NULL]
   # res[, sample_id := factor(sample_id, levels = rownames(sampleinfo))]
   res <- res[order(sample_id)]
