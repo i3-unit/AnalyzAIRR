@@ -472,8 +472,8 @@ ShannonNorm <- function(x) {
   # Debug: Print out to check if exp_shannon is calculated
   message("Debug: exp_shannon calculated")
   print(head(out))
-  
-  keep <- out[order(-count), head(.SD, exp_shannon), by = c("sample_id", "exp_shannon")]
+  keep<-out
+  # keep <- out[order(-count), head(.SD, exp_shannon), by = c("sample_id", "exp_shannon")]
 
   message("Debug: keep calculated")
   print(head(keep))
@@ -483,7 +483,7 @@ ShannonNorm <- function(x) {
   res <- res[order(sample_id)]
   
   
-  filtered <- out[!keep, on = .(sample_id, ntClone)]
+  # filtered <- out[!keep, on = .(sample_id, ntClone)]
   
   stats <- data.frame(res[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols = c("V", "J", "VJ", "ntCDR3", "aaCDR3", "aaClone" , "ntClone"), by = "sample_id"], row.names = 1)
   sampleinfo <- data.frame(merge(sampleinfo[, setdiff(colnames(sampleinfo), colnames(stats))], stats, by = 0, sort=FALSE), row.names = 1)
@@ -494,7 +494,9 @@ ShannonNorm <- function(x) {
   out <- methods::new("RepSeqExperiment",
                       assayData = res,
                       metaData = sampleinfo,
-                      otherData = c(oData(x), normalisation=list(filtered[,c(1:3)])),
+                      otherData = oData(x),
+                      
+                      # otherData = c(oData(x), normalisation=list(filtered[,c(1:3)])),
                       History = rbind(History(x), x.hist))
   cat("Done.\n")
   return(out)
