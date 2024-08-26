@@ -1,0 +1,50 @@
+#<style type="text/css">
+
+
+h1, h2, h3, h4, h5, h6
+{
+    color: #033c73;
+}
+
+
+body{ 
+  font-size: 15px;
+}
+p.caption {
+  font-size: 0.9em;
+  font-style: italic;
+  color: grey;
+  margin-right: 10%;
+  margin-left: 10%;
+  text-align: justify;
+}
+em { 
+font-weight: normal; font-style: italic; font-size: 0.9em;
+}
+em.special { 
+color: grey; 
+}
+#badge {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+}
+
+[type=search] {
+  -webkit-appearance: textfield;
+  outline-offset: -2px;
+}
+
+/* rtl:raw:
+[type="tel"],
+[type="url"],
+[type="email"],
+[type="number"] {
+  direction: ltr;
+}
+*/
+::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
+#</style>

@@ -1,0 +1,18 @@
+pandoc: '3.2'
+pkgdown: 2.0.9
+pkgdown_sha: ~
+articles:
+  dataloading: dataloading.html
+  datamanipulation: datamanipulation.html
+  datanormalization: datanormalization.html
+  exploratory: exploratory.html
+  gettingstarted: gettingstarted.html
+  installation: installation.html
+  multisample: multisample.html
+  onesample: onesample.html
+  vignette_AnalyzAIRR: vignette_AnalyzAIRR.html
+last_built: 2024-08-26T11:30Z
+urls:
+  reference: https://i3-unit.github.io/AnalyzAIRR/reference
+  article: https://i3-unit.github.io/AnalyzAIRR/articles
+
