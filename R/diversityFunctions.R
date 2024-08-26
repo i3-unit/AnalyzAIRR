@@ -467,7 +467,7 @@ ShannonNorm <- function(x) {
   out <- copy(assay(x))[, .(count = sum(count)), by=c("sample_id", "ntClone")]
   out[, row_number := .I]
   # out2 <- out[, exp_shannon :=lapply(1, function(y) .renyiCal(count, y, hill = TRUE)), by="sample_id"]
-  out[, exp_shannon := as.integer(.renyiCal(count, 1, hill = TRUE)), by = "sample_id"]
+  out[, exp_shannon := as.integer(AnalyzAIRR:::.renyiCal(count, 1, hill = TRUE)), by = "sample_id"]
   
   # Debug: Print out to check if exp_shannon is calculated
   message("Debug: exp_shannon calculated")
