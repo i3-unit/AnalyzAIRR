@@ -36,7 +36,7 @@ docker pull vanessajmh/analyzairr:v1.0.0
 
 # Getting started
 
-Details on supported data formats and the data loading process can be found [here](https://github.com/i3-unit/AnalyzAIRR.github.io)
+Details on supported data formats and the data loading process can be found [here](https://i3-unit.github.io/AnalyzAIRR/)
 
 # Shiny interface
 

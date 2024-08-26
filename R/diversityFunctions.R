@@ -476,6 +476,7 @@ ShannonNorm <- function(x) {
   # res[, sample_id := factor(sample_id, levels = rownames(sampleinfo))]
   res <- res[order(sample_id)]
   
+  
   filtered <- out[!keep, on = .(sample_id, ntClone)]
   
   stats <- data.frame(res[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols = c("V", "J", "VJ", "ntCDR3", "aaCDR3", "aaClone" , "ntClone"), by = "sample_id"], row.names = 1)

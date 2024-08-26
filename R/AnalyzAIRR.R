@@ -60,6 +60,7 @@
 #' @import kableExtra
 #' @import MESS
 #' @import tibble
+#' @import smplot2
 #' @import ComplexHeatmap
 #' @import packcircles
 #' @importFrom car dataEllipse
