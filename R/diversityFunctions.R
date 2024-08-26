@@ -467,23 +467,16 @@ ShannonNorm <- function(x) {
   out <- copy(assay(x))[, .(count = sum(count)), by=c("sample_id", "ntClone")]
   out[, row_number := .I]
   # out2 <- out[, exp_shannon :=lapply(1, function(y) .renyiCal(count, y, hill = TRUE)), by="sample_id"]
-  out[, exp_shannon := as.integer(AnalyzAIRR:::.renyiCal(count, 1, hill = TRUE)), by = "sample_id"]
+  out[, exp_shannon := .renyiCal(count, 1, hill = TRUE), by = "sample_id"]
   
-  # Debug: Print out to check if exp_shannon is calculated
-  message("Debug: exp_shannon calculated")
-  print(head(out))
-  keep<-out
+  keep <- out[order(-count), .SD[data.table::frank(-count, ties.method = "first") <= exp_shannon], by = sample_id]
   # keep <- out[order(-count), head(.SD, exp_shannon), by = c("sample_id", "exp_shannon")]
-
-  message("Debug: keep calculated")
-  print(head(keep))
   
   res <- copy(assay(x))[keep, on = c("ntClone", "sample_id", "count")][, c("exp_shannon","row_number") := NULL]
   # res[, sample_id := factor(sample_id, levels = rownames(sampleinfo))]
   res <- res[order(sample_id)]
   
-  
-  # filtered <- out[!keep, on = .(sample_id, ntClone)]
+  filtered <- out[!keep, on = .(sample_id, ntClone)]
   
   stats <- data.frame(res[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols = c("V", "J", "VJ", "ntCDR3", "aaCDR3", "aaClone" , "ntClone"), by = "sample_id"], row.names = 1)
   sampleinfo <- data.frame(merge(sampleinfo[, setdiff(colnames(sampleinfo), colnames(stats))], stats, by = 0, sort=FALSE), row.names = 1)
@@ -494,9 +487,7 @@ ShannonNorm <- function(x) {
   out <- methods::new("RepSeqExperiment",
                       assayData = res,
                       metaData = sampleinfo,
-                      otherData = oData(x),
-                      
-                      # otherData = c(oData(x), normalisation=list(filtered[,c(1:3)])),
+                      otherData = c(oData(x), normalisation=list(filtered[,c(1:3)])),
                       History = rbind(History(x), x.hist))
   cat("Done.\n")
   return(out)
