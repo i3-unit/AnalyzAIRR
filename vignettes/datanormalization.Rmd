@@ -53,7 +53,7 @@ This strategy is particularly efficient when applied on small samples as it corr
 The function `ShannonNorm()` allows the application of this strategy without the need to specify any parameter and returns a new RepSeqExperiment object with the corrected data.
 
 ```{r shannon norma, echo=T, eval=T}
-RepSeqData_sh<- ShannonNorm(x = RepSeqData)
+RepSeqData_sh <- ShannonNorm(x = RepSeqData)
 ```
 
 ```{r, echo=F,fig.align='center', fig.width=10, fig.height=3}
