@@ -42,3 +42,4 @@ plotVJusage(x = RepSeqData, sampleName = NULL, scale = "frequency",
             level="ntClone", prop=1, plot="Heatmap")
 
 }
+\keyword{internal}

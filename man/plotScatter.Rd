@@ -8,17 +8,20 @@ plotScatter(
   x,
   sampleNames = NULL,
   level = c("aaClone", "ntClone", "V", "J", "VJ", "ntCDR3", "aaCDR3"),
-  scale = c("frequency", "log")
+  scale = c("frequency", "count"),
+  shiny = FALSE
 )
 }
 \arguments{
 \item{x}{an object of class \code{\linkS4class{RepSeqExperiment}}}
 
-\item{sampleNames}{a vector of character indicating the two sample_ids of the repertoires to be analyzed. If not specified, the first two samples in the dataset are analyzed.}
+\item{sampleNames}{a vector of character indicating the two sample_ids of the repertoires to be analyzed.}
 
 \item{level}{a character specifying the level of the repertoire to be analyzes. Should be one of "aaClone", "ntClone", "V", "J", "VJ", "ntCDR3" or "aaCDR3".}
 
-\item{scale}{an integer indicating whether to plot a regular or a logarithmic scale.}
+\item{scale}{a character specifying whether to plot in "count" or "frequency".}
+
+\item{shiny}{default is FALSE. whether to plot the shiny compatible version}
 }
 \description{
 This function computes a correlation between a pair of repertoires at any repertoire level.
@@ -29,8 +32,8 @@ It allows a comparative analysis of the occurrence of a given repertoire level b
 data(RepSeqData)
 plotScatter(x = RepSeqData,
             level = "V",
-            sampleNames = c("tripod-30-813", "tripod-30-815"),
-            scale = "log")
+            sampleNames = c("tripod-30-813", "tripod-30-815", "tripod-31-846"),
+            scale = "count")
             
 plotScatter(x = RepSeqData,
             level = "aaClone",

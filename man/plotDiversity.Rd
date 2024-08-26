@@ -6,7 +6,7 @@
 \usage{
 plotDiversity(
   x,
-  index = c("chao1", "shannon", "simpson", "invsimpson", "bergerparker", "gini", "iChao"),
+  index = c("shannon", "simpson", "invsimpson", "bergerparker", "gini"),
   level = c("aaClone", "ntClone", "V", "J", "VJ", "ntCDR3", "aaCDR3"),
   grouped = FALSE,
   colorBy = NULL,
@@ -18,7 +18,7 @@ plotDiversity(
 \arguments{
 \item{x}{an object of class \code{\linkS4class{RepSeqExperiment}}}
 
-\item{index}{a character specifying the diversity index to be estimated. Should be one of "chao1", shannon","invsimpson","simpson" or "gini".}
+\item{index}{a character specifying the diversity index to be estimated. Should be one of "shannon","invsimpson","simpson", "bergerparker" or "gini".}
 
 \item{level}{a character specifying the level of the repertoire on which the diversity should be estimated. Should be one of "aaClone","ntClone", "V", "J", "VJ", "ntCDR3" or "aaCDR3".}
 
@@ -46,10 +46,6 @@ The calculated indices can be one of the following:
 - Berger-Parker index: Expresses the proportional importance of the most abundant species. This metric is highly biased by sample size and richness (Berger and Parker 1970).
 
 - Gini coefficient: Measures the degree of inequality in a distribution of abundances.
-
-- Chao1: Estimates undetected species using the information on the rarest species (the numbers of singletons and doubletons).
-
-- Improved Chao1: an extension of Chao1 which uses additional information, namely, the numbers of tripletons and quadrupletons.
 }
 \examples{
 

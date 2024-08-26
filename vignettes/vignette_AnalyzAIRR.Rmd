@@ -248,8 +248,7 @@ RepSeqData <- readAIRRSet(fileList = l,
                           keep.unproductive=FALSE,
                           filter.singletons=FALSE,
                           aa.th=8,
-                          outFiltered=TRUE,
-                          raretab=FALSE,
+                          outFiltered=FALSE,
                           cores=1L)
 
 ```
@@ -342,6 +341,10 @@ knitr::kable(head(assay(RepSeqData))) %>%
   * **aaClone**: The number of unique aaClones
 
   * **ntClone**: The number of unique ntClones
+  
+  * **Chao1**: Estimates undetected species using the information on the rarest species (the numbers of singletons and doubletons) (Chao, 1984).
+
+  * **Improved Chao1**: An extension of **Chao1** which uses additional information, namely, the numbers of tripletons and quadrupletons  (Chiu et al., 2014).
 
 
 This slot can be extracted using the `mData()` function.
@@ -362,20 +365,10 @@ knitr::kable(mData(RepSeqData)) %>%
 
 - **otherData**: a list encompassing the output of a defined set of functions.
 
-As the `outFiltered` parameter was set to TRUE during the RepSeqExperiment generation, filtered sequences are stored in this slot and can be viewed as followed.  
+For instance, if the `outFiltered` parameter was set to TRUE during the RepSeqExperiment generation, filtered sequences would have been stored in this slot and can be viewed as followed.  
 
 ```{r odata,  echo = T, eval=F}
 oData(RepSeqData)$filtered
-```
-
-```{r view otherData, echo = F}
-knitr::kable(head(oData(RepSeqData)$filtered)) %>% 
-     kableExtra::kable_styling(bootstrap_options = "condensed", 
-                     full_width = F, 
-                     position = "left",
-                     font_size = 10)  %>%
-  kableExtra::row_spec(0, color="#022f5a", font_size = 12)
- 
 ```
 
 This slot can be extracted using the `oData()` function.
@@ -521,17 +514,29 @@ knitr::kable(countFeatures(RepSeqData, level="J", scale="frequency")) %>%
    kableExtra::scroll_box(width = "100%", height = "200px")
 ```
 
-## Diversity estimation
+## Richness and diversity estimation
 
 +  **Rarefaction analysis** 
 
-   Species richness can be assessed by a rarefaction table generated using the `rarefactionTab()` function.
-   
-   Rarefaction curves can as well be plotted using `plotRarefaction()`. The `colorBy` parameter is used to assign colors to plotted curves based on any group column from the **metaData** slot, and `facetBy` to separate the samples based on a different set of group columns.
+To evaluate the clonotype richness and the sequencing depth of a sample, a rarefaction curve can be plotted, which illustrates the relationship between the number of sequences randomly selected from the sample and the number of clones they represent. A plateau in the curve suggests that sampling is yielding few or no new species, and that the observed clonotype richness is approaching the true richness in the sequenced sample. In contrast, a steep ascending curve indicates that additional sequencing may still yield new clones.
+  
+  Rarefaction curves can be plotted using `plotRarefaction()`. The `colorBy` parameter is used to assign colors to plotted curves based on any group column from the **metaData** slot, and `facetBy` to separate the samples based on a different set of group columns.
 ```{r plot rarefaction, echo=T, fig.width=8,fig.height=4, fig.align="center"}
 plotRarefaction(x=RepSeqData, colorBy="sample_id")
 ```
 <figcaption align = "center"><em class="special">Figure 3: Rarefaction curves plotting the number of clones against the number of sequences in each sample.</em></figcaption>
+<br>
+
+To calculate the number of clones that are not observed in the sample, the Chao index can be used, which estimates the total clone richness of a sample including clones that are likely present but unseen or undetected. 
+Together, the Chao1 index and rarefaction curves serve complementary roles. Rrarefaction curves assess the sufficiency of sampling effort and provide a visual representation of species accumulation, while the Chao1 index estimates the total species richness by considering rare species.
+
+The Chao index, which values are already available in the **metaData** slot, can be plotted using the `plotStatScatter()` function. This function plots the values of two statistics along two axes, showing the relationship between them. Chao values can thus be plotted against the number of observed ntClones for instance, to evaluate the difference in the number of observed and unseen clones. 
+
+```{r plot plotStatScatter,  echo=T, fig.width=6,fig.height=4, fig.align="center"}
+plotStatScatter(x = RepSeqData, stat1 = "chao1", stat2 = "ntClone", colorBy = "sample_id")
+
+```
+<figcaption align = "center"><em class="special">Figure 4: The Chao1 richness estimation is plotted as a function of the observed number of ntClones in each sample. The diagonal dashed line represents the reference line.</em></figcaption>
 <br>
 
 +  **Calculation of diversity indices**
@@ -548,9 +553,6 @@ plotRarefaction(x=RepSeqData, colorBy="sample_id")
 
    - **Gini coefficient**: Measures the degree of inequality in a distribution of abundances (Gini, 1921).
 
-   - **Chao1**: Estimates undetected species using the information on the rarest species (the numbers of singletons and doubletons) (Chao, 1984).
-
-   - **Improved Chao1**: An extension of **Chao1** which uses additional information, namely, the numbers of tripletons and quadrupletons  (Chiu et al., 2014).
 
 ```{r indices, echo = TRUE, eval=F}
 diversityIndices(x=RepSeqData, level="aaClone")
@@ -652,40 +654,62 @@ plotRankDistrib(x=RepSeqData,level="aaClone", colorBy="sample_id", scale="freque
 <figcaption align = "center"><em class="special">Figure 8: Clonal distribution as a function of the occurrence rank for each sample.</em></figcaption>
 <div>
 
-# One-sample analysis 
+# Single sample analysis 
 
 Descriptive analyses of each repertoire can be performed individually.
 These analyses include the ones previously described as well as other metrics.
 In all the following functions, the **sample_id** of interest needs to be specified in the `sampleName` parameter. If not specified, the first **sample_id** in the dataset will be analyzed
 
++ **Evaluate basic and diversity statistics**
+
+ The `plotIndStatistics()` function allows the positioning of a sample of interest within the whole dataset. Basic or diversity indices are plotted for the whole dataset, where the sample of interest is highlighted as a red cross, allowing for the comparison of the sample to the whole dataset, and for the potential identification of sample outliers. 
+
+<div class="column-left">
+```{r plotIndStatistics1, fig.cap="Figure 14: Boxplots showing metadata statistics calculated on all the dataset samples. The sample of interest is represented by a red cross"}
+plotIndStatistics(x = RepSeqData, stat = "metadata",  level = "aaClone")
+
+```
+</div>
+<div class="column-right">
+```{r plotIndStatistics2, fig.cap="Figure 15: Boxplots showing different diversity indices calculated on all the dataset samples. The sample of interest is represented by a red cross."}
+plotIndStatistics(x = RepSeqData, stat = "diversity",  level = "aaClone")
+
+```
+</div>
+
+<br>
+
 + **Assess the clonal distribution per interval**
 
-   `plotIndIntervals()` allows the analysis of the clonal distribution per intervals of counts or fractions in a single sample.
-
-```{r plotIndIntervals, echo=TRUE,message=FALSE, warning=FALSE,fig.width=7, fig.height = 4,fig.align="center", cache.comments=FALSE}
-plotIndIntervals(RepSeqData,level = "aaClone", sampleName="tripod-30-813", fractions="frequency")
+   To visualize the repertoire structure and the top clone distribution in a repertoire, `plotIndMap()` can be used to plot a circular treemap in which each circle represents a unique clone, and the circle size corresponds to the clone count. Users can choose the proportion of the top clones to plot using the `prop` parameter. We recommend to plot up to the top 5% of clones, as higher values might generate difficult-to-Interpret Visuals.
+   
+```{r plotIndMap, echo=TRUE,message=FALSE, warning=FALSE,fig.width=4, fig.height = 4,fig.align="center"}
+plotIndMap(x=RepSeqData, sampleName=NULL, level="aaClone", prop=0.01)
 ```
-<figcaption align = "center"><em class="special">Figure 9: Barplots showing the distribution (upper plot) and the cumulative frequency (lower plot) of aaClone within each frequency interval for one selected sample.</em></figcaption>
+<figcaption align = "center"><em class="special">Figure 9: A circular treemap was generated for one single sample and shows the structure of the top 1% of aaClones in the sample repertoire. Each circle represents a unique aaClone, and the circle size corresponds to the aaClone count.</em></figcaption>
+<br>   
+  
+  To quantify these observations, the `plotIndIntervals()` function can be used which allow the analysis of the clonal distribution per intervals of counts or fractions in a single sample.
+
+```{r plotIndIntervals, echo=TRUE,message=FALSE, warning=FALSE,fig.width=6, fig.height = 3,fig.align="center", cache.comments=FALSE}
+plotIndIntervals(RepSeqData, level = "aaClone", sampleName="tripod-30-813", fractions="frequency")
+```
+<figcaption align = "center"><em class="special">Figure 10: Barplots showing the distribution (upper plot) and the cumulative frequency (lower plot) of aaClone within each frequency interval for one selected sample.</em></figcaption>
 <br>
+
+  To visualize the repertoire structure and the top clone distribution in a repertoire, `plotIndMap()` can be used to plot a circular treemap in which each circle represents a unique clone, and the circle size corresponds to the clone count.
+
 
 + **Analyze V and J gene usages**
 
-    `plotIndGeneUsage()`computes V or J gene usages.
-  The parameter `scale` allows to choose whether to compute the count or the frequency.
+   V-J combination usages can be visualized in a heatmap using the `plotIndGeneUsage()` function. The parameter `level` allows to choose whether to compute gene usages at the ntClone or aaClone level. 
+   V and J gene usages are plotted separately at the top and right side of the heatmap, allowing a better view of the individual gene distribution. 
 ```{r J usage ind, echo = TRUE, message=F,warning=F,fig.height = 4,fig.width= 8,fig.align="center"}
-plotIndGeneUsage(x=RepSeqData, level="J", scale="frequency")
+plotIndGeneUsage(x = RepSeqData, level = "aaClone", sampleName = NULL)
 ```
-<figcaption align = "center"><em class="special">Figure 10: Barplots showing the frequency of each J gene in one selected sample.</em></figcaption>
+<figcaption align = "center"><em class="special">Figure 11: Heatmap of V and J combination usage in one selected sample. Frequencies, represented by the color scale, are scaled column-wise. Barplots at the top and right side of the heatmap show the usage of each gene across the row or the column for the V and J genes, respectively.</em></figcaption>
 <br>
-   V-J combination usages can as well be analyzed using the `plotVJusage()` function.
-   Users can choose whether to plot the top most used combinations using the `prop` parameter or all combinations expressed in a sample. Two types of visualizations are proposed, either a **Heatmap** or a **Circos** plot and which can be specified in the `plot` parameter. 
-
-```{r VJusage, fig.align="center",fig.width=5, fig.height=4, warning=F, message=F,cache.comments=FALSE}
-#Plot the top 1% VJ combinations
-plotVJusage(x=RepSeqData, scale = "frequency", prop=0.01, plot="Circos")
-```
-<figcaption align = "center"><em class="special">Figure 11: A circos plot showing the 1% most frequent VJ combinations in one selected sample.</em></figcaption>
-<br>
+  
 
 + **CDR3 Spectratyping**
 
@@ -699,11 +723,7 @@ plotSpectratyping(x=RepSeqData, scale = "frequency", prop=0.1)
 ```
 <figcaption align = "center"><em class="special">Figure 12: CDR3 spectratyping for one selected sample. The 10% most frequent V genes are distinctively coloured.</em></figcaption>
 <br>
-On the other hand, `plotSpectratypingV()` draws the length distribution for each V gene individually.
-```{r spectraV, fig.height = 3.5,fig.width=8,fig.align="center"}
-plotSpectratypingV(x=RepSeqData, scale = "frequency",prop=0.1)
-```
-<figcaption align = "center"><em class="special">Figure 13: CDR3 spectratyping for the top 10% V genes in one selected sample.</em></figcaption>
+
 
 # Multi-sample analysis
 

@@ -1,0 +1,96 @@
+---
+title: "Normalization"
+---
+
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+'%>%' <-  kableExtra::'%>%'
+
+```
+```{r load library, echo=F, eval=T, warning=F, message=F}
+library(AnalyzAIRR)
+```
+
+
+# Down-sampling
+
+This strategy can be applied when the studied samples largely differ in their repertoire sizes.
+
+By using the `sampleRepSeqExp()` function, users can choose the value to which all the samples are downsampled. If not specified, the lowest number of sequences across the dataset will be used.
+
+This function returns a new RepSeqExperiment object with the downsized data.
+
+```{r downsample, echo=T}
+RepSeqData_ds<- sampleRepSeqExp(x = RepSeqData, 
+                                sample.size = 50000)
+```
+
+```{r, echo=F, fig.align='center', fig.width=10, fig.height=6}
+margin_r = ggplot2::theme(plot.margin = ggplot2::unit(c(0,1,0,0), "cm"))
+margin_l = ggplot2::theme(plot.margin = ggplot2::unit(c(0,0,0,1), "cm"))
+
+p3<- plotStatistics(x = RepSeqData_ds, stat = "nSequences", colorBy = "sample_id")+margin_l
+p4<- plotStatistics(x = RepSeqData_ds, stat = "aaClone", colorBy = "sample_id")+margin_l
+p1<- plotStatistics(x = RepSeqData, stat = "nSequences", colorBy = "sample_id")+margin_r
+p2<- plotStatistics(x = RepSeqData, stat = "aaClone", colorBy = "sample_id")+margin_r
+
+gridExtra::grid.arrange(gridExtra::arrangeGrob(p1,p2, top = grid::textGrob("Pre-downsampling", x = .55)), gridExtra::arrangeGrob(p3,p4, top = grid::textGrob("Post-downsampling", x = .62)),ncol=2)
+
+
+```
+<figcaption align = "center"><em class="special">Figure 1: Summary plots showing the effect of downsampling curves plotting the number of sequences and aaClones in each sample</em></figcaption>
+<br>
+
+# Shannon-based normalization
+
+This strategy adapted from [Chaara et al., 2018](https://doi.org/10.3389/fimmu.2018.01038) can be used to eliminate “uninformative” sequences resulting from experimental noise. It uses the Shannon entropy as a threshold and is applied at the `ntClone` level. 
+This strategy is particularly efficient when applied on small samples as it corrects altered count distributions caused by a high-sequencing depth.
+
+The function `ShannonNorm()` allows the application of this strategy without the need to specify any parameter and returns a new RepSeqExperiment object with the corrected data.
+
+```{r shannon norma, echo=T, eval=T}
+RepSeqData_sh<- ShannonNorm(x = RepSeqData)
+```
+
+```{r, echo=F,fig.align='center', fig.width=10, fig.height=3}
+RepSeqData_sh@assayData$sample_id<- paste0(RepSeqData_sh@assayData$sample_id,"_norm")
+RepSeqData_sh@metaData$sample<- RepSeqData_sh@metaData$sample_id
+RepSeqData_sh@metaData$sample_id<- as.factor(paste0(RepSeqData_sh@metaData$sample_id,"_norm"))
+RepSeqData_sh@metaData$normalized<- "normalized"
+RepSeqData_sh@metaData$normalized<- as.factor(RepSeqData_sh@metaData$normalized)
+rownames(RepSeqData_sh@metaData)<- RepSeqData_sh@metaData$sample_id
+
+RepSeqData@metaData <- RepSeqData@metaData %>% dplyr::select(-chao1 ,-iChao)
+RepSeqData@metaData$sample<- RepSeqData@metaData$sample_id
+RepSeqData@metaData$normalized<- "original"
+RepSeqData@metaData$normalized<- as.factor(RepSeqData@metaData$normalized)
+
+norm<- mergeRepSeq(RepSeqData,RepSeqData_sh)
+
+plotStatistics(x = norm, stat = "ntClone",  colorBy = "normalized", facetBy = "sample")+
+  ggplot2::theme(axis.text.x = ggplot2::element_blank())
+
+# p1<-plotStatistics(x = norm, stat = "nSequences",  colorBy = "normalized", facetBy = "sample")+
+#   ggplot2::theme(axis.text.x = ggplot2::element_blank())
+
+# 
+# p2<- plotDiversity(x = norm, index="shannon", level = "aaClone",colorBy = "normalized",  facetBy = "sample")+
+#   ggplot2::theme(axis.text.x = ggplot2::element_blank())
+# 
+# 
+# gridExtra::grid.arrange(p1,p2, ncol=1)
+
+
+```
+<figcaption align = "center"><em class="special">Figure 2: A summary plot showing the number of ntClones pre-and post-Shannon normalizatin in each sample</em></figcaption>
+<br>
+
+**Notes**: 
+
+  + Eliminated sequences in each sample are stored in the **otherData** slot.
+  + Chao, the richness estimator, isn't recalculated for normalized datasets as as their original composition has been modified.
+

@@ -42,12 +42,6 @@ abundant species. This metric is highly biased by sample size and richness
 
 - Gini coefficient: Measures the degree of inequality in a distribution of
 abundances (Gini, 1921).
-
-- Chao1: Estimates undetected species using the information on the rarest
-species (the numbers of singletons and doubletons) (Chao, 1984).
-
-- Improved Chao1: an extension of Chao1 which uses additional information,
-namely, the numbers of tripletons and quadrupletons (Chiu et al., 2014).
 }
 \examples{
 

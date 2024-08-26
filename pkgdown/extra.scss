@@ -1,0 +1,95 @@
+
+body {
+ 
+  font-size: 15px;
+}
+
+em {
+font-weight: normal; 
+font-style: italic;
+font-size: 0.9em;
+text-align: justify;
+}
+
+em.special {
+color: grey;
+}
+
+a {
+  color: #0969da;
+}
+
+img.logo {
+    display: none;
+}
+
+pre {
+  padding: 0.75rem 1rem;
+  // Override pkgdown for better contrast
+  background-color: var(--bs-gray-100);
+}
+
+h1, h2, h3, h4
+{
+    color: #033c73;
+}
+
+h1 {
+  font-size: 30px;
+}
+
+h2 {
+  font-size: 24px;
+}
+
+h3 {
+  font-size: 20px;
+}
+
+h4 {
+  font-size: 18px;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin-top: 1.5rem;
+}
+
+b,
+strong {
+  font-weight: bolder;
+  color: #033c73;
+}
+
+// Fix toc disappearing
+@include media-breakpoint-up(md) {
+  .row > main {
+    max-width: 90%;
+  }
+}
+
+.col-md-3 {
+  margin-left: 0;
+}
+
+
+.page-header {
+  min-height: 0 !important;
+}
+
+
+#toc > .nav .nav li {
+  font-size: 0.9rem;
+}
+
+#toc > .nav .nav a {
+  margin: 0;
+  border-left: 0px solid var(--bs-gray-200);
+  border-radius: 0;
+}
+
+.reactable {
+  font-size: 0.875rem;
+}

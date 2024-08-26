@@ -42,8 +42,7 @@ utils::globalVariables(c("J", ".", "..sNames", "sdata", "metaData", ".SD",
 #'
 #'
 countFeatures <- function(x,
-                          level = c("V", "J", "VJ",
-                                    "ntCDR3", "aaCDR3", "ntClone", "aaClone"),
+                          level = c("V", "J", "VJ", "ntCDR3", "aaCDR3", "ntClone", "aaClone"),
                           scale = c("count", "frequency"), group = NULL) {
   if (missing(x)) stop("x is missing.")
   if (!is.RepSeqExperiment(x)) stop("An object of class RepSeqExperiment 
@@ -152,9 +151,14 @@ filterCount <- function(x, level=c("aaClone","ntClone","aaCDR3","ntCDR3"), n=1, 
 
     nfilter <- nrow(cts) - nrow(res)
 
-    stats <- data.frame(res[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols = c("V", "J", "VJ", "ntCDR3", "aaCDR3", "ntClone", "aaClone"), by = "sample_id"], row.names = 1)
+    stats <- data.frame(res[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols = c("V", "J", "VJ", "ntCDR3", "aaCDR3", "aaClone","ntClone"), by = "sample_id"], row.names = 1)
+    
+    pastek <- function(y) list( chao1 = .chao1(y)$chao.est, iChao = iChao(y))
+    out <- data.frame(res[, .(count = sum(count)), by = c("sample_id", "ntClone")][, pastek(count), by = "sample_id"], row.names = 1)
+    stats <- data.frame(base::merge(stats, out, by = 0, sort=FALSE), row.names = 1, stringsAsFactors = TRUE)
+
     metaData<- metaData %>%
-      dplyr::select(-c(nSequences,ntCDR3,aaCDR3,V,J,VJ,aaClone,ntClone))
+      dplyr::select(-c(nSequences,ntCDR3,aaCDR3,V,J,VJ,aaClone,ntClone, chao1, iChao))
     sdata <- data.frame(base::merge(metaData, stats, by = 0, sort = FALSE),
                         row.names=1,  stringsAsFactors = TRUE)
     
@@ -213,9 +217,9 @@ getPrivate <- function(x,  level=c("ntCDR3", "aaCDR3", "ntClone", "aaClone"), si
     setkey(res, sample_id)
     nfilter <- nrow(cts) - nrow(res)
 
-    stats <- data.frame(res[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols = c("V", "J", "VJ", "ntCDR3", "aaCDR3", "ntClone", "aaClone"), by = "sample_id"], row.names = 1)
+    stats <- data.frame(res[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols = c("V", "J", "VJ", "ntCDR3", "aaCDR3", "aaClone","ntClone"), by = "sample_id"], row.names = 1)
     metaData<- metaData %>%
-      dplyr::select(-c(nSequences,ntCDR3,aaCDR3,V,J,VJ,aaClone,ntClone))
+      dplyr::select(-c(nSequences,ntCDR3,aaCDR3,V,J,VJ,aaClone,ntClone, chao1, iChao))
     sdata <- data.frame(base::merge(metaData, stats, by = 0, sort = FALSE),
                         row.names=1,  stringsAsFactors = TRUE)
     sdata <- sdata[match(rownames(metaData), rownames(stats)), ]
@@ -288,9 +292,9 @@ getPublic <- function(x, level=c("ntCDR3", "aaCDR3", "ntClone", "aaClone"),
   setkey(res, sample_id)
   rm(cts, keep)
 
-  stats <- data.frame(res[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols = c("V", "J", "VJ", "ntCDR3", "aaCDR3", "ntClone", "aaClone"), by = "sample_id"], row.names = 1)
+  stats <- data.frame(res[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols = c("V", "J", "VJ", "ntCDR3", "aaCDR3", "aaClone","ntClone"), by = "sample_id"], row.names = 1)
   metaData<- metaData %>%
-    dplyr::select(-c(nSequences,ntCDR3,aaCDR3,V,J,VJ,aaClone,ntClone))
+    dplyr::select(-c(nSequences,ntCDR3,aaCDR3,V,J,VJ,aaClone,ntClone, chao1, iChao))
   sdata <- data.frame(base::merge(metaData, stats, by = 0, sort = FALSE),
                       row.names=1,  stringsAsFactors = TRUE)
   sdata <- sdata[match(rownames(sdata), rownames(stats)), ]
@@ -427,8 +431,7 @@ filetype <- function(path) {
 #'                        chain = "TRA",
 #'                        sampleinfo = metaData[1:3,],
 #'                        filter.singletons = FALSE,
-#'                        outFiltered = FALSE,
-#'                        raretab = FALSE)
+#'                        outFiltered = FALSE)
 #'
 #' dataset2 <- readAIRRSet(fileList = l[c(4:8)],
 #'                        cores=1L,
@@ -436,8 +439,7 @@ filetype <- function(path) {
 #'                        chain = "TRA",
 #'                        sampleinfo = metaData[4:8,],
 #'                        filter.singletons = FALSE,
-#'                        outFiltered = FALSE,
-#'                        raretab = FALSE)
+#'                        outFiltered = FALSE)
 #'
 #' dataset <- mergeRepSeq(a = dataset1, b = dataset2)
 #'
@@ -446,7 +448,7 @@ mergeRepSeq <- function(a, b) {
     if (missing(a) | missing (b)) stop("Two RepSeqExperiment objects are required.")
     if (!is.RepSeqExperiment(a)) stop("a is not an object of class RepSeqExperiment.")
     if (!is.RepSeqExperiment(b)) stop("b is not an object of class RepSeqExperiment.")
-    if (any(rownames(mData(a)) == rownames(mData(b)))) stop("Duplicates in sample names are not allowed, please use the function names()<- to rename them.")
+    if (any(rownames(mData(a)) %in% rownames(mData(b)))) stop("Duplicates in sample names are not allowed, please use the function names()<- to rename them.")
     cts <- rbind(assay(a), assay(b))
     cts[, sample_id := as.character(sample_id)]
     sampleinfo <- rbind(mData(a), mData(b))
@@ -564,7 +566,7 @@ filterSequence <- function(x, level=c("aaClone","ntClone","aaCDR3","ntCDR3"), na
   
   nfilter <- nrow(cts) - nrow(res)
   
-  stats <- data.frame(res[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols = c("V", "J", "VJ", "ntCDR3", "aaCDR3", "ntClone", "aaClone"), by = "sample_id"], row.names = 1)
+  stats <- data.frame(res[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols = c("V", "J", "VJ", "ntCDR3", "aaCDR3", "aaClone","ntClone"), by = "sample_id"], row.names = 1)
   metaData<- metaData %>%
     dplyr::select(-c(nSequences,ntCDR3,aaCDR3,V,J,VJ,aaClone,ntClone))
   sdata <- data.frame(base::merge(metaData, stats, by = 0, sort = FALSE),
@@ -616,13 +618,18 @@ getProductive <- function(x) {
   indx <- !cts[, nchar(ntCDR3) %% 3 > 0 | grepl("\\*", aaCDR3) | grepl("\\~", aaCDR3)]
   res <- cts[indx, ]
 
-  stats <- data.frame(res[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols =c("V", "J", "VJ", "ntCDR3", "aaCDR3", "ntClone", "aaClone"), by = "sample_id"], row.names = 1)
+  stats <- data.frame(res[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols =c("V", "J", "VJ", "ntCDR3", "aaCDR3", "aaClone","ntClone"), by = "sample_id"], row.names = 1)
+  pastek <- function(y) list( chao1 = .chao1(y)$chao.est, iChao = iChao(y))
+  out <- data.frame(res[, .(count = sum(count)), by = c("sample_id", "ntClone")][, pastek(count), by = "sample_id"], row.names = 1)
+  stats <- data.frame(base::merge(stats, out, by = 0, sort=FALSE), row.names = 1, stringsAsFactors = TRUE)
+  
   metaData<- metaData %>%
-    dplyr::select(-c(nSequences,ntCDR3,aaCDR3,V,J,VJ,aaClone,ntClone))
+    dplyr::select(-c(nSequences,ntCDR3,aaCDR3,V,J,VJ,aaClone,ntClone, chao1, iChao))
   sdata <- data.frame(base::merge(metaData, stats, by = 0, sort = FALSE),
                       row.names=1,  stringsAsFactors = TRUE)
-  sdata <- sdata[match(rownames(sdata), rownames(stats)), ]
-
+  
+  sdata <- sdata[order(match(rownames(sdata), rownames(stats))), ]
+  
   out <- new("RepSeqExperiment",
              assayData = res,
              metaData = sdata,
@@ -667,9 +674,9 @@ getUnproductive <- function(x) {
   indx <- cts[, nchar(ntCDR3) %% 3 > 0 | grepl("\\*", aaCDR3) | grepl("\\~", aaCDR3) ]
   res <- cts[indx, ]
 
-  stats <- data.frame(res[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols =c("V", "J", "VJ", "ntCDR3", "aaCDR3", "ntClone", "aaClone"), by = "sample_id"], row.names = 1)
+  stats <- data.frame(res[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols =c("V", "J", "VJ", "ntCDR3", "aaCDR3", "aaClone","ntClone"), by = "sample_id"], row.names = 1)
   metaData<- metaData %>%
-    dplyr::select(-c(nSequences,ntCDR3,aaCDR3,V,J,VJ,aaClone,ntClone))
+    dplyr::select(-c(nSequences,ntCDR3,aaCDR3,V,J,VJ,aaClone,ntClone, chao1, iChao))
   sdata <- data.frame(base::merge(metaData, stats, by = 0, sort = FALSE),
                       row.names=1,  stringsAsFactors = TRUE)
   sdata <- sdata[match(rownames(sdata), rownames(stats)), ]
@@ -710,6 +717,7 @@ plotColors<- function(x){
   col_pals = RColorBrewer::brewer.pal.info[RColorBrewer::brewer.pal.info$category  == "qual" ,]
   mycolors = as.vector(unlist(mapply(RColorBrewer::brewer.pal, col_pals$maxcolors, rownames(col_pals))))
   
+  mycolors<- mycolors[-which(base::duplicated(mycolors))]
   names=unique(as.vector(mData(x)[, unlist(lapply(mData(x), is.factor)), drop = FALSE]) %>% names())
   
   ann_colors<-vector("list")
@@ -787,9 +795,126 @@ theme_RepSeq<- function(){
                    panel.grid.major = ggplot2::element_line(colour = "gray89",linetype="dashed",size=0.1))
 }
 
+
+#' @title Calculation of the clonal distribution per interval
+#'
+#' @description This function calculates the clonal distribution per a set of intervals in all the samples within the dataset. 
+#'
+#' The column titled "Distribution" calculates the proportion of each interval in the whole repertoire, whereas the one titled "Cumulative frequency" shows the cumulative frequency of the sequences within each interval.
+#'
+#' This could allow a global view of the repertoire fraction contributing the most to the repertoire. For instance, top sequences belonging to the highest interval often constitute a low fraction of the whole repertoire but contribute more significantly in terms of cumulative frequency in view of their high occurrence.
+#'
+#' @param x an object of class  \code{\linkS4class{RepSeqExperiment}}
+#' @param level a character specifying the level of the repertoire to be taken into account when calculating the clonal distribution. Should be one of "aaClone","ntClone", "ntCDR3" or "aaCDR3".
+#' @param fractions whether intervals should be determined in count or frequency
+#' @export
+#' @examples
+#'
+#' data(RepSeqData)
+#'
+#' Intervals(x = RepSeqData, level="aaCDR3",  fractions="count")
+#' 
+Intervals <- function(x, 
+                      level = c("aaClone","ntClone", "ntCDR3","aaCDR3"),
+                      fractions=c("count", "frequency")){
+  
+  if (missing(x)) stop("x is missing.")
+  if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected.")
+  
+  interval=percent <- NULL
+  sdata<-mData(x)
+  levelChoice <- match.arg(level)
+  
+  data2plot <- data.table::copy(assay(x))
+  data2plot<- data2plot[, lapply(.SD, sum), by = c(levelChoice, "sample_id"), .SDcols = "count"][,frequency := prop.table(count),by="sample_id"]
+  
+  if(fractions=="count"){
+ 
+    f <- function(x){
+      if(x == 1) "1"
+      else if(x <= 10) "]1, 10]"
+      else if(x <= 100) "]10, 100]"
+      else if(x <= 1000) "]100, 1000]"
+      else if(x <= 10000) "]1000, 10000]"
+      else "]10000, Inf]"
+    }
+  } else if(fractions=="frequency"){
+   
+    f <- function(x){
+      if(x <= 0.000001) "]0, 0.000001]"
+      else if(x <= 0.00001) "]0.000001, 0.00001]"
+      else if(x <= 0.0001) "]0.00001, 0.0001]"
+      else if(x <= 0.001) "]0.0001, 0.001]"
+      else if(x <= 0.01) "]0.001, 0.01]"
+      else "]0.01, 1]"
+    }
+  }
+  
+  data2plot <- data2plot[, lapply(.SD, sum), by = c(levelChoice, "sample_id"), .SDcols = fractions][, `:=`(interval, unlist(lapply(get(fractions), 
+                                                                                                                                   f))), by = "sample_id"]
+  data2plot_b <- data2plot %>% dplyr::group_by(interval, sample_id) %>% dplyr::summarize(sum=dplyr::n())
+  data2plot_b <- data2plot_b %>% dplyr::group_by( sample_id) %>% dplyr::mutate(distribution=sum/sum(sum))
+  
+  data2plot <- data2plot[, lapply(.SD, sum), by = c("interval",  "sample_id"), .SDcols = fractions][, `:=`(cumulative_freq, prop.table(get(fractions))), by = "sample_id"]
+  data2plot <- merge(data2plot[,c(1,2,4)], data2plot_b[,c(1,2,4)], by=c("interval", "sample_id"))
+  return(data2plot)
+}
+
+
+#' @title Calculation of repertoire dissimilarities
+#'
+#' @description This function assesses pairwise repertoire dissimilarities using a specific dissimilarity method.
+#'
+#' It calculates a list of dissimilarity indices, each taking into account different parameters. The proposed methods include:
+#' 
+#'  The Jaccard similarity: a measure of similarity between sample sets defined as the size of the intersection divided by the size of the union of the sample sets.
+#'
+#'  The Morisita-Horn similarity: a measure of similarity that tends to be over-sensitive to abundant species.
+#'#'
+#' @param x an object of class \code{\linkS4class{RepSeqExperiment}}
+#' @param level a character specifying the level of the repertoire on which the indices are computed. Should be one of "aaClone","ntClone", "V", "J", "VJ", "ntCDR3" or "aaCDR3".
+#' @param method a character specifying the distance method to be computed. Should be one of the following: "manhattan", "euclidean", "canberra", "clark", "bray", "kulczynski", "jaccard", "gower", "altGower", "morisita", "horn", "mountford", "raup", "binomial", "chao", "cao", "mahalanobis."
+#' @param binary a boolean indicating whether or not to transform the data into a presence/absence data. Default is FALSE
+#'
+#' @details Details on the calculated indices can be found in the vegan package: https://www.rdocumentation.org/packages/vegan/versions/2.4-2/topics/vegdist
+#' @export
+#' @examples
+#'
+#' data(RepSeqData)
+#'
+#' CalcDissimilarity(x = RepSeqData, level = "aaClone", method = "jaccard", )
+#'
+
+
+CalcDissimilarity <- function(x, 
+                              level = c("aaClone","ntClone", "V", "J", "VJ", "ntCDR3","aaCDR3"),
+                              method = c("manhattan", "euclidean", "canberra", "clark", "bray", "kulczynski",
+                                         "jaccard", "gower", "altGower", "morisita", "horn", "mountford", "raup",
+                                         "binomial", "chao", "cao", "mahalanobis"),
+                              binary = FALSE) {
+  
+  if (missing(x)) stop("x is missing.")
+  if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected.")
+  if (is.null(method)) stop("a distance method is expected.")
+  
+  variable <- NULL
+  levelChoice <- match.arg(level)
+  methodChoice <- match.arg(method)
+  cols <- c("sample_id", levelChoice, "count")
+  tmp <- data.table::copy(assay(x))[, ..cols]
+  sdata <- mData(x)
+  sNames <- rownames(sdata)
+
+  dat <- data.table::dcast(data = tmp, paste(levelChoice, "~sample_id"), value.var = "count", fun.aggregate = sum)
+  simmat <- as.matrix(dat[, vegan::vegdist(t(.SD), method = methodChoice, diag = TRUE, upper = TRUE, binary = binary), .SDcols=sNames])
+  return(simmat)
+  
+  }
+
 # extract legend
 g_legend<-function(a.gplot){
   tmp <- ggplot2::ggplot_gtable(ggplot2::ggplot_build(a.gplot))
   leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
   legend <- tmp$grobs[[leg]]
   return(legend)}
+

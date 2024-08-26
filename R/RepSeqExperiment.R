@@ -26,10 +26,10 @@ utils::globalVariables(c("J", ".", "aaClone", "sample_id", "V", "J", "VJ","clono
 #'  - aaClone: Full sequence including the V gene, the CDR3 amino acid sequence and the J gene
 #'  
 #'  - ntClone: Full sequence including the the V gene, CDR3 nucleotide sequence and the J gene
-#'
+#'  
 #'  - count: the occurrence of the clone sequence
 #'
-#' @slot metaData a data frame containing sample information specified during the building of the \code{\linkS4class{RepSeqExperiment}} object. Each row represents a sample, and columns the possible information or group that can be attributed to the samples such as the cell population, the donor's age, sex, etc...
+#' @slot metaData a data frame containing sample information specified during the building of the \code{\linkS4class{RepSeqExperiment}} object. Each row represents a sample, and columns the possible information or group that can be attributed to the samples such as the cell population, the donor's age, sex, etc... Summary statistics of the assayData slot are also calculated for each sample, as well as the Chao richness estimation. 
 #' @slot otherData a list of data frames containing sequences that were filtered out from the RepSeqExperiment object in case filtering functions were applied.
 #' @slot History a data frame registering all operations performed on \code{\linkS4class{RepSeqExperiment}} object, such as the filtering functions and the normalization.
 #' @rdname RepSeqExperiment-class
@@ -59,6 +59,7 @@ setGeneric("assay", function(object) standardGeneric("assay"))
 #' @name RepSeqExperiment-class
 #' @rdname RepSeqExperiment-class
 #' @exportMethod assay<-
+#' @keywords internal
 setGeneric("assay<-", function(object, i, j, value) standardGeneric("assay<-"))
 
 #' Method oData.
@@ -73,6 +74,7 @@ setGeneric("oData", function(object) standardGeneric("oData"))
 #' @name RepSeqExperiment-class
 #' @rdname RepSeqExperiment-class
 #' @exportMethod oData<-
+#' @keywords internal
 setGeneric("oData<-", function(object, value) standardGeneric("oData<-"))
 
 #' Method mData.
@@ -87,6 +89,7 @@ setGeneric("mData", function(object) standardGeneric("mData"))
 #' @name RepSeqExperiment-class
 #' @rdname RepSeqExperiment-class
 #' @exportMethod mData<-
+#' @keywords internal
 setGeneric("mData<-", function(object, value) standardGeneric("mData<-"))
 
 #' Method History.
@@ -101,6 +104,7 @@ setGeneric("History", function(object) standardGeneric("History"))
 #' @name RepSeqExperiment-class
 #' @rdname RepSeqExperiment-class
 #' @exportMethod History<-
+#' @keywords internal
 setGeneric("History<-", function(object, value) standardGeneric("History<-"))
 
 #------------------------------------------------------------------
@@ -118,6 +122,7 @@ setGeneric("History<-", function(object, value) standardGeneric("History<-"))
 #' @rdname RepSeqExperiment-class
 #' @aliases assay
 #' @aliases assay,RepSeqExperiment-method
+#' @keywords internal
 setMethod(f = "assay",
     signature = "RepSeqExperiment",
     definition = function(object) object@assayData
@@ -132,6 +137,7 @@ setMethod(f = "assay",
 #' @rdname RepSeqExperiment-class
 #' @aliases assay<-
 #' @aliases assay<-,RepSeqExperiment-method
+#' @keywords internal
 setReplaceMethod(f = "assay",
     signature = "RepSeqExperiment",
     definition = function(object, i, j, value) {
@@ -147,6 +153,7 @@ setReplaceMethod(f = "assay",
 #' @rdname RepSeqExperiment-class
 #' @aliases oData
 #' @aliases oData,RepSeqExperiment-method
+#' @keywords internal
 setMethod(f = "oData",
     signature = "RepSeqExperiment",
     definition = function(object) object@otherData
@@ -156,6 +163,7 @@ setMethod(f = "oData",
 #' @rdname RepSeqExperiment-class
 #' @aliases oData<-
 #' @aliases oData<-,RepSeqExperiment-method
+#' @keywords internal
 setReplaceMethod(f = "oData",
     signature = "RepSeqExperiment",
     definition = function(object, value) {
@@ -178,6 +186,7 @@ setReplaceMethod(f = "oData",
 #' @rdname RepSeqExperiment-class
 #' @aliases mData
 #' @aliases mData,RepSeqExperiment-method
+#' @keywords internal
 setMethod(f = "mData",
     signature = "RepSeqExperiment",
     definition = function(object) object@metaData
@@ -193,6 +202,7 @@ setMethod(f = "mData",
 #' @rdname RepSeqExperiment-class
 #' @aliases mData<-
 #' @aliases mData<-,RepSeqExperiment-method
+#' @keywords internal
 setReplaceMethod(
     f = "mData",
     signature = "RepSeqExperiment",
@@ -215,6 +225,7 @@ setReplaceMethod(
 #' @rdname RepSeqExperiment-class
 #' @aliases History
 #' @aliases History,RepSeqExperiment-method
+#' @keywords internal
 setMethod(f = "History",
     signature = "RepSeqExperiment",
     definition = function(object) object@History
@@ -229,6 +240,7 @@ setMethod(f = "History",
 #' @rdname RepSeqExperiment-class
 #' @aliases History<-
 #' @aliases History<-,RepSeqExperiment-method
+#' @keywords internal
 setReplaceMethod(f = "History",
     signature = "RepSeqExperiment",
     definition = function(object, value) {
@@ -248,6 +260,7 @@ setReplaceMethod(f = "History",
 
 #' @rdname RepSeqExperiment-class
 #' @aliases show,RepSeqExperiment-method
+#' @keywords internal
 setMethod("show", "RepSeqExperiment",
 function(object) {
     cts <- assay(object)
@@ -265,6 +278,7 @@ function(object) {
 #' @rdname RepSeqExperiment-class
 #' @aliases names
 #' @aliases names,RepSeqExperiment-method
+#' @keywords internal
 setMethod(f = "names",
     signature(x="RepSeqExperiment"),
     definition = function(x) {
@@ -275,6 +289,7 @@ setMethod(f = "names",
 #' @rdname RepSeqExperiment-class
 #' @aliases names<-
 #' @aliases names<-,RepSeqExperiment-method
+#' @keywords internal
 setReplaceMethod(f = "names",
     signature(x="RepSeqExperiment", value="ANY"),
     definition = function(x, value) {
@@ -292,6 +307,7 @@ setReplaceMethod(f = "names",
 # modified by GPI
 #' @rdname RepSeqExperiment-class
 #' @name RepSeqExperiment-class
+#' @keywords internal
 setValidity("RepSeqExperiment", function(object) {
     msg <- NULL
     valid <- TRUE

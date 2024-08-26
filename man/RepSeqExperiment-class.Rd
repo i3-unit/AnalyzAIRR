@@ -114,13 +114,14 @@ An S4 class object enclosing the adaptive immune repertoire data, and which is u
  - aaClone: Full sequence including the V gene, the CDR3 amino acid sequence and the J gene
  
  - ntClone: Full sequence including the the V gene, CDR3 nucleotide sequence and the J gene
-
+ 
  - count: the occurrence of the clone sequence}
 
-\item{\code{metaData}}{a data frame containing sample information specified during the building of the \code{\linkS4class{RepSeqExperiment}} object. Each row represents a sample, and columns the possible information or group that can be attributed to the samples such as the cell population, the donor's age, sex, etc...}
+\item{\code{metaData}}{a data frame containing sample information specified during the building of the \code{\linkS4class{RepSeqExperiment}} object. Each row represents a sample, and columns the possible information or group that can be attributed to the samples such as the cell population, the donor's age, sex, etc... Summary statistics of the assayData slot are also calculated for each sample, as well as the Chao richness estimation.}
 
 \item{\code{otherData}}{a list of data frames containing sequences that were filtered out from the RepSeqExperiment object in case filtering functions were applied.}
 
 \item{\code{History}}{a data frame registering all operations performed on \code{\linkS4class{RepSeqExperiment}} object, such as the filtering functions and the normalization.}
 }}
 
+\keyword{internal}

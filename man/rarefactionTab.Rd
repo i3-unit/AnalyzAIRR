@@ -29,3 +29,4 @@ data(RepSeqData)
 rarefactionTab(x = RepSeqData)
 
 }
+\keyword{internal}

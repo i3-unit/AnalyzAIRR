@@ -1,0 +1,318 @@
+---
+title: "Data loading"
+---
+
+```{r, include = FALSE, eval=TRUE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+'%>%' <-  kableExtra::'%>%'
+
+```
+
+```{r load library, echo=F, eval=T, warning=F, message=F}
+library(AnalyzAIRR)
+```
+
+## Input format
+
+**AnalyzAIRR** proposes two different data loading processes depending on the alignment files format. 
+
+### Automatic format detection
+
+  **AnalyzAIRR** integrates parser functions to automatically detect the following formats:
+  
+  * **MiXCR**: https://github.com/milaboratory/mixcr
+
+  * **immunoSEQ**: https://www.immunoseq.com/
+
+  * **MiAIRR**: https://docs.airr-community.org/en/latest/datarep/rearrangements.html 
+  
+These alignment files can be loaded using the `readAIRRSet()` function. 
+
+### Reformatting of annotated files
+
+**AnalyzAIRR** offers the possibility to load alignment files in other formats than the ones cited in the previous section. These files should contain the following required column names:
+
+- **sample_id**: Sample names
+
+- **V**: Variable gene name (IMGT nomenclature)
+
+- **J**: Joining gene name (IMGT nomenclature)
+
+- **ntCDR3**: Nucleotide CDR3 sequence
+
+- **aaCDR3**: Amino acid CDR3 sequence
+
+- **count**: The occurrence of each sequence within the sample
+
+**Note**: The order of the columns must be respected. Input files can contain additional columns that will not be taken into account during the loading process.
+
+`readFormatSet()` is the equivalent function of `readAIRRSet()` when using user-formatted files. It allows the loading and filtering of a list of files using the same previously described parameters.
+
+## Data loading
+### Paths to input files
+
+Specify the list of paths to the aligned files.
+
+A list of 8 samples were selected from a published study (Mhanna et al., 2021) to illustrate the use of this package. Samples were collected from the spleen of 4 healthy mice and sorted into naïve regulatory T cells (nTreg), and activated/memory regulatory T cells (amTreg). 
+Fastq files were aligned using MiXCR and exported in a MiAIRR format, and can be found at https://github.com/i3-unit/AnalyzAIRR/tree/master/inst/extdata/MiAIRR
+
+```{r load aligned files, echo=T, eval=T}
+l <- list.files(system.file(file.path('extdata/MiAIRR'),
+                            package = 'AnalyzAIRR'),
+                            full.names = T)
+```
+
+### Metadata
+
+It is possible to provide a metadata if users wish to perform inter-group comparative analyses. 
+
+The metadata should be provided as a dataframe containing:
+
+  * a column with the sample names that match the name of the alignment files and their order in the list.
+
+  Only one column containing the sample names should be provided in the metadata file. This column is assigned to the `row.names` argument when loading the metadata. 
+
+  * any additional columns with relevant information for the analyses. Columns could encompass the experimental conditions, clinical variables, etc... 
+  
+  No specific column names nor order are required.
+  
+  **Note**: Since **R 4.0.0**, `stringsAsFactors` is set to **FALSE** by default, user will thus need to coerce character vectors into factors.
+
+
+```{r load metadata}
+metadata <- read.table(system.file(file.path('extdata/sampledata.txt'),
+                            package = 'AnalyzAIRR'), 
+                            header = T,
+                            row.names = 1)
+metadata$cell_subset <- factor(metadata$cell_subset)
+metadata$sex <- factor(metadata$sex)
+```
+
+```{r view metadata, echo=F, fig.align='center'}
+reactable::reactable(metadata,  bordered = TRUE,  fullWidth = TRUE,
+          defaultColDef = reactable::colDef(vAlign = "center",  align = "center", 
+                                 headerStyle = list(background = "#f7f7f8")))
+```
+
+### Loading
+
+Whether you're using the `readAIRRSet()` or `readFormatSet()` function, the following parameters must be specified:
+
+ * `fileList`: The list of paths to the input files. File extensions can be one of the following: .tsv, txt.gz, .zip, .tar
+ 
+ * `fileFormat`: The name of the tool that was used to generate the alignment files. Should be one of "MiXCR", "immunoseq" or "MiAIRR".
+ 
+ * `chain`: The chain type to be analyzed. Should be one of the following:
+   - "TRA", "TRB","TRG" or "TRD" for the TCR repertoires
+   - "IGH","IGK" or "IGL" for the BCR repertoires
+   
+  Only a single chain can be loaded at once. 
+ 
+ 
+ * `sampleinfo`: A data frame with the metadata information
+ 
+ * `keep.ambiguous`: A choice whether ambiguous sequences should be left in the datasets
+ 
+ * `keep.unproductive`: A choice whether unproductive sequences should be left in the datasets
+ 
+ * `filter.singletons`: A choice whether sequences with an occurrence of 1 should be filtered out
+  
+ * `aa.th`: A threshold determining the amino acid CDR3 sequence length limits. Refer to the function's documentation for more details
+ 
+ * `outFiltered`: A choice whether to write an output file containing the filtered out reads by the previously cited filtering parameters
+ 
+ * `cores`: The number of CPU cores to be used for a parallel processing
+ 
+It is possible to apply the above-mentioned filtering functions subsequently to the data loading step in case users wish to explore the datasets before any data manipulation.
+
+
+```{r data loading, echo=T, eval=F}
+RepSeqData <- readAIRRSet(fileList = l,
+                          fileFormat = "MiAIRR",
+                          chain = "TRA",
+                          sampleinfo = metadata,
+                          keep.ambiguous = FALSE,
+                          keep.unproductive = FALSE,
+                          filter.singletons = FALSE,
+                          aa.th = 8,
+                          outFiltered = FALSE,
+                          raretab = FALSE,
+                          cores = 1L)
+
+```
+
+
+## The RepSeqExperiment object
+
+### Architecture
+
+Data loading with either one of `readFormatSet()` or `readAIRRSet()` allows the generation of a RepSeqExperiment object. This object is used as input in all of the functions.
+
+It is composed of 4 slots, each containing a different type of information.
+
++ **assayData**: a data.table composed of all the alignment datasets and containing the following columns:
+
+    - **sample_id**: Sample names
+
+  - **V**: Variable gene name
+
+  - **J**: Joining gene name
+
+  - **VJ**: V-J gene combination using V and J gene names.
+  
+  - **ntCDR3**: Nucleotide CDR3 sequence
+
+  - **aaCDR3**: Amino acid CDR3 sequence
+
+  - **aaClone**: The full sequence including the V gene, the amino acid CDR3 sequence and the J gene
+
+  - **ntClone**: The full sequence including the V gene, the nucleotide CDR3 sequence and the J gene 
+
+  - **count**: The occurrence of each clone
+
+This slot can be extracted using the `assay()` function.
+
+```{r assay,  echo = T, eval=F}
+assay(RepSeqData)
+```
+
+```{r view assay,  echo = F}
+reactable::reactable(head(assay(RepSeqData)),  bordered = TRUE,  fullWidth = TRUE,pagination = FALSE,height = 300,
+          defaultColDef = reactable::colDef(vAlign = "center",  align = "center", 
+                                            minWidth = 200,
+                                 headerStyle = list(background = "#f7f7f8")),
+          columns = list(
+            V= reactable::colDef(minWidth = 100),
+            J=reactable::colDef(minWidth = 100),
+            VJ=reactable::colDef(minWidth = 100),
+            count=reactable::colDef(minWidth = 100)
+          ))
+```
+
++ **metaData**: a data frame containing the metadata information provided for the building of the RepSeqExperiment object, followed by a number of statistics calculated for each sample.
+
+  These statistics include:
+  
+    * **nSequences**: the total number of sequences in a sample
+
+  * **V**: The total number of V genes expressed in each sample
+  
+  * **J**: The total number of J genes
+
+  * **VJ**: The total number of V-J gene combinations
+  
+  * **ntCDR3**: The number of unique nucleotide CDR3s
+
+  * **aaCDR3**: The number of unique amino acid CDR3s
+  
+  * **aaClone**: The number of unique aaClones
+
+  * **ntClone**: The number of unique ntClones
+  
+  * **Chao1**: Estimates undetected species using the information on the rarest species (the numbers of singletons and doubletons) (Chao, 1984).
+
+  * **Improved Chao1**: An extension of **Chao1** which uses additional information, namely, the numbers of tripletons and quadrupletons  (Chiu et al., 2014).
+
+
+This slot can be extracted using the `mData()` function.
+
+```{r sdata,  echo = T, eval=F}
+mData(RepSeqData)
+```
+
+```{r view metaData, echo = F}
+tbl<- mData(RepSeqData)
+tbl$iChao<- round(tbl$iChao, 2)
+tbl$chao1<- round(tbl$chao1, 2)
+
+reactable::reactable(tbl,  bordered = TRUE,  fullWidth = TRUE, 
+          defaultColDef = reactable::colDef(vAlign = "center",  align = "center", 
+                                            minWidth = 200,maxWidth = 110,
+                                 headerStyle = list(background = "#f7f7f8"),
+                                format = reactable::colFormat( separators = TRUE)),
+     columns=list(
+       sample_id= reactable::colDef(maxWidth = 150),
+       cell_susbet= reactable::colDef(maxWidth = 150))
+          )
+ 
+```
+
+- **otherData**: a list encompassing the output of a defined set of functions.
+
+This slot can be extracted using the `oData()` function.
+
+For instance, if the `outFiltered` parameter was set to TRUE during the RepSeqExperiment generation, filtered sequences would have been stored in this slot and can be viewed as followed.  
+
+```{r odata,  echo = T, eval=F}
+oData(RepSeqData)$filtered
+```
+
+In addition, `oData` contains a list of colors attributed for each group in the metadata file
+```{r col,  echo = T, eval=T}
+oData(RepSeqData)$label_colors
+```
+
+
+
+- **History**: a data frame registering all operations performed on the RepSeqExperiment object, such as the filtering and the down-sampling.
+
+This slot can be extracted using the `History()` function.
+
+```{r history,  echo = T, eval=F}
+History(RepSeqData)
+```
+
+```{r view history, echo = F}
+History(RepSeqData)[[1]][[1]] <- "data directory=./extdata/MiAIRR"
+reactable::reactable(History(RepSeqData),
+                     bordered = TRUE,  fullWidth = TRUE, 
+          defaultColDef = reactable::colDef(
+                                 headerStyle = list(background = "#f7f7f8")))
+```
+
+### RepSeqExp merging
+
+`mergeRepSeq()` allows to combine two RepSeqExperiment objects encompassing different datasets. As such, a same **sample_id** cannot be in both datasets and should be renamed before using this function.
+
+```{r}
+l <- list.files(system.file(file.path('extdata/MiAIRR'),
+                     package = 'AnalyzAIRR'),
+                     full.names = TRUE)
+
+dataset1 <- readAIRRSet(fileList = l[c(1:3)],
+                       cores = 1L,
+                       fileFormat = "MiAIRR",
+                       chain = "TRA",
+                       sampleinfo = NULL,
+                       filter.singletons = FALSE,
+                       outFiltered = FALSE)
+
+dataset2 <- readAIRRSet(fileList = l[c(4:8)],
+                       cores = 1L,
+                       fileFormat = "MiAIRR",
+                       chain = "TRA",
+                       sampleinfo = NULL,
+                       filter.singletons = FALSE,
+                       outFiltered = FALSE)
+
+dataset <- mergeRepSeq(a = dataset1, b = dataset2)
+```
+```{r ,  echo = F, eval=T}
+tbl<- mData(dataset)
+tbl$iChao<- round(tbl$iChao, 2)
+tbl$chao1<- round(tbl$chao1, 2)
+
+reactable::reactable(tbl,  bordered = TRUE,  fullWidth = TRUE, 
+          defaultColDef = reactable::colDef(vAlign = "center",  align = "center", 
+                                            minWidth = 200,maxWidth = 110,
+                                 headerStyle = list(background = "#f7f7f8"),
+                                format = reactable::colFormat( separators = TRUE)),
+     columns=list(
+       sample_id= reactable::colDef(maxWidth = 150),
+       cell_suset= reactable::colDef(maxWidth = 150))
+          )
+```
+

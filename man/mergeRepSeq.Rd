@@ -39,8 +39,7 @@ dataset1 <- readAIRRSet(fileList = l[c(1:3)],
                        chain = "TRA",
                        sampleinfo = metaData[1:3,],
                        filter.singletons = FALSE,
-                       outFiltered = FALSE,
-                       raretab = FALSE)
+                       outFiltered = FALSE)
 
 dataset2 <- readAIRRSet(fileList = l[c(4:8)],
                        cores=1L,
@@ -48,8 +47,7 @@ dataset2 <- readAIRRSet(fileList = l[c(4:8)],
                        chain = "TRA",
                        sampleinfo = metaData[4:8,],
                        filter.singletons = FALSE,
-                       outFiltered = FALSE,
-                       raretab = FALSE)
+                       outFiltered = FALSE)
 
 dataset <- mergeRepSeq(a = dataset1, b = dataset2)
 

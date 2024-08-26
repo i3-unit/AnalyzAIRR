@@ -46,6 +46,7 @@
 #' @import limma
 #' @import stringr
 #' @import scales
+#' @import GGally
 #' @import grDevices
 #' @import ade4
 #' @import ggVennDiagram
@@ -60,14 +61,16 @@
 #' @import MESS
 #' @import tibble
 #' @import ComplexHeatmap
+#' @import packcircles
 #' @importFrom car dataEllipse
-#' @importFrom rlang sym
+#' @importFrom rlang sym syms
 #' @importFrom lemon g_legend
 #' @importFrom tidyselect all_of
 #' @importFrom circlize chordDiagram circos.track circos.text 
 #' @importFrom stats median sd as.formula var frequency cmdscale lag lm
 #' @importFrom grDevices colorRampPalette
-#' @importFrom dplyr %>% group_by summarize n mutate filter select rename
+#' @importFrom magrittr %>%
+#' @importFrom dplyr group_by summarize n mutate filter select rename
 #' @importFrom ggrepel geom_text_repel
 #' @name AnalyzAIRR
 NULL

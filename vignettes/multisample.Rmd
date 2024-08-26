@@ -1,0 +1,251 @@
+---
+title: "Cross-sample analysis"
+---
+
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+'%>%' <-  kableExtra::'%>%'
+```
+
+```{r load library, echo=F, eval=T, warning=F, message=F}
+library(AnalyzAIRR)
+```
+
+
+The majority of the functions described in the [Data exploration](exploratory.html) section can be applied to compare groups of samples and perform statistical tests.
+
+# MetaData statistics
+
+   The calculated statistics in the **metaData** slot can be compared between groups of samples. This is possible using the `plotStatistics()` function by setting the `grouped` parameter to **TRUE** and specifying one group column from the **metadata** slot to compare in the `colorBy` parameter, and up to two columns in the `facetBy` parameter.
+   
+```{r comp sd1,fig.align='center'}
+plotStatistics(x = RepSeqData,
+               stat = "ntClone",
+               colorBy = "cell_subset", 
+               facetBy = "sex",
+               grouped = TRUE)
+```
+<figcaption align = "center"><em class="special">Figure 1: Comparison of the the number of ntClones between amTreg and nTreg samples. Boxplots represent the median across all samples belonging to the same group.</em></figcaption>
+<br>
+
+## Gene usage
+
+  `plotGeneUsage()` allows the comparison of V or J gene usages between groups of samples using the `colorBy` parameter.
+
+```{r J usage , echo = TRUE, fig.width=12, fig.height=5, message=F,warning=F,fig.align="center"}
+plotGeneUsage(x = RepSeqData, 
+              level = "J", 
+              scale = "frequency", 
+              colorBy = "cell_subset",
+              show_stats = TRUE)
+```
+<figcaption align = "center"><em class="special">Figure 2: Comparison of the J gene usage between amTreg and nTreg samples. A Wilcoxon test was performed. Only significant values are plotted.</em></figcaption>
+<br>
+
+## Repertoire diversity
+
+   Diversity indices can be compared between groups of samples using the `plotDiversity()` function with the `grouped` parameter set to **TRUE**, and the groups to be analysed should be specified in the `colorBy` parameter.
+
+```{r plot indices 3,fig.align='center',verbose=FALSE}
+plotDiversity(x = RepSeqData,
+              level = "aaClone",
+              index = "shannon",
+              colorBy = "cell_subset",
+              grouped = TRUE,
+              show_stats = TRUE)
+
+```
+<figcaption align = "center"><em class="special">Figure 3: The Shannon index is calculated at the aaClone level and compared between cell subsets. Boxplots represent the median across all samples belonging to the same group. A Wilcoxon test is applied and adjusted p-values using the Holm method are shown.</em></figcaption>
+<br>
+
+  The Renyi index also supports the `grouped` parameter.
+
+```{r plot plotRenyiIndexG,verbose=FALSE, fig.height = 5, fig.width=7, fig.align='center'}
+plotRenyiIndex(x = RepSeqData,
+               level = "aaClone",
+               colorBy = "cell_subset",
+               grouped = TRUE)
+
+```
+<figcaption align = "center"><em class="special">Figure 4: The Renyi values were calculated at the aaClone level at each pre-defined alpha value. For each specified group, the mean (circles) and stantard error (shade) are plotted.</em></figcaption>
+
+
+
+## Clonal distribution
+
+   Similarly to the analysis applied at the single-sample level, `plotIntervals()` allows to plot and compare clonal distributions within defined count intervals between experimental groups.
+
+```{r plotDistribVpJall,fig.height = 5, fig.width=8.5, fig.align='center'}
+plotIntervals(x = RepSeqData, 
+              level = "aaClone", 
+              colorBy = "cell_subset", 
+              fractions = "count", 
+              grouped = TRUE,
+              show_stats = TRUE)
+```
+<figcaption align = "center"><em class="special">Figure 5: The distribution (upper plot) and the cumulative frequency (bottom plot) of aaClones within each count interval was compared between amTreg and nTreg samples within each sex. A Wilcoxon test is applied and adjusted p-values using the Holm method are shown.</em></figcaption>
+
+
+# Similarity analysis
+
+The repertoire sharing at any level evaluates the degree of convergence between repertoires and experimental conditions.
+Different statistical methods are proposed herein to evaluate this convergence.
+
+## Repertoire overlap
+
+   The number of shared sequences, at any level, between samples belonging for instance to the same experimental group can be obtained using the `plotVenn()` function.
+  If `sampleNames` is not specified, the first 3 samples in the datasets will be analyzed.
+
+```{r venn, fig.align='center',echo = T, eval=T,  fig.width=8, fig.height=4}
+ctrnames <- rownames(mData(RepSeqData))[which(mData(RepSeqData)[,"cell_subset" ] %in% "nTreg")]
+plotVenn(x = RepSeqData,
+         level = "aaClone",
+         sampleNames = ctrnames)
+```
+<figcaption align = "center"><em class="special">Figure 6: Venn diagram representing the number of shared aaClones between the nTreg samples.</em></figcaption>
+<br>
+
+## Correlation between a pair of samples
+
+  The correlation between a pair of repertoires can be calculated using the `plotScatter()` function by simply specifying a two or more `sampleNames` to compare.
+
+
+```{r scatter, echo = T, message=FALSE, warning=FALSE, fig.align='center',eval=T, message=FALSE}
+plotScatter(x = RepSeqData,
+            level = "V",
+            scale = "frequency",
+            sampleNames = c("tripod-30-813","tripod-31-846"))
+```
+<figcaption align = "center"><em class="special">Figure 7: A biplot comparing the V gene usage between two defined samples. A linear model is fitted on the data. The V usage is significantly similar between the two samples.</em></figcaption>
+<br>
+
+It is also possible to compare, for instance, all samples beloging to a specific group. In the example below, scatter plots and drawn between all pairwise nTreg samples. 
+
+```{r scatter 2, echo = T,fig.width=8,message=FALSE, warning=FALSE,fig.align='center', eval=T, message=FALSE}
+names<- as.character(RepSeqData@metaData$sample_id[RepSeqData@metaData$cell_subset=="nTreg"])
+
+plotScatter(x = RepSeqData,
+            level = "VJ",
+            scale = "frequency",
+            sampleNames = names)+
+  ggplot2::theme(axis.text = ggplot2::element_text(size=7))
+```
+<figcaption align = "center"><em class="special">Figure 8: A biplot comparing the clonal expression between two defined samples. A linear model is fitted on the data. Clonal overlap and expression are significantly low between the compared samples.</em></figcaption>
+<br>
+
+## Dissimilarity indices
+
+   **AnalyzAIRR** proposes a list of dissimilarity indices, each taking into account different parameters. The proposed methods include:
+
+   + The **Jaccard** similarity: a measure of similarity between sample sets defined as the size of the intersection divided by the size of the union of the sample sets.
+
+   + The **Morisita-Horn** similarity: a measure of similarity that tends to be over-sensitive to abundant species.
+
+   Details on these indices and others can be found [here](https://rdrr.io/cran/vegan/man/vegdist.html)
+
+  These distances can be calculated at any level of the repertoire and can be:
+
+   - Visualized As a dissimilarity heatmap by setting `plot` to **Heatmap**.
+  This function performs a hierarchical clustering on the calculated distance scores using the method specified in  the `clustering` parameter.
+  
+
+```{r dissimilarity,fig.height=5, echo = TRUE,fig.align='center'}
+plotDissimilarity(x = RepSeqData,
+                  level = "aaClone",
+                  method = "morisita",
+                  clustering = "ward.D",
+                  colorBy = c("sex","cell_subset"),
+                  plot = "Heatmap")
+```
+<figcaption align = "center"><em class="special">Figure 9: A heatmap showing the Morisita distances calculated at the aaClone level between all pairwise samples. The ward D method was used to perform the hierarchical clustering.</em></figcaption>
+<br>
+   
+   - Used to perform a multidimensional scaling analysis by setting `plot` to **MDS**. In this case, no clustering method is needed.
+
+```{r mds1, echo = TRUE,warning=FALSE,fig.align='center', message=FALSE}
+plotDissimilarity(x = RepSeqData,
+                 level = "aaClone",
+                 method = "morisita",
+                 colorBy = "cell_subset",
+                 plot = "MDS")
+```
+<figcaption align = "center"><em class="special">Figure 25: Morisita distances were calculated at the aaClone level between all pairwise samples within the dataset and used to perform a multidimensional scaling analysis.</em></figcaption>
+<br>
+
+# Differential analysis
+
+ Differentially expressed genes or sequences can be identified using `diffExpGroup`.
+The experimental groups to be compared can be specified with the `group` parameter, and the function outputs the statistics calculated for each gene/sequence.
+
+In the following example, we identify over-expressed VJ combinations within the amTreg samples compared to the nTregs.
+
+```{r diffexp, warning=FALSE, message=FALSE}
+DS <- diffExpGroup(x = RepSeqData,
+                   colGrp = "cell_subset" ,
+                   level = "VJ",
+                   group = c("cell_subset", "amTreg", "nTreg"))
+```
+```{r dds, echo = F, warning=FALSE, message=FALSE,fig.width=5, fig.height=3.5}
+DS<- round(DS, 2)
+reactable::reactable(head(DS),  bordered = TRUE,  fullWidth = TRUE, 
+          defaultColDef = reactable::colDef(vAlign = "center",  align = "center", minWidth = 150,
+                                 headerStyle = list(background = "#f7f7f8")))
+
+
+```
+
+<br>
+
+The results can be visualized using the `plotDiffExp` function into a volcano plot.
+
+   Users can specify the number of top differentially expressed genes/sequences to be identified on the plot using the `top` parameter.
+   It is also possible to choose a log2FoldChange and an adjusted pvalue threshold, based on which the over- and down-expression will be defined. By default, these parameters are fixed to 2 and 0.05 respectively.
+
+```{r volcano, echo = TRUE, warning=FALSE,fig.align='center', message=FALSE,fig.width=7, fig.height=4}
+plotDiffExp(x = RepSeqData,
+            top = 10,
+            level = "VJ",
+            group = c("cell_subset", "amTreg", "nTreg"))
+```
+<figcaption align = "center"><em class="special">Figure 26: A volcano plot showing differentially expressed VJ combinations between amTreg and nTreg samples. Over-expressed combinations in the amTreg population are shown in red.</em></figcaption>
+<br>
+
+# Spectratyping comparison
+
+ The `perturbationScore()` function computes the perturbation scores of the aaCDR3 length distribution within each V gene as a distance between each repertoire and the mean repertoire of the control group.
+
+```{r, echo=TRUE, eval=FALSE}
+ctrnames <- rownames(mData(RepSeqData))[which(mData(RepSeqData)[,"cell_subset" ] %in% "nTreg")]
+perturbationScore(x = RepSeqData, 
+                  ctrl.names = ctrnames, 
+                  distance = "euclidean")
+
+```
+
+```{r deseq2.res 2, echo = F, include = TRUE}
+ctrnames <- rownames(mData(RepSeqData))[which(mData(RepSeqData)[,"cell_subset" ] %in% "nTreg")]
+per<- perturbationScore(RepSeqData, ctrl.names=ctrnames, distance ="euclidean")
+per<- round(per, 2)
+
+reactable::reactable(head(per),  bordered = TRUE,  fullWidth = TRUE,
+          defaultColDef = reactable::colDef(vAlign = "center",  align = "center", minWidth = 150,
+                                 headerStyle = list(background = "#f7f7f8")))
+```
+<br>
+ Scores can be visualized in a heatmap using the `plotPerturbationScore()` function.
+
+The parameter `order` allows to define the order in which the samples will be plotted on the heatmap which helps a better separation between the control groups and the other samples.
+
+```{r, echo=T,warning=F, message=F, fig.width=8, fig.height=4, fig.align='center'}
+plotPerturbationScore(x = RepSeqData, 
+                      ctrl.names = ctrnames, 
+                      distance = "euclidean", 
+                      order = "cell_subset")
+
+```
+<figcaption align = "center"><em class="special">Figure 28: A heatmap plotting the perturbation scores of the aaCDR3 length distribution within each V gene in the amTreg population compared to the nTregs (used as reference). The parameter order allows to define the order in which the samples will be plotted on the heatmap which helps a better separation between the control groups and the other samples.</em></figcaption>
+

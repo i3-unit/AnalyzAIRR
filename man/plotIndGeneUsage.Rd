@@ -4,12 +4,7 @@
 \alias{plotIndGeneUsage}
 \title{Visualization of the V or J gene usage}
 \usage{
-plotIndGeneUsage(
-  x,
-  sampleName = NULL,
-  level = c("V", "J"),
-  scale = c("count", "frequency")
-)
+plotIndGeneUsage(x, sampleName = NULL, level = c("aaClone", "ntClone"))
 }
 \arguments{
 \item{x}{an object of class  \code{\linkS4class{RepSeqExperiment}}}
@@ -17,18 +12,16 @@ plotIndGeneUsage(
 \item{sampleName}{a character specifying the sample_id to analyze. Default is NULL, which plots the first sample in the dataset.}
 
 \item{level}{a character specifying the level of the repertoire to be taken into account when calculating the gene usages. Should be one of "aaClone" or "ntClone".}
-
-\item{scale}{a character specifying whether to plot the gene usage in "count" or "frequency".}
 }
 \description{
-This function plots the V or J gene usages for a given sample.
+This function plots a heatmap of V and J combination usage within the sample of interest. 
+Frequencies, represented by the color scale, are scaled column-wise. Barplots at the top and right side of the heatmap show the usage of each gene across the row or the column for the V and J genes, respectively.
 }
 \examples{
 
 data(RepSeqData)
 snames <- rownames(mData(RepSeqData))
 
-plotIndGeneUsage(x = RepSeqData, level = "V", sampleName = snames[1], scale = "count")
+plotIndGeneUsage(x = RepSeqData, level = "aaClone", sampleName = snames[1])
 
-plotIndGeneUsage(x = RepSeqData, level = "J", sampleName = NULL, scale = "frequency")
 }

@@ -32,7 +32,7 @@ Unproductive sequences include:
 a filtered clonotype table.
 }
 \description{
-This function filters adaptive immune repertoires that were not aligned by a AnalyzAIRR-supported tool. The loaded clonotype table must however contain the  required columns:
+This function filters adaptive immune repertoires that were not aligned by a AnalyzAIRR-supported tool. The loaded clonotype table must however contain the required columns:
 
  - sample_id: sample names
 

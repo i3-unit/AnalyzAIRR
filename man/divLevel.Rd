@@ -16,7 +16,7 @@ divLevel(
 \item{x}{an object of class [\code{\linkS4class{RepSeqExperiment}}]}
 
 \item{index}{character, the diversity index to calculate. Should be one of
-"chao1.se", "chaowor","shannon","invsimpson","simpson" or "gini".}
+"chaowor","shannon","invsimpson","simpson" or "gini".}
 
 \item{level}{character, the level of the repertoire to estimate. 
 Should be one of "V", "J" or "VJ".}

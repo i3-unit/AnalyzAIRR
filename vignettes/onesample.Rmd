@@ -1,0 +1,101 @@
+---
+title: "Single sample analysis"
+---
+
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+'%>%' <-  kableExtra::'%>%'
+```
+
+```{r load library, echo=F, eval=T, warning=F, message=F}
+library(AnalyzAIRR)
+```
+
+Descriptive analyses can be applied on each repertoire individually.
+These analyses include the ones described in the [Data exploration](exploratory.html) section in addition to other metrics.
+
+In all the following functions, the **sample_id** of interest needs to be specified in the `sampleName` parameter. If not specified, the first **sample_id** in the dataset will be analyzed.
+
+# Repertoire statistics
+## Basic statistics
+ The `plotIndStatistics()` function allows the positioning of the sample of interest within the whole dataset, based on a set of statistic metrics. Boxplots are drawn on the whole dataset values, on which the sample of interest is highlighted as a red cross. This allows the comparison of the sample to the whole dataset, and the detection of sample outliers. 
+  
+To plot statistics in the **metaData** slot, the `stat` parameter should be set to **statistics** in the **metaData** slot.
+
+   
+```{r plotIndStatistics1, fig.align='center'}
+plotIndStatistics(x = RepSeqData, 
+                  stat = "metadata",  
+                  level = "aaClone")
+
+```
+<figcaption align = "center"><em class="special">Figure 1: Boxplots showing metadata statistics calculated on all the dataset samples. The sample of interest is represented by a red cross.</em></figcaption>
+
+## Diversity indices
+
+The `plotIndStatistics()` function can also be used to plot diversity indices by setting the `stat` parameter to **diversity**.
+
+```{r plotIndStatistics2,fig.align='center', fig.height=3}
+plotIndStatistics(x = RepSeqData, 
+                  stat = "diversity",  
+                  level = "aaClone")
+```
+<figcaption align = "center"><em class="special">Figure 2: Boxplots showing different diversity indices calculated on all the dataset samples. The sample of interest is represented by a red cross.</em></figcaption>
+
+# Clonal distribution
+## Tree map
+   To visualize the repertoire structure and the top clone distribution in a repertoire, `plotIndMap()` can be used to plot a circular treemap in which each circle represents a unique clone, and the circle size corresponds to the clone count. Users can choose the proportion of the top clones to plot using the `prop` parameter. We recommend to plot up to the top 10,000 clones, as higher values might generate difficult-to-interpret visuals.
+   
+```{r plotIndMap, echo=TRUE,message=FALSE, warning=FALSE,fig.width=4, fig.height = 4,fig.align="center"}
+plotIndMap(x = RepSeqData, 
+           sampleName=  NULL, 
+           level = "aaClone", 
+           prop = 0.01)
+```
+<figcaption align = "center"><em class="special">Figure 3: A circular treemap was generated for one single sample and shows the structure of the top 1% of aaClones in the sample repertoire. Each circle represents a unique aaClone, and the circle size corresponds to the aaClone count.</em></figcaption>
+<br>   
+  
+## Intervals
+  The `plotIndIntervals()` function can be used to quantitatively analyze the above plot, by evaluating the clonal distribution per intervals of counts or fractions in a single sample.
+
+```{r plotIndIntervals, echo=TRUE,message=FALSE, warning=FALSE,fig.align="center", cache.comments=FALSE}
+plotIndIntervals(x = RepSeqData, 
+                 level = "aaClone", 
+                 sampleName = "tripod-30-813", 
+                 fractions = "frequency")
+```
+<figcaption align = "center"><em class="special">Figure 4: Barplots showing the distribution (upper plot) and the cumulative frequency (lower plot) of aaClone within each frequency interval for one selected sample.</em></figcaption>
+<br>
+
+
+# V and J gene usages
+
+   V-J combination usages can be visualized in a heatmap using the `plotIndGeneUsage()` function. The parameter `level` allows to choose whether to compute gene usages at the ntClone or aaClone level. 
+   V and J gene usages are plotted separately at the top and right side of the heatmap, allowing a better view of the individual gene distribution. 
+```{r J usage ind, echo = TRUE, message=F,warning=F,fig.height = 6,fig.width= 9,fig.align="center"}
+plotIndGeneUsage(x = RepSeqData,
+                 level = "aaClone",
+                 sampleName = NULL)
+```
+<figcaption align = "center"><em class="special">Figure 5: Heatmap of V and J combination usage in one selected sample. Frequencies, represented by the color scale, are scaled column-wise. Barplots at the top and right side of the heatmap show the usage of each gene across the row or the column for the V and J genes, respectively.</em></figcaption>
+<br>
+
+
+# CDR3 Spectratyping
+
+Spectratyping analyzes the CDR3 amino acid length distribution in a sample.
+
+Using `plotSpectratyping()`, it is possible to add the V gene usage information per CDR3 length. The proportion of the most used genes within the repertoire can be specified with the `prop` parameter, thus showing their relative proportions within each CDR3 length.
+
+```{r spectra, fig.width=8, fig.height = 4,fig.align="center"}
+#Show the top 10%
+plotSpectratyping(x = RepSeqData, 
+                  scale = "frequency",
+                  prop = 0.1)
+```
+<figcaption align = "center"><em class="special">Figure 6: CDR3 spectratyping for one selected sample. The 10% most frequent V genes are distinctively coloured.</em></figcaption>
+<br>

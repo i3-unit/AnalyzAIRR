@@ -2,6 +2,8 @@
 
 # AnalyzAIRR
 
+<img src="man/figures/logo.png" align="right" width="150" />
+
 AnalyzAIRR is an R package developed to analyze bulk Ig/TCR repertoire datasets.
 
 - It proposes an analytical routine starting with data exploration, leading to in-depth statistical comparisons with the aim of answering defined biological questions.
@@ -34,7 +36,7 @@ docker pull vanessajmh/analyzairr:v1.0.0
 
 # Getting started
 
-Details on supported data formats and the data loading process can be found [here](https://vanessajmh.github.io/AnalyzAIRR.github.io)
+Details on supported data formats and the data loading process can be found [here](https://github.com/i3-unit/AnalyzAIRR.github.io)
 
 # Shiny interface
 

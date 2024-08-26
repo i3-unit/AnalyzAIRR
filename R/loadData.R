@@ -298,7 +298,7 @@ readInFormat <- function(path,
 
 #' @title Adaptive immune repertoire filtering
 #'
-#' @description This function filters adaptive immune repertoires that were not aligned by a AnalyzAIRR-supported tool. The loaded clonotype table must however contain the  required columns:
+#' @description This function filters adaptive immune repertoires that were not aligned by a AnalyzAIRR-supported tool. The loaded clonotype table must however contain the required columns:
 #'
 #'  - sample_id: sample names
 #'
@@ -490,7 +490,6 @@ readAIRR <- function(path, fileFormat=c("MiXCR", "immunoseq", "MiAIRR"),
 #' @param filter.singletons a boolean indicating whether or not ntClones (V+ntCDR3+J) with an occurrence of 1 should be filtered out. Default is \code{FALSE}
 #' @param aa.th an integer determining the CDR3 amino acid sequence length limits, i.e. the maximum number of amino acids deviating from the mean length that is accepted. The default value is 8, which keeps amino acid CDR3s with a length that falls inside the following range: mean length-8 =< aa.th <= mean length+ 8.
 #' @param outFiltered a boolean indicating whether or not to write in the oData slot of the RepSeqexperiment object a data frame containing the filtered out reads.
-#' @param raretab a boolean indicating whether or not a rarefaction table should be generated. It uses the \code{\link{rarefactionTab}} function, which computes a rarefaction table for each sample. Default is \code{TRUE}.
 #' @param cores an integer indicating the number of CPU cores to be used by the function. The process is paralleled and can thus be used on multiple cores. Default is 1.
 #'
 #' @return an object of class \code{\link{RepSeqExperiment}} that is  used in all the analytical metrics proposed by the AnalyzAIRR package. See \code{\link{RepSeqExperiment-class}} for more details.
@@ -515,7 +514,6 @@ readAIRR <- function(path, fileFormat=c("MiXCR", "immunoseq", "MiAIRR"),
 #'                        filter.singletons = FALSE,
 #'                        aa.th=9,
 #'                        outFiltered = FALSE,
-#'                        raretab = FALSE,
 #'                        cores=1L)
 #'
 readAIRRSet <- function(fileList, fileFormat = c("MiXCR", "immunoseq",  "MiAIRR"),
@@ -526,7 +524,6 @@ readAIRRSet <- function(fileList, fileFormat = c("MiXCR", "immunoseq",  "MiAIRR"
                              filter.singletons = FALSE,
                              aa.th = NULL,
                              outFiltered = FALSE,
-                             raretab = FALSE,
                              cores = 1L) {
   sample_id=clone=V=VJ=V1 <- NULL
   cores <- min(parallel::detectCores()-1, cores)
@@ -581,8 +578,13 @@ readAIRRSet <- function(fileList, fileFormat = c("MiXCR", "immunoseq",  "MiAIRR"
   if (nrow(sdata) != length(fileList)) stop("Number of files to import differ from the number of samples in sampleinfo file.")
   #sdata[vapply(sdata, FUN = is.character, FUN.VALUE = logical(1))] <- lapply(sdata[vapply(sdata, FUN = is.character, FUN.VALUE = logical(1))], as.factor)
   stats <- data.frame(countobj[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols = c( "V", "J", "VJ","ntCDR3", "aaCDR3","aaClone","ntClone"), by = "sample_id"], row.names = 1)
+  pastek <- function(y) list( chao1 = .chao1(y)$chao.est, iChao = iChao(y))
+  out <- data.frame(countobj[, .(count = sum(count)), by = c("sample_id", "ntClone")][, pastek(count), by = "sample_id"], row.names = 1)
+  stats <- data.frame(base::merge(stats, out, by = 0, sort=FALSE), row.names = 1, stringsAsFactors = TRUE)
+
   sdata <- data.frame(base::merge(sdata, stats, by = 0, sort=FALSE), row.names = 1, stringsAsFactors = TRUE)
   sdata <- sdata[match(rownames(sdata), rownames(stats)),]
+  
   cat("Creating a RepSeqExperiment object...\n")
   x.hist <- data.frame(history = c(paste0("data directory=", dirname(fileList[1])),
                                    paste0("readAIRRSet; cores=", cores,
@@ -591,8 +593,7 @@ readAIRRSet <- function(fileList, fileFormat = c("MiXCR", "immunoseq",  "MiAIRR"
                                           "; ambiguous ", keep.ambiguous,
                                           "; unprod ", keep.unproductive,
                                           "; filter.singletons ", filter.singletons,
-                                          "; aa threshold=", aa.th,
-                                          "; raretab ", raretab)),
+                                          "; aa threshold=", aa.th)),
                        stringsAsFactors = FALSE)
 
   if (outFiltered == TRUE) {
@@ -610,11 +611,11 @@ readAIRRSet <- function(fileList, fileFormat = c("MiXCR", "immunoseq",  "MiAIRR"
                         History = x.hist)
   }
 
-  if (raretab == TRUE) {
-    cat("Computing rarefaction table...\n")
-    oData(out) <- c(oData(out), raretab=list(rarefactionTab(out)))
-
-  }
+  # if (raretab == TRUE) {
+  #   cat("Computing rarefaction table...\n")
+  #   oData(out) <- c(oData(out), raretab=list(rarefactionTab(out)))
+  # 
+  # }
   if (filter.singletons) {
     cat ("Removing singleton sequences...")
     out <- filterCount(out,level="ntClone", n = 1)
@@ -682,6 +683,13 @@ RepSeqExp <- function(clonotypetab, sampleinfo = NULL){
     sampleinfo <- data.frame(cbind(sampleinfo, stats), row.names = sNames)
   }
 
+  pastek <- function(y) list( chao1 = .chao1(y)$chao.est, iChao = iChao(y))
+  out <- clonotypetab[, .(count = sum(count)), by = c("sample_id", "ntClone")][, pastek(count), by = "sample_id"]
+  
+  sdata <- data.frame(base::merge(sdata, out, by = "sample_id", sort=FALSE), stringsAsFactors = TRUE)
+  rownames(sdata)<- sdata$sample_id
+  
+  
   x.hist <- data.frame(history = paste0("RepSeqExp; clononotypetab=",
                                         deparse(substitute(clonotypetab)), "; sampleinfo=",
                                         deparse(substitute(sampleinfo))),
@@ -750,7 +758,6 @@ RepSeqExp <- function(clonotypetab, sampleinfo = NULL){
 #' @param filter.singletons a boolean indicating whether or not ntClones (V+ntCDR3+J) with an occurrence of 1 should be filtered out. Default is \code{FALSE}
 #' @param aa.th an integer determining the CDR3 amino acid sequence length limits, i.e. the maximum number of amino acids deviating from the mean length that is accepted. The default value is 8, which keeps amino acid CDR3s with a length that falls inside the following range: mean length-8 =< aa.th <= mean length+ 8.
 #' @param outFiltered a boolean indicating whether or not to write in the oData slot of the RepSeqexperiment object a data frame containing the filtered out reads.
-#' @param raretab a boolean indicating whether or not a rarefaction table should be generated. It uses the \code{\link{rarefactionTab}} function which computes a rarefaction table for each sample. Default is \code{TRUE}.
 #' @param cores an integer indicating the number of cores to be uses by the function. The process is paralleled and can thus be used on multiple cores. Default is 1.
 #'
 #' @return an object of class \code{\link{RepSeqExperiment}} that is  used in all the analytical metrics proposed by the AnalyzAIRR package. See \code{\link{RepSeqExperiment-class}} for more details.
@@ -765,7 +772,7 @@ readFormatSet <- function(fileList,
                          chain = c("TRA", "TRB","TRG","TRD","IGH","IGK","IGL"),
                          sampleinfo = NULL, keep.ambiguous = FALSE,
                          keep.unproductive = FALSE, filter.singletons = FALSE,
-                         aa.th = 8,  outFiltered = TRUE, raretab = TRUE,
+                         aa.th = 8,  outFiltered = TRUE, 
                          cores = 1L) {
 
   sample_id = clone = V = VJ = V1 <- NULL
@@ -834,13 +841,18 @@ readFormatSet <- function(fileList,
                       row.names = 1, stringsAsFactors = TRUE)
   sdata <- sdata[match(rownames(sdata), rownames(stats)), ]
 
+  pastek <- function(y) list( chao1 = .chao1(y)$chao.est, iChao = iChao(y))
+  out <- tab[, .(count = sum(count)), by = c("sample_id", "ntClone")][, pastek(count), by = "sample_id"]
+  
+  sdata <- data.frame(base::merge(sdata, out, by = "sample_id", sort=FALSE), stringsAsFactors = TRUE)
+  rownames(sdata)<- sdata$sample_id
+  
   cat("Creating a RepSeqExperiment object...\n")
 
   x.hist <- data.frame(history = c(paste0("data directory=" , dirname(fileList[1])), paste0("readFormatSet;
                                           cores=", cores, "; chain=", ch, "; ambiguous ",
                                           keep.ambiguous, "; unprod ", keep.unproductive, "; filter.singletons ",
-                                          filter.singletons, "; aa threshold=", aa.th, "; raretab ",
-                                          raretab)), stringsAsFactors = FALSE)
+                                          filter.singletons, "; aa threshold=", aa.th)), stringsAsFactors = FALSE)
 
   if (outFiltered) {
     out <- methods::new("RepSeqExperiment",
@@ -857,10 +869,10 @@ readFormatSet <- function(fileList,
   }
 
 
-  if (raretab == TRUE) {
-    cat("Computing rarefaction table...\n")
-    oData(out) <- c(oData(out), raretab=list(rarefactionTab(out)))
-  }
+  # if (raretab == TRUE) {
+  #   cat("Computing rarefaction table...\n")
+  #   oData(out) <- c(oData(out), raretab=list(rarefactionTab(out)))
+  # }
   if (filter.singletons) {
     cat("Removing singleton sequences...")
     out <- filterCount(out, level = "ntClone", n = 1)

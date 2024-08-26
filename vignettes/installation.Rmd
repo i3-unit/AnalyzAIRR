@@ -1,0 +1,67 @@
+---
+title: "AnalyzAIRR"
+---
+
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+'%>%' <-  kableExtra::'%>%'
+
+```
+# Introduction
+
+**AnalyzAIRR** is a MiAIRR compliant R package developed to analyze bulk Ig/TCR repertoire datasets.
+
+* It can be used by both biologists and bioinformaticians.
+
+* It proposes an analytical routine starting with data exploration, leading to in-depth statistical comparisons with the aim of answering defined biological questions.
+
+* It allows the calculation of a set of diversity measures and statistical metrics applicable at any level of granularity.
+
+* It offers different types of data visualization and ready-to-publish graphics that can be easily personalized. 
+
+This guide provides an overview of the pipeline proposed in **AnalyzAIRR**.
+
+# Installation
+## Devtools
+The latest release of **AnalyzAIRR** can be installed from Github using **devtools**:
+```{r github1, echo = TRUE, eval = FALSE}
+install.packages("devtools")  
+devtools::install_github("vanessajmh/AnalyzAIRR")
+```
+
+Load the **AnalyzAIRR** package
+```{r load library, echo=T, eval=FALSE, warning=F, message=F}
+library(AnalyzAIRR)
+```
+
+## Docker
+A Docker image of the AnalyzAIRR tool encapsulating its dependencies, and required run environments is available on docker hub at vanessajmh/analyzairr.
+
+To install the latest version, the following command line can be used:
+```{bash, eval=F}
+docker pull vanessajmh/analyzairr:latest
+```
+
+Images are versioned using tags. To install a specific version,  the following command line can be used:
+
+```{bash, eval=F}
+docker pull vanessajmh/analyzairr:v1.0.0
+
+```
+
+
+# Quick start
+
+Details on supported data formats and the data loading process can be found [here](https://vanessajmh.github.io/AnalyzAIRR.github.io)
+
+# Shiny interface
+
+A Shiny web application was developed for **AnalyzAIRR** making it user-friendly for biologists with little or no background in bioinformatics.
+The application can be either download from the [Github repository](https://github.com/vanessajmh/Shiny-AnalyzAIRR.git) or used directly at this [link](https://analyzairr.shinyapps.io/shiny-analyzairr/)
+
+
+

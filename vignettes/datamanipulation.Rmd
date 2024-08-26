@@ -1,0 +1,121 @@
+---
+title: "Data manipulation"
+---
+
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+'%>%' <-  kableExtra::'%>%'
+
+```
+```{r load library, echo=F, eval=T, warning=F, message=F}
+library(AnalyzAIRR)
+```
+
+
+Different functions were developed to filter out or extract samples or sequences within a RepSeqExperiment object.
+
+
+# Filtering
+
+## Sequence filtering
+
+### Based on sequence occurrence
+
+  `filterCount()` filters out sequences, at any level, having a count below a chosen threshold. The function returns a RepSeqExperiment object that can be used to perform in-depth analyses on the remaining dataset.
+  
+```{r, eval=FALSE}
+RepSeqData_filtered <- filterCount(x = RepSeqData,
+                                   n = 1,
+                                   level = "aaClone")
+```
+
+The parameter `group` allows the selection of a group of samples on which the filtering must be applied.
+These samples should all belong to a particular group in the **metaData** slot. In this the following case, we're filtering out aaClones with a count of 1 in all amTreg samples.
+
+```{r, eval=FALSE}
+RepSeqData_filtered_amTreg <- filterCount(x = RepSeqData,
+                                          n = 1,
+                                          level = "aaClone",
+                                          group = c("cell_subset", "amTreg"))
+```
+
+
+### Based on sequence name
+
+  `filterSequence()` filters out specific sequences in all or a in group of samples.
+
+```{r, eval=FALSE}
+RepSeqData_filtered <- filterSequence(x = RepSeqData,
+                                      level = "aaClone",
+                                      name = "TRAV11 CVVGDRGSALGRLHF TRAJ18",
+                                      group = c("cell_subset" , "Teff"))
+```
+
+
+## Sample filtering
+
+  `dropSamples()` offers the possibility to filter out one or multiple repertoires by specifying their corresponding sample_id. 
+ These repertoires can be ones identified, for instance, as outliers during the exploratory analysis 
+
+```{r, eval=FALSE}
+RepSeqData_drop <- dropSamples(x = RepSeqData,
+                              sampleNames=c("tripod-30-813", "tripod-30-815"))
+
+```
+
+
+# Data selection
+
+### Based on sequence sharing
+
+  `getPublic()` allows to subset a RepSeqExperiment object in order to extract sequences that are either shared by:
+
+    + samples belonging to a specified group
+    + samples within the whole dataset if the `group` parameter is not specified.
+  <br>
+
+The sharing threshold is set to 50% of the selected samples.
+
+```{r getoverlaps,  echo = T, eval=F}
+# Get clones present in at least 50% of the samples belonging to the amTreg group
+RepSeqData_public <- getPublic(x = RepSeqData, 
+                                level = "aaClone", 
+                                group = c("cell_subset", "amTreg"))
+```
+
+  Similarly, it is possible to extract private sequences with `getPrivate()`. If the parameter `singletons` is set to TRUE, only private sequences with a count of 1 will be returned.
+  
+```{r, eval=FALSE}
+RepSeqData_private <- getPrivate(x = RepSeqData,
+                                level = "ntClone",
+                                singletons = FALSE)
+```
+
+
+### Based on sequence occurrence
+  
+  `getTopSequences()` allows the extraction of the top most expressed sequences.
+   The `prop` parameter allows users to specify the percentage of top sequences to extract. 
+   
+```{r, eval=FALSE}
+RepSeqData_top <- getTopSequences(x = RepSeqData,
+                                  level = "aaClone",
+                                  group = c("cell_subset", "Teff"), 
+                                  prop = 0.1)
+
+```
+   
+
+### Based on sequence functionality
+
+  `getProductive()` and `getUnproductive()` allow the extraction of productive or unproductive sequences respectively in case no filters were applied during the building of the RepSeqExperiment object.
+
+
+**Note**: All the above-mentioned functions can be applied at any of the following repertoire level: **clone**, **clonotype**, **CDR3aa** and **CDR3nt**.
+
+
+ 

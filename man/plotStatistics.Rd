@@ -6,7 +6,7 @@
 \usage{
 plotStatistics(
   x,
-  stat = c("nSequences", "aaClone", "ntClone", "V", "J", "VJ", "aaCDR3", "ntCDR3"),
+  stat = NULL,
   grouped = FALSE,
   colorBy = NULL,
   facetBy = NULL,
@@ -17,7 +17,7 @@ plotStatistics(
 \arguments{
 \item{x}{an object of class \code{\linkS4class{RepSeqExperiment}}}
 
-\item{stat}{a character specifying the statistic to plot. Should one of the statistics in the metaData slot.}
+\item{stat}{a character specifying any numeric column name in the metadata to plot.}
 
 \item{grouped}{a character indicating one or multiple groups to be compared. A Wilcoxon test is thus performed and adjusted p-values using the Holm method are shown. Colors are attributed to the different groups within the first column, and a facet is applied on the second column. If not specified, no statistical tests will be performed, and calculated values for each sample_id will be represented.}
 
@@ -49,6 +49,8 @@ These statistics include:
 - aaClone: the number of unique aaClones
 
 - ntClone: the number of unique ntClones
+
+Or any other user-defined numeric statistics in the metadata.
 
 They can be compared between groups of samples or simply plotted for each sample.
 }

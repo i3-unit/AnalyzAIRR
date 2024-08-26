@@ -25,12 +25,6 @@ utils::globalVariables(c("ranks", "exp_shannon"))
 #' - Gini coefficient: Measures the degree of inequality in a distribution of
 #' abundances (Gini, 1921).
 #'
-#' - Chao1: Estimates undetected species using the information on the rarest
-#' species (the numbers of singletons and doubletons) (Chao, 1984).
-#'
-#' - Improved Chao1: an extension of Chao1 which uses additional information,
-#' namely, the numbers of tripletons and quadrupletons (Chiu et al., 2014).
-#'
 #' @param x an object of class \code{\linkS4class{RepSeqExperiment}}
 #' @param level a character specifying the level of the repertoire on which the
 #' diversity should be estimated. Should be one of "aaClone","ntClone", "V",
@@ -50,10 +44,11 @@ diversityIndices <- function(x,  level = c("aaClone","ntClone", "V", "J", "VJ", 
                                simpson = .diversity(y, index = "simpson"),
                                invsimpson = .diversity(y, index = "invsimpson"),
                                bergerparker= .renyiCal(y, alpha=Inf, hill = FALSE),
-                               gini = .gini(y),
-                               chao1 = .chao1(y)$chao.est,
-                               chao1.se = .chao1(y)$chao.se,
-                               iChao = iChao(y))
+                               gini = .gini(y)
+                               #chao1 = .chao1(y)$chao.est,
+                               #chao1.se = .chao1(y)$chao.se,
+                               #iChao = iChao(y)
+                               )
     out <- copy(assay(x))[, .(count = sum(count)), by = c("sample_id", levelChoice)][, pastek(count), by = "sample_id"]
     return(out)
 }
@@ -75,7 +70,7 @@ diversityIndices <- function(x,  level = c("aaClone","ntClone", "V", "J", "VJ", 
         H <- 1 / H
     } 
 
-    H2 <- round(H, digits = 2)
+    H2 <- round(H, digits = 3)
     return(H2)
 }
 
@@ -88,7 +83,7 @@ diversityIndices <- function(x,  level = c("aaClone","ntClone", "V", "J", "VJ", 
 #'
 #' @param x an object of class [\code{\linkS4class{RepSeqExperiment}}]
 #' @param index character, the diversity index to calculate. Should be one of
-#' "chao1.se", "chaowor","shannon","invsimpson","simpson" or "gini".
+#' "chaowor","shannon","invsimpson","simpson" or "gini".
 #' @param level character, the level of the repertoire to estimate. 
 #' Should be one of "V", "J" or "VJ".
 #' @param norm boolean, whether to compute the normalized diversity index,
@@ -222,7 +217,8 @@ renyiIndex <- function(x, alpha = c(0, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, Inf), 
     r <- f1/f2
     chao.var <- f2 * ((r^4)/4 + r^3 + (r^2)/2)
     chao.se <- sqrt(chao.var)
-    return(list(chao.est=est, chao.se=chao.se))
+    
+    return(list(chao.est=round(est, 2), chao.se=chao.se))
 }
 
 #' @title Improved Chao1
@@ -249,7 +245,7 @@ iChao <- function(x) {
     p1 <- (n-3)/n
     p2 <- (n-3)/(n-1)
     est <- .chao1(x)$chao.est + p1*f3/(4*f4) * max(f1 - p2*f2*f3/(2*f4), 0)
-    return(est)
+    return(round(est, 2))
 }
 
 #' @title Adjusted Chao1
@@ -319,6 +315,7 @@ rarefyDT <- function(x) {
 #' rarefaction curves. The function \code{\link{plotRarefaction}} can be used
 #' for that purpose.
 #' @export
+#' @keywords internal
 #' @examples
 #'
 #' data(RepSeqData)
@@ -370,7 +367,8 @@ rarefactionTab <- function(x) {
 sampleRepSeqExp <- function(x, sample.size = min(mData(x)$nSequences), rngseed = FALSE, replace = TRUE, verbose = TRUE) {
     if (missing(x)) stop("x is missing, an object of class RepSeqExperiment is expected")
     if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected")
-    sampleinfo <- mData(x)
+    sampleinfo <- mData(x) %>% dplyr::select(-chao1 ,-iChao)
+
     if (as(rngseed, "logical")) {
         set.seed(rngseed)
         if (verbose) {
@@ -421,7 +419,7 @@ sampleRepSeqExp <- function(x, sample.size = min(mData(x)$nSequences), rngseed =
                    list(rarevec=rareout)}, by = sample_id]
     }
     cts <- cts[count>0]
-    stats <- data.frame(cts[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols = c("ntCDR3", "aaCDR3", "V", "J", "VJ","aaClone","ntClone"), by = "sample_id"], row.names = 1)
+    stats <- data.frame(cts[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols = c("V", "J", "VJ", "ntCDR3", "aaCDR3", "aaClone" , "ntClone"), by = "sample_id"], row.names = 1)
     sampleinfo <- data.frame(merge(sampleinfo[, setdiff(colnames(sampleinfo), colnames(stats))], stats, by = 0, sort=FALSE), row.names = 1)
 
     
@@ -464,24 +462,30 @@ sampleRepSeqExp <- function(x, sample.size = min(mData(x)$nSequences), rngseed =
 ShannonNorm <- function(x) {
   if (missing(x)) stop("x is missing, an object of class RepSeqExperiment is expected")
   if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected")
-  sampleinfo <- mData(x)
+  sampleinfo <- mData(x) %>% dplyr::select(-chao1 ,-iChao)
 
-  out <- copy(assay(x))[, .(count = sum(count)), by=c("sample_id", "ntClone")][, ranks := lapply(.SD, frankv, ties.method = "min", order=-1L), by = "sample_id", .SDcols = "count"]
-  out2 <- out[, .(count=sum(count)), by=c("sample_id", "ntClone", "ranks")][, exp_shannon :=lapply(1, function(y) .renyiCal(count, y, hill = TRUE)), by="sample_id"]
-  keep <- out2[out2[, .I[ranks %in% seq_len(exp_shannon)], by = "sample_id" ]$V1]
-  res <- copy(assay(x))[keep, on = c("ntClone", "sample_id")][, c("exp_shannon", "ranks","i.count") := NULL]
-
-  stats <- data.frame(res[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols = c("ntCDR3", "aaCDR3", "V", "J", "VJ","aaClone","ntClone"), by = "sample_id"], row.names = 1)
+  out <- copy(assay(x))[, .(count = sum(count)), by=c("sample_id", "ntClone")]
+  out[, row_number := .I]
+  out2 <- out[, exp_shannon :=lapply(1, function(y) .renyiCal(count, y, hill = TRUE)), by="sample_id"]
+  keep <- out2[order(-count), head(.SD, exp_shannon), by = c("sample_id", "exp_shannon")]
+  
+  res <- copy(assay(x))[keep, on = c("ntClone", "sample_id", "count")][, c("exp_shannon","row_number") := NULL]
+  # res[, sample_id := factor(sample_id, levels = rownames(sampleinfo))]
+  res <- res[order(sample_id)]
+  
+  
+  filtered <- out2[!keep, on = .(sample_id, ntClone)]
+  
+  stats <- data.frame(res[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols = c("V", "J", "VJ", "ntCDR3", "aaCDR3", "aaClone" , "ntClone"), by = "sample_id"], row.names = 1)
   sampleinfo <- data.frame(merge(sampleinfo[, setdiff(colnames(sampleinfo), colnames(stats))], stats, by = 0, sort=FALSE), row.names = 1)
-
+  
   x.hist <- "A Shannon-based normalization was performed"
-  filtered=  out2[out2[, .I[!ranks %in% seq_len(exp_shannon)], by = "sample_id" ]$V1]
 
   message("Creating a RepSeqExperiment object...\n")
   out <- methods::new("RepSeqExperiment",
                       assayData = res,
                       metaData = sampleinfo,
-                      otherData = c(oData(x), normalisation=list(filtered[,c(1:2,4)])),
+                      otherData = c(oData(x), normalisation=list(filtered[,c(1:3)])),
                       History = rbind(History(x), x.hist))
   cat("Done.\n")
   return(out)

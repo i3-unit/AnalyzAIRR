@@ -20,8 +20,6 @@ none
 This function plots the rarefaction curve for each sample within the dataset.
 
 Rarefaction is a measure of species richness. The curves plot the number of clones against the number of sequences in a sample, each being obtained by randomly re-sampling a number of sequences multiple times and representing the mean number of found clones.
-
-Calculation can be obtained using the \code{\link{rarefactionTab}} function which computes rarefaction values for each sample.
 }
 \examples{
 

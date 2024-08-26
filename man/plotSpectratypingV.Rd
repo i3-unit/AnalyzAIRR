@@ -38,3 +38,4 @@ plotSpectratypingV(x = RepSeqData, sampleName = snames[1], scale = "frequency")
 
 
 }
+\keyword{internal}

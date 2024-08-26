@@ -1,0 +1,44 @@
+url: https://i3-unit.github.io/AnalyzAIRR/
+template:
+  bootstrap: 5
+  params:
+    css: pkgdown/extra.scss
+search:
+  index: yes
+navbar:
+  structure:
+    left:
+    - intro
+    - articles
+    - reference
+    - news
+    right:
+    - search
+    - github
+  components:
+    articles:
+      text: Tutorial
+      menu:
+      - text: '---'
+      - text: Getting started
+      - text: Installation
+        href: articles/gettingstarted.html
+      - text: Data loading
+        href: articles/dataloading.html
+      - text: '---'
+      - text: Advanced data manipulation
+      - text: Data filtering
+        href: articles/datamanipulation.html
+      - text: '---'
+      - text: Comprehensive data exploration
+      - text: Exploratory Analysis
+        href: articles/exploratory.html
+      - text: One-sample analysis
+        href: articles/onesample.html
+      - text: '---'
+      - text: In-depth cross-sample comparison
+      - text: Data normalization
+        href: articles/datanormalization.html
+      - text: Multi-sample analysis
+        href: articles/multisample.html
+
