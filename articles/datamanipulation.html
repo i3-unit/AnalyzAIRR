@@ -148,11 +148,14 @@ during the exploratory analysis</p>
 </h4>
 <p><code><a href="../reference/getPublic.html">getPublic()</a></code> allows to subset a RepSeqExperiment object
 in order to extract sequences that are either shared by:</p>
-<pre><code>+ samples belonging to a specified group
-+ samples within the whole dataset if the `group` parameter is not specified.</code></pre>
-<p><br></p>
+<ul>
+<li>samples belonging to a specified group</li>
+<li>samples within the whole dataset if the <code>group</code> parameter
+is not specified. <br>
+</li>
+</ul>
 <p>The sharing threshold is set to 50% of the selected samples.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Get clones present in at least 50% of the samples belonging to the amTreg group</span></span>
 <span><span class="va">RepSeqData_public</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getPublic.html">getPublic</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">RepSeqData</span>, </span>
 <span>                                level <span class="op">=</span> <span class="st">"aaClone"</span>, </span>
@@ -161,7 +164,7 @@ in order to extract sequences that are either shared by:</p>
 <code><a href="../reference/getPrivate.html">getPrivate()</a></code>. If the parameter <code>singletons</code> is
 set to TRUE, only private sequences with a count of 1 will be
 returned.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">RepSeqData_private</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getPrivate.html">getPrivate</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">RepSeqData</span>,</span>
 <span>                                level <span class="op">=</span> <span class="st">"ntClone"</span>,</span>
 <span>                                singletons <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
@@ -172,7 +175,7 @@ returned.</p>
 <p><code><a href="../reference/getTopSequences.html">getTopSequences()</a></code> allows the extraction of the top most
 expressed sequences. The <code>prop</code> parameter allows users to
 specify the percentage of top sequences to extract.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">RepSeqData_top</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getTopSequences.html">getTopSequences</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">RepSeqData</span>,</span>
 <span>                                  level <span class="op">=</span> <span class="st">"aaClone"</span>,</span>
 <span>                                  group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cell_subset"</span>, <span class="st">"Teff"</span><span class="op">)</span>, </span>
