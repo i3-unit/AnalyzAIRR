@@ -78,6 +78,7 @@ Additional information on the metadata can be found [here](dataloading.html).
 ### Choice of chain to analyze
 
 The chain type to be analyzed is to be chosen. Users can choose only **one** of the following:
+
    - "TRA", "TRB","TRG" or "TRD" for the TCR repertoires
    - "IGH","IGK" or "IGL" for the BCR repertoires
    
