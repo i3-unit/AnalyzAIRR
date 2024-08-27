@@ -41,7 +41,7 @@ Details on supported data formats and the data loading process can be found [her
 # Shiny interface
 
 A Shiny web application was developed for **AnalyzAIRR** making it user-friendly for biologists with little or no background in bioinformatics.
-The application can be either download from the [Github repository](https://github.com/vanessajmh/Shiny-AnalyzAIRR.git) or used directly at this [link](https://analyzairr.shinyapps.io/shiny-analyzairr/)
+The application can be either downloaded from this [Github repository](https://github.com/vanessajmh/Shiny-AnalyzAIRR.git) or used directly at this [link](https://analyzairr.shinyapps.io/shiny-analyzairr/)
 
 # Support
 

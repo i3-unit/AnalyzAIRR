@@ -1,0 +1,97 @@
+---
+title: "Shiny-AnalyzAIRR"
+---
+
+
+**Shiny-AnalyzAIRR** is a Shiny web application developed for the [AnalyzAIRR package](https://github.com/vanessajmh/AnalyzAIRR), making it user-friendly for biologists with little or no background in bioinformatics.
+
+Users are can apply the full range of analytical methods proposed by AnalyzAIRR and described in this documentation, without requiring any bioinformatics expertise.
+
+The Shiny includes additional features:
+
+- interactive plots that reveal information that might be missed in static visualizations
+- summary reports compiling all plots created during an analysis session. This report can be customized with descriptive text for each figure, allowing for detailed interpretation of results, and can be downloaded in various formats, including PDF, HTML, and PowerPoint. 
+
+# Installation
+## Installation of the AnalyzAIRR package
+
+The latest release of **AnalyzAIRR** can be installed from Github using devtools:
+
+```{r, eval=FALSE}
+devtools::install_github("vanessajmh/AnalyzAIRR")
+
+```
+
+## Installation of Shiny-AnalyzAIRR
+
+**Shiny-AnalyzAIRR** should be cloned in the command line as follow:
+```{r, eval=FALSE}
+git clone https://github.com/i3-unit/Shiny-AnalyzAIRR.git
+
+```
+
+
+Once downloaded, **Shiny-AnalyzAIRR** can be launched from the terminal:
+```{r, eval=FALSE}
+# Go to the Shiny-AnalyzAIRR folder
+cd Shiny-AnalyzAIRR
+# Launch R and shiny
+R -e 'shiny::runApp("./")'
+```
+
+Alternatively, it can be run in Rstudio:
+```{r,eval=FALSE}
+# Open the global.R file in RStudio and run:
+shiny::runApp("./")
+```
+
+The interface can be opened in a web browser using the displayed hyper link address.
+
+
+# Data loading
+
+## Uploading a RepSeqExperiment object
+
+A **RepSeqExperiment** object generated using the **AnalyzAIRR** R package and saved in an rds format can be loaded directly into the Shiny
+
+## Uploading alignment data files
+### File source
+
+Different alignment file formats are supported by the package. More details on AnalyzAIRR-supported input data can be found [here](dataloading.html).
+
+### Metadata
+
+It is possible to provide a metadata if users wish to perform inter-group comparative analyses. 
+
+The metadata should be provided as a table containing:
+
+  * a column with the sample names that match the name of the alignment files and their order in the list.
+
+  Only one column containing the sample names should be provided in the metadata file. This column is assigned to the `row.names` argument when loading the metadata. 
+
+  * any additional columns with relevant information for the analyses. Columns could encompass the experimental conditions, clinical variables, etc... 
+  
+  No specific column names nor order are required.
+
+Additional information on the metadata can be found [here](dataloading.html).
+
+### Choice of chain to analyze
+
+The chain type to be analyzed is to be chosen. Users can choose only **one** of the following:
+   - "TRA", "TRB","TRG" or "TRD" for the TCR repertoires
+   - "IGH","IGK" or "IGL" for the BCR repertoires
+   
+When all files are loaded, Shiny-AnalyZAIRR automatically creates and loads the **RepSeqExperiment** object. This object is used as input in all of the functions. For more details on the the **RepSeqExperiment** object structure, visit [this page](dataloading.html). An example data is included to illustrate the functionalities of the package.
+
+## Getting started
+
+Once the data is successfully loaded, a summary of the dataset is displayed on the home page.
+The summary include:
+
+ * The total number of samples in the dataset
+ * The number of groups found in the metadata
+ * The total number of sequences across all samples
+ * The sequence number overview illustrates the distribution of sample sizes within the dataset, with each sample's size quantified by its sequence count
+ * The count distribution showing the clone count distribution for each sample within the dataset
+
+The package offers various statistical metrics and visualization methods, allowing a complete data exploration as well as cross-sample comparisons to answer defined biological questions. A detailed description of each of AnalyzAIRR's functionalities can be found in the different sections of this documentation.

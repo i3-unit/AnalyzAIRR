@@ -109,7 +109,7 @@ plotVenn(x = RepSeqData,
 <figcaption align = "center"><em class="special">Figure 6: Venn diagram representing the number of shared aaClones between the nTreg samples.</em></figcaption>
 <br>
 
-## Correlation between a pair of samples
+## Correlation between pairs of samples
 
   The correlation between a pair of repertoires can be calculated using the `plotScatter()` function by simply specifying a two or more `sampleNames` to compare.
 

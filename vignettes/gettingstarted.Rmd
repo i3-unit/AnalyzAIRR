@@ -1,5 +1,5 @@
 ---
-title: "Getting started"
+title: "Installation"
 ---
 
 
@@ -12,8 +12,7 @@ knitr::opts_chunk$set(
 
 ```
 
-# Installation
-## Devtools
+# Devtools
 The latest release of **AnalyzAIRR** can be installed from Github using **devtools**:
 ```{r github1, echo = TRUE, eval = FALSE}
 install.packages("devtools")  
@@ -25,7 +24,7 @@ Load the **AnalyzAIRR** package
 library(AnalyzAIRR)
 ```
 
-## Docker
+# Docker
 A Docker image of the AnalyzAIRR tool encapsulating its dependencies, and required run environments is available on docker hub at vanessajmh/analyzairr.
 
 To install the latest version, the following command line can be used:
@@ -39,16 +38,6 @@ Images are versioned using tags. To install a specific version,  the following c
 docker pull vanessajmh/analyzairr:v1.0.0
 
 ```
-
-
-# Quick start
-
-Details on supported data formats and the data loading process can be found [here](https://vanessajmh.github.io/AnalyzAIRR.github.io)
-
-# Shiny interface
-
-A Shiny web application was developed for **AnalyzAIRR** making it user-friendly for biologists with little or no background in bioinformatics.
-The application can be either download from the [Github repository](https://github.com/vanessajmh/Shiny-AnalyzAIRR.git) or used directly at this [link](https://analyzairr.shinyapps.io/shiny-analyzairr/)
 
 
 

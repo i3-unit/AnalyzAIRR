@@ -2,15 +2,6 @@
 title: "Data loading"
 ---
 
-```{r, include = FALSE, eval=TRUE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
-'%>%' <-  kableExtra::'%>%'
-
-```
-
 ```{r load library, echo=F, eval=T, warning=F, message=F}
 library(AnalyzAIRR)
 ```
@@ -254,7 +245,6 @@ In addition, `oData` contains a list of colors attributed for each group in the 
 ```{r col,  echo = T, eval=T}
 oData(RepSeqData)$label_colors
 ```
-
 
 
 - **History**: a data frame registering all operations performed on the RepSeqExperiment object, such as the filtering and the down-sampling.
