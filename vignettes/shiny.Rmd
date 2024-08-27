@@ -83,7 +83,7 @@ The chain type to be analyzed is to be chosen. Users can choose only **one** of 
    
 When all files are loaded, Shiny-AnalyZAIRR automatically creates and loads the **RepSeqExperiment** object. This object is used as input in all of the functions. For more details on the the **RepSeqExperiment** object structure, visit [this page](dataloading.html). An example data is included to illustrate the functionalities of the package.
 
-## Getting started
+# Getting started
 
 Once the data is successfully loaded, a summary of the dataset is displayed on the home page.
 The summary include:
