@@ -72,10 +72,10 @@ RepSeqData_drop <- dropSamples(x = RepSeqData,
 
 ### Based on sequence sharing
 
-  `getPublic()` allows to subset a RepSeqExperiment object in order to extract sequences that are either shared by:
+`getPublic()` allows to subset a RepSeqExperiment object in order to extract sequences that are either shared by:
 
-    + samples belonging to a specified group
-    + samples within the whole dataset if the `group` parameter is not specified.
+  + samples belonging to a specified group
+  + samples within the whole dataset if the `group` parameter is not specified.
   <br>
 
 The sharing threshold is set to 50% of the selected samples.
