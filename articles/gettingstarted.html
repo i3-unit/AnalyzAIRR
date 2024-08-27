@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Getting started • AnalyzAIRR</title>
+<title>Installation • AnalyzAIRR</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
@@ -16,7 +16,7 @@
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Getting started">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Installation">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -47,12 +47,15 @@
     <li><a class="dropdown-item" href="../articles/datamanipulation.html">Data filtering</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Comprehensive data exploration</h6></li>
-    <li><a class="dropdown-item" href="../articles/exploratory.html">Exploratory Analysis</a></li>
+    <li><a class="dropdown-item" href="../articles/exploratory.html">Exploratory analysis</a></li>
     <li><a class="dropdown-item" href="../articles/onesample.html">One-sample analysis</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>In-depth cross-sample comparison</h6></li>
     <li><a class="dropdown-item" href="../articles/datanormalization.html">Data normalization</a></li>
     <li><a class="dropdown-item" href="../articles/multisample.html">Multi-sample analysis</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Interactive AIRR data analysis</h6></li>
+    <li><a class="dropdown-item" href="../articles/shiny.html">Shiny-AnalyzAIRR</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
@@ -74,7 +77,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.png" class="logo" alt=""><h1>Getting started</h1>
+      <img src="../logo.png" class="logo" alt=""><h1>Installation</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/i3-unit/AnalyzAIRR/blob/master/vignettes/gettingstarted.Rmd" class="external-link"><code>vignettes/gettingstarted.Rmd</code></a></small>
@@ -84,11 +87,8 @@
     
     
 <div class="section level2">
-<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+<h2 id="devtools">Devtools<a class="anchor" aria-label="anchor" href="#devtools"></a>
 </h2>
-<div class="section level3">
-<h3 id="devtools">Devtools<a class="anchor" aria-label="anchor" href="#devtools"></a>
-</h3>
 <p>The latest release of <strong>AnalyzAIRR</strong> can be installed
 from Github using <strong>devtools</strong>:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
@@ -98,9 +98,9 @@ from Github using <strong>devtools</strong>:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/i3-unit/AnalyzAIRR" class="external-link">AnalyzAIRR</a></span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level3">
-<h3 id="docker">Docker<a class="anchor" aria-label="anchor" href="#docker"></a>
-</h3>
+<div class="section level2">
+<h2 id="docker">Docker<a class="anchor" aria-label="anchor" href="#docker"></a>
+</h2>
 <p>A Docker image of the AnalyzAIRR tool encapsulating its dependencies,
 and required run environments is available on docker hub at
 vanessajmh/analyzairr.</p>
@@ -110,21 +110,6 @@ used:</p>
 <p>Images are versioned using tags. To install a specific version, the
 following command line can be used:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="ex">docker</span> pull vanessajmh/analyzairr:v1.0.0</span></code></pre></div>
-</div>
-</div>
-<div class="section level2">
-<h2 id="quick-start">Quick start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
-</h2>
-<p>Details on supported data formats and the data loading process can be
-found <a href="https://vanessajmh.github.io/AnalyzAIRR.github.io" class="external-link">here</a></p>
-</div>
-<div class="section level2">
-<h2 id="shiny-interface">Shiny interface<a class="anchor" aria-label="anchor" href="#shiny-interface"></a>
-</h2>
-<p>A Shiny web application was developed for <strong>AnalyzAIRR</strong>
-making it user-friendly for biologists with little or no background in
-bioinformatics. The application can be either download from the <a href="https://github.com/vanessajmh/Shiny-AnalyzAIRR.git" class="external-link">Github
-repository</a> or used directly at this <a href="https://analyzairr.shinyapps.io/shiny-analyzairr/" class="external-link">link</a></p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

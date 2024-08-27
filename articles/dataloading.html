@@ -47,12 +47,15 @@
     <li><a class="dropdown-item" href="../articles/datamanipulation.html">Data filtering</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Comprehensive data exploration</h6></li>
-    <li><a class="dropdown-item" href="../articles/exploratory.html">Exploratory Analysis</a></li>
+    <li><a class="dropdown-item" href="../articles/exploratory.html">Exploratory analysis</a></li>
     <li><a class="dropdown-item" href="../articles/onesample.html">One-sample analysis</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>In-depth cross-sample comparison</h6></li>
     <li><a class="dropdown-item" href="../articles/datanormalization.html">Data normalization</a></li>
     <li><a class="dropdown-item" href="../articles/multisample.html">Multi-sample analysis</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Interactive AIRR data analysis</h6></li>
+    <li><a class="dropdown-item" href="../articles/shiny.html">Shiny-AnalyzAIRR</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
@@ -322,20 +325,20 @@ have been stored in this slot and can be viewed as followed.</p>
 <p>In addition, <code>oData</code> contains a list of colors attributed
 for each group in the metadata file</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/RepSeqExperiment-class.html">oData</a></span><span class="op">(</span><span class="va">RepSeqData</span><span class="op">)</span><span class="op">$</span><span class="va">label_colors</span></span>
-<span><span class="co">#&gt; $sample_id</span></span>
-<span><span class="co">#&gt;  tripod-30-813  tripod-30-815  tripod-31-846  tripod-31-848  tripod-35-970 </span></span>
-<span><span class="co">#&gt;      "#7FC97F"      "#BEAED4"      "#FDC086"      "#FFFF99"      "#386CB0" </span></span>
-<span><span class="co">#&gt;  tripod-35-972 tripod-36-1003 tripod-36-1005 </span></span>
-<span><span class="co">#&gt;      "#F0027F"      "#BF5B17"      "#666666" </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $cell_subset</span></span>
-<span><span class="co">#&gt;    amTreg     nTreg </span></span>
-<span><span class="co">#&gt; "#7FC97F" "#BEAED4" </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $sex</span></span>
-<span><span class="co">#&gt;         F         M </span></span>
-<span><span class="co">#&gt; "#FDC086" "#FFFF99"</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/RepSeqExperiment-class.html">oData</a></span><span class="op">(</span><span class="va">RepSeqData</span><span class="op">)</span><span class="op">$</span><span class="va">label_colors</span></span></code></pre></div>
+<pre><code><span><span class="co">## $sample_id</span></span>
+<span><span class="co">##  tripod-30-813  tripod-30-815  tripod-31-846  tripod-31-848  tripod-35-970 </span></span>
+<span><span class="co">##      "#7FC97F"      "#BEAED4"      "#FDC086"      "#FFFF99"      "#386CB0" </span></span>
+<span><span class="co">##  tripod-35-972 tripod-36-1003 tripod-36-1005 </span></span>
+<span><span class="co">##      "#F0027F"      "#BF5B17"      "#666666" </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## $cell_subset</span></span>
+<span><span class="co">##    amTreg     nTreg </span></span>
+<span><span class="co">## "#7FC97F" "#BEAED4" </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## $sex</span></span>
+<span><span class="co">##         F         M </span></span>
+<span><span class="co">## "#FDC086" "#FFFF99"</span></span></code></pre>
 <ul>
 <li>
 <strong>History</strong>: a data frame registering all operations
@@ -344,7 +347,7 @@ down-sampling.</li>
 </ul>
 <p>This slot can be extracted using the <code><a href="../reference/RepSeqExperiment-class.html">History()</a></code>
 function.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/RepSeqExperiment-class.html">History</a></span><span class="op">(</span><span class="va">RepSeqData</span><span class="op">)</span></span></code></pre></div>
 <div class="reactable html-widget html-fill-item" id="htmlwidget-febe03efa1a2d8d52a86" style="width:auto;height:auto;"></div>
 <script type="application/json" data-for="htmlwidget-febe03efa1a2d8d52a86">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"history":["data directory=./extdata/MiAIRR","readAIRRSet; cores=2; fileFormat=MiAIRR; chain=TRA; ambiguous FALSE; unprod FALSE; filter.singletons FALSE; aa threshold=8; raretab FALSE"]},"columns":[{"id":"history","name":"history","type":"character","headerStyle":{"background":"#f7f7f8"}}],"bordered":true,"dataKey":"e06405b20f95913554c0abb0fe79877c"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
@@ -356,7 +359,7 @@ function.</p>
 objects encompassing different datasets. As such, a same
 <strong>sample_id</strong> cannot be in both datasets and should be
 renamed before using this function.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">l</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="st">'extdata/MiAIRR'</span><span class="op">)</span>,</span>
 <span>                     package <span class="op">=</span> <span class="st">'AnalyzAIRR'</span><span class="op">)</span>,</span>
 <span>                     full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -367,27 +370,27 @@ renamed before using this function.</p>
 <span>                       chain <span class="op">=</span> <span class="st">"TRA"</span>,</span>
 <span>                       sampleinfo <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>                       filter.singletons <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>                       outFiltered <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Running on 1 cores...</span></span>
-<span><span class="co">#&gt; Loading and filtering sequences...</span></span>
-<span><span class="co">#&gt; Assembling sequences...</span></span>
-<span><span class="co">#&gt; Creating a RepSeqExperiment object...</span></span>
-<span><span class="co">#&gt; Done.</span></span>
-<span></span>
-<span><span class="va">dataset2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/readAIRRSet.html">readAIRRSet</a></span><span class="op">(</span>fileList <span class="op">=</span> <span class="va">l</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span><span class="op">:</span><span class="fl">8</span><span class="op">)</span><span class="op">]</span>,</span>
+<span>                       outFiltered <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Running on 1 cores...</span></span>
+<span><span class="co">## Loading and filtering sequences...</span></span>
+<span><span class="co">## Assembling sequences...</span></span>
+<span><span class="co">## Creating a RepSeqExperiment object...</span></span>
+<span><span class="co">## Done.</span></span></code></pre>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dataset2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/readAIRRSet.html">readAIRRSet</a></span><span class="op">(</span>fileList <span class="op">=</span> <span class="va">l</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span><span class="op">:</span><span class="fl">8</span><span class="op">)</span><span class="op">]</span>,</span>
 <span>                       cores <span class="op">=</span> <span class="fl">1L</span>,</span>
 <span>                       fileFormat <span class="op">=</span> <span class="st">"MiAIRR"</span>,</span>
 <span>                       chain <span class="op">=</span> <span class="st">"TRA"</span>,</span>
 <span>                       sampleinfo <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>                       filter.singletons <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>                       outFiltered <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Running on 1 cores...</span></span>
-<span><span class="co">#&gt; Loading and filtering sequences...</span></span>
-<span><span class="co">#&gt; Assembling sequences...</span></span>
-<span><span class="co">#&gt; Creating a RepSeqExperiment object...</span></span>
-<span><span class="co">#&gt; Done.</span></span>
-<span></span>
-<span><span class="va">dataset</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mergeRepSeq.html">mergeRepSeq</a></span><span class="op">(</span>a <span class="op">=</span> <span class="va">dataset1</span>, b <span class="op">=</span> <span class="va">dataset2</span><span class="op">)</span></span></code></pre></div>
+<span>                       outFiltered <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Running on 1 cores...</span></span>
+<span><span class="co">## Loading and filtering sequences...</span></span>
+<span><span class="co">## Assembling sequences...</span></span>
+<span><span class="co">## Creating a RepSeqExperiment object...</span></span>
+<span><span class="co">## Done.</span></span></code></pre>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dataset</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mergeRepSeq.html">mergeRepSeq</a></span><span class="op">(</span>a <span class="op">=</span> <span class="va">dataset1</span>, b <span class="op">=</span> <span class="va">dataset2</span><span class="op">)</span></span></code></pre></div>
 <div class="reactable html-widget html-fill-item" id="htmlwidget-1fb4450895fe099f74a1" style="width:auto;height:auto;"></div>
 <script type="application/json" data-for="htmlwidget-1fb4450895fe099f74a1">{"x":{"tag":{"name":"Reactable","attribs":{"data":{".rownames":["tripod-30-813","tripod-30-815","tripod-31-846","tripod-31-848","tripod-35-970","tripod-35-972","tripod-36-1003","tripod-36-1005"],"sample_id":["tripod-30-813","tripod-30-815","tripod-31-846","tripod-31-848","tripod-35-970","tripod-35-972","tripod-36-1003","tripod-36-1005"],"nSequences":[386417,574542,850465,596086,933370,949481,729348,1134680],"V":[98,99,98,95,95,100,96,99],"J":[43,44,43,43,43,43,43,43],"VJ":[3540,3692,3629,3680,3345,3707,3026,3104],"ntCDR3":[64196,110624,84923,111265,42610,107535,26874,26725],"aaCDR3":[44112,69066,55861,69521,30786,67244,20439,20586],"aaClone":[57686,96819,75054,97398,38664,94095,24999,24756],"ntClone":[64196,110624,84923,111265,42610,107535,26874,26725],"chao1":[80170.8,127396.99,96946.52,129314.9,49665.03,115403.18,30121.45,29430.56],"iChao":[84135.19,131590.18,99898.12,133826.67,50713.99,117363.9,30687.55,29976.98]},"columns":[{"id":".rownames","name":"","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"},"sortable":false,"filterable":false,"rowHeader":true},{"id":"sample_id","name":"sample_id","type":"factor","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"nSequences","name":"nSequences","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"V","name":"V","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"J","name":"J","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"VJ","name":"VJ","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"ntCDR3","name":"ntCDR3","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"aaCDR3","name":"aaCDR3","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"aaClone","name":"aaClone","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"ntClone","name":"ntClone","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"chao1","name":"chao1","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"iChao","name":"iChao","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}}],"bordered":true,"dataKey":"a0dda9d1ddb63495ffdf82d6425a5f0d"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
