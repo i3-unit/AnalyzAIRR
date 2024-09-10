@@ -57,7 +57,7 @@ A **RepSeqExperiment** object generated using the **AnalyzAIRR** R package and s
 ## Uploading alignment data files
 ### File source
 
-Different alignment file formats are supported by the package. More details on AnalyzAIRR-supported input data can be found [here](dataloading.html).
+Different alignment file formats are supported by the package. More details on AnalyzAIRR-supported input data can be found [here](dataloading.html#input-format).
 
 ### Metadata
 
@@ -73,7 +73,7 @@ The metadata should be provided as a table containing:
   
   No specific column names nor order are required.
 
-Additional information on the metadata can be found [here](dataloading.html).
+Additional information on the metadata can be found [here](dataloading.html#metadata).
 
 ### Choice of chain to analyze
 
@@ -82,7 +82,7 @@ The chain type to be analyzed is to be chosen. Users can choose only **one** of 
    - "TRA", "TRB","TRG" or "TRD" for the TCR repertoires
    - "IGH","IGK" or "IGL" for the BCR repertoires
    
-When all files are loaded, Shiny-AnalyZAIRR automatically creates and loads the **RepSeqExperiment** object. This object is used as input in all of the functions. For more details on the the **RepSeqExperiment** object structure, visit [this page](dataloading.html). An example data is included to illustrate the functionalities of the package.
+When all files are loaded, Shiny-AnalyZAIRR automatically creates and loads the **RepSeqExperiment** object. This object is used as input in all of the functions. For more details on the the **RepSeqExperiment** object structure, visit [this page](dataloading.html#the-repseqexperiment-object). An example data is included to illustrate the functionalities of the package.
 
 # Getting started
 

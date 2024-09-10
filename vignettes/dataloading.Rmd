@@ -130,7 +130,6 @@ RepSeqData <- readAIRRSet(fileList = l,
                           filter.singletons = FALSE,
                           aa.th = 8,
                           outFiltered = FALSE,
-                          raretab = FALSE,
                           cores = 1L)
 
 ```
