@@ -26,15 +26,15 @@ navbar:
       - text: Data loading
         href: articles/dataloading.html
       - text: '---'
-      - text: Advanced data manipulation
-      - text: Data filtering
-        href: articles/datamanipulation.html
-      - text: '---'
       - text: Comprehensive data exploration
       - text: Exploratory analysis
         href: articles/exploratory.html
       - text: One-sample analysis
         href: articles/onesample.html
+      - text: '---'
+      - text: Advanced data manipulation
+      - text: Data filtering
+        href: articles/datamanipulation.html
       - text: '---'
       - text: In-depth cross-sample comparison
       - text: Data normalization

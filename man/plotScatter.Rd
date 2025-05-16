@@ -8,7 +8,7 @@ plotScatter(
   x,
   sampleNames = NULL,
   level = c("aaClone", "ntClone", "V", "J", "VJ", "ntCDR3", "aaCDR3"),
-  scale = c("frequency", "count"),
+  scale = c("frequency", "count", "log"),
   shiny = FALSE
 )
 }
@@ -19,7 +19,7 @@ plotScatter(
 
 \item{level}{a character specifying the level of the repertoire to be analyzes. Should be one of "aaClone", "ntClone", "V", "J", "VJ", "ntCDR3" or "aaCDR3".}
 
-\item{scale}{a character specifying whether to plot in "count" or "frequency".}
+\item{scale}{a character specifying whether to plot in "count" , "frequency". or "log'}
 
 \item{shiny}{default is FALSE. whether to plot the shiny compatible version}
 }
@@ -33,11 +33,12 @@ data(RepSeqData)
 plotScatter(x = RepSeqData,
             level = "V",
             sampleNames = c("tripod-30-813", "tripod-30-815", "tripod-31-846"),
-            scale = "count")
+            scale = "log")
             
 plotScatter(x = RepSeqData,
             level = "aaClone",
             sampleNames = c("tripod-30-813", "tripod-30-815"),
             scale = "frequency")
+
 
 }

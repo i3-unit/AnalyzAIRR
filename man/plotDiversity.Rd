@@ -51,7 +51,7 @@ The calculated indices can be one of the following:
 
 data(RepSeqData)
 
-plotDiversity(x = RepSeqData, level = "V", colorBy = "sample_id", 
+plotDiversity(x = RepSeqData, level = "V",  colorBy = "sample_id",
               facetBy="cell_subset", index="shannon")
 
 plotDiversity(x = RepSeqData, level = "ntCDR3", colorBy = "cell_subset", facetBy="sex", 

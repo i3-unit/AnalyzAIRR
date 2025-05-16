@@ -32,11 +32,9 @@ RepSeqExperiment object in all samples or a specified group of samples.
 }
 \examples{
 
-data(RepSeqData)
-
 RepSeqData<- filterSequence(x = RepSeqData,
                             level="aaClone",
-                            name="TRAV11 CVVGDRGSALGRLHF TRAJ18",
-                            group=c("cell_subset","Teff"))
+                            name="TRAV13-2 CAETQSLQRALIGNLQSPISRF TRAJ50",
+                            group=c("cell_subset","nTreg"))
 
 }

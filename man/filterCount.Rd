@@ -40,16 +40,10 @@ a specific experimental group.
 }
 \examples{
 
-data(RepSeqData)
-
 filterdata <- filterCount(x = RepSeqData,
                           n = 1,
-                          level = "aaClone",
-                          group = c("cell_subset", "amTreg"))
+                          level = "aaCDR3",
+                          group = c("sex", "M"))
 
-filterdata <- filterCount(x=RepSeqData,
-                          n = 1,
-                          level = "ntClone",
-                          group = NULL)
 
 }

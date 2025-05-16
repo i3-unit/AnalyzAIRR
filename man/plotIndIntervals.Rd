@@ -8,7 +8,7 @@ plotIndIntervals(
   x,
   sampleName = NULL,
   level = c("aaClone", "ntClone", "ntCDR3", "aaCDR3"),
-  fractions = c("count", "frequency")
+  interval_scale = c("count", "frequency")
 )
 }
 \arguments{
@@ -18,7 +18,7 @@ plotIndIntervals(
 
 \item{level}{a character specifying the level of the repertoire to be taken into account when calculating the clonal distribution. Should be one of "aaClone","ntClone", "ntCDR3" or "aaCDR3".}
 
-\item{fractions}{whether intervals should be determined in count or frequency}
+\item{interval_scale}{whether intervals should be determined in count or frequency}
 }
 \description{
 This function plots two histograms of the clonal distribution per a set of fixed intervals in a given sample.
@@ -33,8 +33,8 @@ data(RepSeqData)
 
 snames <- rownames(mData(RepSeqData))
 
-plotIndIntervals(x = RepSeqData, level="aaCDR3", sampleName = snames[1],  fractions="count")
+plotIndIntervals(x = RepSeqData, level="aaCDR3", sampleName = snames[1],  interval_scale="count")
 
-plotIndIntervals(x = RepSeqData, level="aaClone", sampleName = NULL,  fractions="frequency")
+plotIndIntervals(x = RepSeqData, level="aaClone", sampleName = NULL,  interval_scale="frequency")
 
 }

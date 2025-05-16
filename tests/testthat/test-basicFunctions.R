@@ -1,9 +1,9 @@
-test_that("plotColors works", {
+testthat::test_that("plotColors works", {
   colors <- AnalyzAIRR::plotColors(x = RepSeqData)
   expect_equal(any(is.na(colors)), FALSE)
 })
 
-test_that("countFeatures works", {
+testthat::test_that("countFeatures works", {
 level_statistics <- AnalyzAIRR::countFeatures(x = RepSeqData,
                                   level = "J",
                                   group=c("sex", "F"),

@@ -17,7 +17,9 @@ plotGeneUsage(
 \arguments{
 \item{x}{an object of class  \code{\linkS4class{RepSeqExperiment}}}
 
-\item{level}{a character specifying the level of the repertoire to be taken into account when calculating the gene usages. Should be one of "aaClone" or "ntClone".}
+\item{level}{a character specifying the level of the repertoire to be taken 
+into account when calculating the gene usages. Should be one of "aaClone" or 
+"ntClone".}
 
 \item{scale}{a character specifying whether to plot the gene usage in "count" or "frequency".}
 
@@ -36,8 +38,16 @@ This function compares the V or J gene usages between given groups.
 
 data(RepSeqData)
 
-plotGeneUsage(x = RepSeqData, level = "J", scale = "count", colorBy = "cell_subset", show_stats=TRUE )
+plotGeneUsage(x = RepSeqData, 
+              level = "J", 
+              scale = "count", 
+              colorBy = "cell_subset", 
+              show_stats=TRUE )
 
-plotGeneUsage(x = RepSeqData, level = "V", scale = "count", colorBy = "cell_subset", facetBy="sex")
+plotGeneUsage(x = RepSeqData,
+             level = "V", 
+             scale = "frequency",
+             colorBy = "cell_subset", 
+             facetBy="sex")
 
 }

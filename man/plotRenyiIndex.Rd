@@ -8,6 +8,7 @@ plotRenyiIndex(
   x,
   alpha = c(0, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, Inf),
   level = c("aaClone", "ntClone", "V", "J", "VJ", "ntCDR3", "aaCDR3"),
+  Hill = FALSE,
   colorBy = NULL,
   facetBy = NULL,
   grouped = FALSE,
@@ -21,6 +22,8 @@ plotRenyiIndex(
 
 \item{level}{a character specifying the level of the repertoire to be taken into account when calculating VJ usages. Should be one of "aaClone","ntClone", "V", "J", "VJ", "ntCDR3" or "aaCDR3".}
 
+\item{Hill}{a boolean if TRUE the Hill's index is computed.}
+
 \item{colorBy}{a character indicating a column name in mData. Colors are thus attributed to the different groups within this column. The chosen column must be of class factor.}
 
 \item{facetBy}{a vector of character indicating one or two column names in mData to apply a facet on.}
@@ -30,27 +33,52 @@ plotRenyiIndex(
 \item{label_colors}{a list of colors for each variable in ColorBy. See \code{\link{plotColors}}. If NULL, default colors are used.}
 }
 \description{
-This function plots the Renyi values at any repertoire level for all the samples in the dataset.
-The alpha values for which the Renyi is to be estimated can be personalized, thus allowing to focus on certain indices such as the Shannon index for alpha=1 or the Simpson index for alpha=2.
-For instance, the most frequent sequence is attributed a rank of 1, and its relative abundance is plotted on the y-axis.
+This function plots the Renyi Entropy or Hill Diversity at any repertoire level for all the samples in the dataset.
+The alpha parameters can be personalized, thus allowing to focus on certain indices such as the Shannon index for alpha=1 or the Simpson index for alpha=2.
 }
 \details{
-The Renyi index is a generalization of the Shannon index. It represents the distribution of clonal expansions
-as a function of the parameter alpha. At alpha=0, it equally considers all species including the rare ones,
-whereas it up-weighs the abundant species with an increasing value of alpha. Alpha =1 is an approximation of the Shannon index; 
-alpha = 2 corresponds to the Simpson index and alpha=Inf corresponds to the Berger-Parker index. The latter highlights the highest clonal expansion in a repertoire.
+Hill diversity uses a parameter q to adjust how species are count. 
+If q=0, it just counts the number of species (species richness). If q=1, 
+it gives equal weight to all species, balancing rare and common ones. If q=2, 
+it focuses more on the most common species.
+Rényi diversity is a generalization of the Shannon index. It also uses a parameter 
+alpha that works similarly. When alpha is small, it gives more weight to rare 
+species. When alpha is large, it focuses more on the dominant species. Alpha =1 
+is an approximation of the Shannon index; alpha = 2 corresponds to the Simpson
+index and alpha=Inf corresponds to the Berger-Parker index.
+The main difference is that Hill diversity is designed to give “effective
+species numbers” i.e. how many equally abundant species would give the same
+diversity, while Rényi diversity is based on entropy and doesn't directly
+translate to species counts. Both are useful for exploring how diversity
+changes depending on whether you care more about rare or common species.
 }
 \examples{
 
 data(RepSeqData)
 
-plotRenyiIndex(x = RepSeqData,  alpha = c(0,  1, 2, 8, 16, 32, 64), level = "V", colorBy = "sex")
+plotRenyiIndex(x = RepSeqData, 
+               alpha = c(0,  1, 2, 8, 16, 32, 64), 
+               level = "V", 
+               colorBy = "sex")
 
-plotRenyiIndex(x = RepSeqData,  alpha = c(0,  1, 2, 8, 16, 32, 64), level = "V", colorBy = "sample_id")
+plotRenyiIndex(x = RepSeqData, 
+                 alpha = c(0,  1, 2, 8, 16, 32, 64), 
+                 level = "V",
+                  colorBy = "sample_id")
 
-plotRenyiIndex(x = RepSeqData, level = "J", colorBy = "cell_subset", grouped=TRUE)
+plotRenyiIndex(x = RepSeqData, 
+                level = "J",
+                 colorBy = "cell_subset", 
+                 grouped=TRUE)
 
-plotRenyiIndex(x = RepSeqData, level = "J", colorBy = "sex", facetBy= "cell_subset", grouped=TRUE)
+plotRenyiIndex(x = RepSeqData,
+              level = "J",
+               colorBy = "sex", 
+               facetBy= "cell_subset", 
+               grouped=TRUE, Hill=TRUE)
 
-plotRenyiIndex(x = RepSeqData, level = "J", colorBy = "sample_id", grouped=FALSE)
+plotRenyiIndex(x = RepSeqData, 
+              level = "J", 
+              colorBy = "sample_id", 
+              grouped=FALSE)
 }

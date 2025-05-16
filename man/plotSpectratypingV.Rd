@@ -28,8 +28,6 @@ This function plots a histogram of the CDR3 length distribution per V gene in a 
 }
 \examples{
 
-data(RepSeqData)
-
 snames <- rownames(mData(RepSeqData))
 
 plotSpectratypingV(x = RepSeqData, sampleName = snames[1], scale = "count", prop=0.05)

@@ -1,5 +1,10 @@
 ---
 title: "Normalization"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Normalization}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 
@@ -39,7 +44,6 @@ p1<- plotStatistics(x = RepSeqData, stat = "nSequences", colorBy = "sample_id")+
 p2<- plotStatistics(x = RepSeqData, stat = "aaClone", colorBy = "sample_id")+margin_r
 
 gridExtra::grid.arrange(gridExtra::arrangeGrob(p1,p2, top = grid::textGrob("Pre-downsampling", x = .55)), gridExtra::arrangeGrob(p3,p4, top = grid::textGrob("Post-downsampling", x = .62)),ncol=2)
-
 
 ```
 <figcaption align = "center"><em class="special">Figure 1: Summary plots showing the effect of downsampling curves plotting the number of sequences and aaClones in each sample</em></figcaption>

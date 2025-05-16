@@ -24,11 +24,8 @@ nucleotides in the ntCDR3 column
 }
 \examples{
 
-\donttest{
 data(RepSeqData)
 
 unproductiveData <- getUnproductive(x = RepSeqData)
-
-}
 
 }

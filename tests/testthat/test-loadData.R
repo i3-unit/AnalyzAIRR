@@ -1,4 +1,4 @@
-test_that("multiplication works", {
+testthat::test_that("multiplication works", {
   l <-   list.files(system.file(file.path('extdata/MiAIRR'),
                                  package = 'AnalyzAIRR'),
                                  full.names = TRUE)
@@ -16,7 +16,6 @@ test_that("multiplication works", {
                          filter.singletons = TRUE,
                          aa.th=9,
                          outFiltered = FALSE,
-                         raretab = FALSE,
                          cores=1L)
   expect_equal(is.RepSeqExperiment(dataset), TRUE)
 })

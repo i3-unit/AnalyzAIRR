@@ -19,7 +19,6 @@ calculate the improved Chao1 index
 function computes the improved version of Chao1 (Chao and Lin, 2012)
 }
 \examples{
-set.seed(1234)
 x <- rbinom(20, 5, 0.5)
 iChao(x)
 }

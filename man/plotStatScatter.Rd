@@ -62,5 +62,5 @@ data(RepSeqData)
 plotStatScatter(x = RepSeqData, stat1 = "nSequences", stat2 = "aaClone", colorBy = "sample_id")
 
 plotStatScatter(x = RepSeqData, stat1 = "ntClone", stat2 = "aaClone", colorBy = "cell_subset")
-
+plotStatScatter(x = RepSeqData, stat1 = "chao1", stat2 = "aaClone", colorBy = "cell_subset")
 }

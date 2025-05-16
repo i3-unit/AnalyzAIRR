@@ -50,8 +50,7 @@ dataset <- readAIRR(path = l[1],
                           chain = "TRA",
                           keep.ambiguous = FALSE,
                           keep.unproductive = FALSE,
-                         outFiltered = FALSE,
-                          aa.th = NULL)
+                         outFiltered = FALSE)
 
 }
 \keyword{internal}

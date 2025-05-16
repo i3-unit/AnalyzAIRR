@@ -1,5 +1,10 @@
 ---
 title: "Data manipulation"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Data manipulation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 
@@ -11,7 +16,7 @@ knitr::opts_chunk$set(
 '%>%' <-  kableExtra::'%>%'
 
 ```
-```{r load library, echo=F, eval=T, warning=F, message=F}
+```{r load library, echo=FALSE, eval=TRUE, warning=FALSE, message=FALSE}
 library(AnalyzAIRR)
 ```
 
@@ -80,7 +85,7 @@ RepSeqData_drop <- dropSamples(x = RepSeqData,
 
 The sharing threshold is set to 50% of the selected samples.
 
-```{r getoverlaps,  echo = T, eval=F}
+```{r getoverlaps,  echo = TRUE, eval=FALSE}
 # Get clones present in at least 50% of the samples belonging to the amTreg group
 RepSeqData_public <- getPublic(x = RepSeqData, 
                                 level = "aaClone", 

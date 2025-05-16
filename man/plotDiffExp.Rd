@@ -31,17 +31,11 @@ This function plots differentially expressed repertoire levels calculated using 
 }
 \examples{
 
-data(RepSeqData)
-
 plotDiffExp(x = RepSeqData,
             level = "V",
             group = c("cell_subset", "amTreg", "nTreg"),
             top = 10,
             FC.TH = 1,
             PV.TH = 0.05)
-
-plotDiffExp(x = RepSeqData,
-            level = "V",
-            group = c("cell_subset", "amTreg", "nTreg"))
             
 }

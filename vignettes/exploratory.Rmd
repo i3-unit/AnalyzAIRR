@@ -1,5 +1,11 @@
 ---
 title: "Data exploration"
+vignette: >
+  %\VignetteIndexEntry{Data exploration}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+resource_files:
+  - exploratory_files/figure-html/*.png
 ---
 
 
@@ -16,6 +22,10 @@ knitr::opts_chunk$set(
 library(AnalyzAIRR)
 ```
 
+```{r}
+data("RepSeqData")
+print(colnames(RepSeqData@metaData))
+```
 
 **AnalyzAIRR** proposes a series of metrics that can be performed on each sample within the dataset, enabling its exploratory description. This process can facilitate the detection of potential outliers or contaminants within the data. 
 
@@ -67,7 +77,7 @@ reactable::reactable(head(countFeatures(RepSeqData, level="J", scale="frequency"
 
 ## Rarefaction analysis
 
-To evaluate the clonotype richness and the sequencing depth of a sample, a rarefaction curve can be plotted, which illustrates the relationship between the number of sequences randomly selected from the sample and the number of clones they represent. A plateau in the curve suggests that sampling is yielding few or no new species, and that the observed clonotype richness is approaching the true richness in the sequenced sample. In contrast, a steep ascending curve indicates that additional sequencing may still yield new clones.
+To evaluate the clonal richness and the sequencing depth of a sample, a rarefaction curve can be plotted, which illustrates the relationship between the number of sequences randomly selected from the sample and the number of clones they represent. A plateau in the curve suggests that sampling is yielding few or no new species, and that the observed clonal richness is approaching the true richness in the sequenced sample. In contrast, a steep ascending curve indicates that additional sequencing may still yield new clones.
   
   Rarefaction curves can be plotted using `plotRarefaction()`. The `colorBy` parameter is used to assign colors to the curves based on any group column from the **metaData** slot, and `facetBy` to separate the samples based on a different set of group columns.
 ```{r plot rarefaction, echo=T, fig.width=8,fig.height=4, fig.align="center"}
@@ -79,15 +89,17 @@ plotRarefaction(x = RepSeqData,
 
 ## Richness estimation
 
-To calculate the number of clones that are not observed in the sample, the Chao index can be used, which estimates the total clone richness of a sample including clones that are likely present but unseen or undetected. 
-Together, the Chao1 index and rarefaction curves serve complementary roles. Rarefaction curves assess the sufficiency of sampling effort and provide a visual representation of species accumulation, while the Chao1 index estimates the total species richness by considering rare species.
+To calculate the number of clones that are not observed in the sample, the Chao index can be used. The Chao index is a statistical estimator used to predict species richness by accounting for rare species. It can be applied in AIRR studies to address the limitation of undercounting species due to low sampling/sequencing depth.
+
+Explicitly, it predicts the total clone richness in a sample, including those that are present but not observed due to sampling limitations. 
+The Chao1 index and rarefaction curves serve complementary roles: rarefaction curves assess the sufficiency of sampling effort and visually represent the accumulation of observed richness as sampling increases, while the Chao1 index provides a statistical estimate of the total richness by accounting for rare, unobserved clones.
 
 The Chao index, which values are available in the **metaData** slot, can be plotted using the `plotStatScatter()` function. This function plots the values of two statistics along two axes, showing the relationship between them. Chao values can thus be plotted against the number of observed ntClones for instance, to evaluate the difference in the number of observed and unseen clones. 
 
 ```{r plot plotStatScatter,  echo=T, fig.width=6,fig.height=4, fig.align="center"}
-plotStatScatter(x = RepSeqData, 
-                stat1 = "chao1", 
-                stat2 = "ntClone", 
+plotStatScatter(x = RepSeqData,
+                stat1 = "chao1",
+                stat2 = "aaClone",
                 colorBy = "sample_id")
 ```
 <figcaption align = "center"><em class="special">Figure 4: The Chao1 richness estimation is plotted as a function of the observed number of ntClones in each sample. The diagonal dashed line represents the reference line.</em></figcaption>
@@ -139,39 +151,42 @@ plotDiversity(x = RepSeqData,
 <figcaption align = "center"><em class="special">Figure 4: A barplot showing the Shannon values calculated at the ntClone level within each sample.</em></figcaption>
 <br>
 
-## Renyi diversity
+## Generalized diversity
 
-   The Renyi index is a generalization of the Shannon entropy. 
+  Rényi and Hill diversity are families of diversity indices used to quantify diversity by capturing both species richness (the number of species) and evenness (how evenly individuals are distributed among species).
   
-  It represents the distribution of clonal expansions as a function of the parameter alpha. It equally considers all species including the rare ones at alpha=0, and up-weighs the abundant species with an increasing value of alpha. Alpha =1 is an approximation of the Shannon index; alpha = 2 corresponds to the Simpson index and alpha=Inf corresponds to the Berger-Parker index. The latter highlights the highest clonal expansion in a repertoire.
+  Rényi diversity (or Rényi entropy) is a generalization of several classic diversity measures, introducing a parameter alpha that allows the index to emphasize different aspects of diversity. By varying this parameter, Rényi diversity can represent different indices: at 1, it corresponds to the Shannon index, and at 2, to the logarithm of the inverse Simpson index. Rényi diversity profiles are useful for comparing the diversity and evenness of different communities across a range of scales.
+  
+  Hill diversity (Hill numbers or true diversity) transforms classic diversity measures into the effective number of equally abundant species, making interpretation intuitive. Orders 0, 1, and 2 correspond to species richness, the exponential of Shannon entropy, and the inverse Simpson index, respectively. A key advantage of Hill numbers is the doubling property: when combining two completely distinct, equally diverse communities, the overall diversity doubles. This replication principle aligns with intuitive expectations and is not shared by most traditional indices.
 
-
-   Renyi values can be computed at any repertoire level using `renyiIndex()`.
-By default, it is assessed for the following alpha values: $$\alpha \in {0, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, Inf}$$
+   Rényi and Hill diversity values can be computed at any repertoire level using `generalizedDiversity()`.
+By default, it is calculated for the following alpha values: $$\alpha \in {0, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, Inf}$$ but any set of values can be given to the `alpha` parameter.
 
 ```{r renyi, echo = TRUE, eval=F}
-renyiIndex(x = RepSeqData, 
-           level = "aaClone")
+generalizedDiversity(x = RepSeqData, 
+                     Hill = FALSE, 
+                     level = "aaClone")
 
 ```
 
 ```{r view renyi, echo = F, verbose=FALSE}
-rn<- renyiIndex(x = RepSeqData, 
+rn<- generalizedDiversity(x = RepSeqData,  Hill = FALSE, 
                 level = "aaClone")
 reactable::reactable(rn,  bordered = TRUE,  fullWidth = TRUE,  pagination=FALSE,
           defaultColDef = reactable::colDef(vAlign = "center",  align = "center", minWidth=150,
                                  headerStyle = list(background = "#f7f7f8")))
 ```
 
-  Renyi's entropy values can be plotted using `plotRenyiIndex()`. A curve for each sample is plotted and colors are attributed based on the `colorBy` parameter. 
+  Rényi and Hill diversity values can be plotted using `plotGenDiversity()` with the `Hill` parameter set to FALSE or TRUE, respectively. A curve for each sample is plotted and colors are attributed based on the `colorBy` parameter. 
 
 ```{r plot renyi, echo = TRUE, fig.width=8, fig.height = 4,fig.align="center"}
-plotRenyiIndex(x = RepSeqData, 
-               level = "aaClone", 
-               colorBy = "sample_id", 
-               facetBy = c("cell_subset", "sex"))
+plotGenDiversity(x = RepSeqData,
+                 Hill=TRUE,
+                 level = "aaClone", 
+                 colorBy = "sample_id", 
+                 facetBy = c("cell_subset", "sex"))
 ```
-<figcaption align = "center"><em class="special">Figure 5: The Renyi values were calculated at the J gene level at each pre-defined alpha value and plotted for each sample.</em></figcaption>
+<figcaption align = "center"><em class="special">Figure 5: The Hill numbers were calculated at the J gene level at each pre-defined alpha value and plotted for each sample.</em></figcaption>
 
 # Clonal distribution
 
@@ -187,13 +202,13 @@ plotRenyiIndex(x = RepSeqData,
 ```{r, eval=F}
 Intervals(x = RepSeqData, 
           level="aaCDR3",  
-          fractions="count")
+          interval_scale="count")
 
 ```
 ```{r echo=FALSE}
 int<- Intervals(x = RepSeqData, 
           level="aaCDR3",  
-          fractions="count")
+          interval_scale="count")
 int<- cbind(int[,c(1:2)], apply(int[,-c(1:2)], 2 , round, 2))
 reactable::reactable(int %>% dplyr::filter(sample_id %in% c("tripod-30-813", "tripod-30-815")),  bordered = TRUE,  fullWidth = TRUE,  pagination=FALSE,
                      height=300,
@@ -207,10 +222,21 @@ reactable::reactable(int %>% dplyr::filter(sample_id %in% c("tripod-30-813", "tr
 ```{r intervals, fig.height=6, fig.width=8,fig.align="center"}
 plotIntervals(x = RepSeqData, 
               level = "aaClone", 
-              fractions = "frequency", 
-              facetBy = "cell_subset")
+              interval_scale = "frequency", 
+              facetBy = "cell_subset",
+              calculation_type="distribution")
 ```
-<figcaption align = "center"><em class="special">Figure 6: Stacked bars showing the distribution (upper plot) and the cumulative frequency (lower plot) of clones within each count interval in each sample.</em></figcaption>
+<figcaption align = "center"><em class="special">Figure 6: Stacked bars showing the distribution of clones within each count interval in each sample.</em></figcaption>
+<br>
+
+```{r intervals 2, fig.height=6, fig.width=8,fig.align="center"}
+plotIntervals(x = RepSeqData, 
+              level = "aaClone", 
+              interval_scale = "frequency", 
+              facetBy = "cell_subset",
+              calculation_type="cumulative frequency")
+```
+<figcaption align = "center"><em class="special">Figure 6: Stacked bars showing the cumulative frequency of clones within each count interval in each sample.</em></figcaption>
 <br>
 
 ## Rank

@@ -33,8 +33,6 @@ It offers two types of visualization of the calculated VJ usage in a given sampl
 }
 \examples{
 
-data(RepSeqData)#'
-
 plotVJusage(x = RepSeqData, sampleName = NULL, scale = "count", 
             level="aaClone", prop=0.1, plot="Circos")
 

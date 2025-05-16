@@ -20,7 +20,6 @@ function computes the adjusted Chao1 index for sampling without
 replacement
 }
 \examples{
-set.seed(1234)
 x <- rbinom(20, 5, 0.5)
 chaoWor(x)
 }

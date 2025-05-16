@@ -7,7 +7,7 @@
 Intervals(
   x,
   level = c("aaClone", "ntClone", "ntCDR3", "aaCDR3"),
-  fractions = c("count", "frequency")
+  interval_scale = c("count", "frequency")
 )
 }
 \arguments{
@@ -15,7 +15,7 @@ Intervals(
 
 \item{level}{a character specifying the level of the repertoire to be taken into account when calculating the clonal distribution. Should be one of "aaClone","ntClone", "ntCDR3" or "aaCDR3".}
 
-\item{fractions}{whether intervals should be determined in count or frequency}
+\item{interval_scale}{whether intervals should be determined in count or frequency}
 }
 \description{
 This function calculates the clonal distribution per a set of intervals in all the samples within the dataset. 
@@ -28,6 +28,6 @@ This could allow a global view of the repertoire fraction contributing the most 
 
 data(RepSeqData)
 
-Intervals(x = RepSeqData, level="aaCDR3",  fractions="count")
+Intervals(x = RepSeqData, level="aaCDR3",  interval_scale="count")
 
 }

@@ -30,15 +30,15 @@ It calculates a list of dissimilarity indices, each taking into account differen
  The Jaccard similarity: a measure of similarity between sample sets defined as the size of the intersection divided by the size of the union of the sample sets.
 
  The Morisita-Horn similarity: a measure of similarity that tends to be over-sensitive to abundant species.
-#'
 }
 \details{
-Details on the calculated indices can be found in the vegan package: https://www.rdocumentation.org/packages/vegan/versions/2.4-2/topics/vegdist
+Details on the calculated indices can be found in the vegan package: 
+https://www.rdocumentation.org/packages/vegan/versions/2.4-2/topics/vegdist
 }
 \examples{
 
-data(RepSeqData)
 
-CalcDissimilarity(x = RepSeqData, level = "aaClone", method = "jaccard", )
+CalcDissimilarity(x = RepSeqData, 
+                  level = "V", method = "jaccard" )
 
 }

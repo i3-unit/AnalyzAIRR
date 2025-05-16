@@ -1,7 +1,8 @@
 utils::globalVariables(c("J", ".", "..sNames", "sdata", "metaData", ".SD", 
                         ".SDcols", "key", ".N", "count", "..keep.cols","ntCDR3",
                         "sampleNames", "aaCDR3.length", "aaCDR3", "ntClone",
-                        "pct", "ctrl.mean", "ID","prop", "nSequences", "ranks"))
+                        "pct", "ctrl.mean", "ID","prop", "nSequences", "ranks",
+                        "cumulative_frequency"))
 
 
 #' @title Computing the occurrence of any repertoire level
@@ -47,10 +48,14 @@ countFeatures <- function(x,
   if (missing(x)) stop("x is missing.")
   if (!is.RepSeqExperiment(x)) stop("An object of class RepSeqExperiment 
                                       is expected.")
+  
+  metaData <- mData(x)
+  if(!is.null(group) & nrow(metaData[metaData[, group[1]] == group[2],])==0) stop("The chosen group is not present in the metaData")
+  
   levelChoice <- match.arg(level)
   cts <- data.table::copy(assay(x))
   scl <- match.arg(scale)
-  metaData <- mData(x)
+  
   if (!is.null(group)) {
     grp <- metaData[, group[1]]
     grp.name <- group[2]
@@ -60,7 +65,7 @@ countFeatures <- function(x,
   if (scl == "count"){
     out <- data.table::dcast(cts, as.formula(paste0(levelChoice,"~ sample_id")), value.var="count", fun=sum)
   } else {
-    cts <- cts[, .(count = sum(count)), by=c("sample_id", levelChoice)][, prop := round(count/sum(count),2), by = "sample_id"]
+    cts <- cts[, .(count = sum(count)), by=c("sample_id", levelChoice)][, prop := count/sum(count), by = "sample_id"]
     out <- data.table::dcast(cts, as.formula(paste0(levelChoice, "~sample_id")), value.var = "prop", fill = 0)
   }
     return(out)
@@ -112,26 +117,25 @@ countFeatures <- function(x,
 #' @export
 #' @examples
 #'
-#' data(RepSeqData)
-#'
 #' filterdata <- filterCount(x = RepSeqData,
 #'                           n = 1,
-#'                           level = "aaClone",
-#'                           group = c("cell_subset", "amTreg"))
+#'                           level = "aaCDR3",
+#'                           group = c("sex", "M"))
 #'
-#' filterdata <- filterCount(x=RepSeqData,
-#'                           n = 1,
-#'                           level = "ntClone",
-#'                           group = NULL)
 #'
 filterCount <- function(x, level=c("aaClone","ntClone","aaCDR3","ntCDR3"), n=1, group=NULL) {
     V1 <- NULL
+    chao1 <- NULL
     if (missing(x)) stop("x is missing.")
     if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected.")
     if (!is(n, 'numeric')) stop("n should be an integer")
+    
+    
     levelChoice <- match.arg(level)
     cts <- data.table::copy(assay(x))
     metaData <- mData(x)
+    if(!is.null(group) & nrow(metaData[metaData[, group[1]] == group[2],])==0) stop("The chosen group is not present in the metaData")
+    
 
     if (!is.null(group)) {
       grp <- metaData[, group[1]]
@@ -202,6 +206,7 @@ filterCount <- function(x, level=c("aaClone","ntClone","aaCDR3","ntCDR3"), n=1, 
 #'
 getPrivate <- function(x,  level=c("ntCDR3", "aaCDR3", "ntClone", "aaClone"), singletons=FALSE) {
     V1 <- NULL
+    chao1 <- NULL
     if (missing(x)) stop("x is missing.")
     if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected.")
     cts <- data.table::copy(assay(x))
@@ -271,10 +276,13 @@ getPrivate <- function(x,  level=c("ntCDR3", "aaCDR3", "ntClone", "aaClone"), si
 getPublic <- function(x, level=c("ntCDR3", "aaCDR3", "ntClone", "aaClone"),
                         group = NULL) {
   V1 <- NULL
+  chao1 <- NULL
   if (missing(x)) stop("x is missing.")
   if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected.")
   cts <- data.table::copy(assay(x))
   metaData <- mData(x)
+  if(!is.null(group) & nrow(metaData[metaData[, group[1]] == group[2],])==0) stop("The chosen group is not present in the metaData")
+  
   levelChoice <- match.arg(level)
   if (!is.null(group)){
     grp <- metaData[, group[1]]
@@ -339,6 +347,8 @@ getTopSequences <- function(x, level=c("aaClone","ntClone","aaCDR3","ntCDR3"),
   if (prop>1) stop("prop should be a proportion between 0 and 1")
   cts <- data.table::copy(assay(x))
   sdata <- mData(x)
+  if(!is.null(group) & nrow(sdata[sdata[, group[1]] == group[2],])==0) stop("The chosen group is not present in the metaData")
+  
   levelChoice <- match.arg(level)
   if (!is.null(group)){
     grp <- sdata[, group[1]]
@@ -361,8 +371,9 @@ getTopSequences <- function(x, level=c("aaClone","ntClone","aaCDR3","ntCDR3"),
   sdata <- setDT(sdata)[, c("nSequences" ,"aaClone" , "V" ,"J" ,"VJ","aaCDR3" ) := NULL]
   sdata<- data.frame(sdata,row.names =sdata$sample_id )
   sdata <- data.frame(base::merge(sdata, stats, by = 0, sort=FALSE), row.names = 1, stringsAsFactors = TRUE)
-  sdata <- sdata[match(rownames(sdata), rownames(stats)),]
-
+  # sdata <- sdata[match(rotiwnames(sdata), rownames(stats)),]
+  sdata <- sdata[order(match(sdata$sample_id, rownames(stats))),]
+  
   out <- new("RepSeqExperiment",
              assayData = res,
              metaData = sdata,
@@ -415,33 +426,32 @@ filetype <- function(path) {
 #' @return a  \code{\linkS4class{RepSeqExperiment}} object containing all
 #' information from the two merged objects.
 #' @export
-#' @examples
-#' l <- list.files(system.file(file.path('extdata/MiAIRR'),
-#'                      package = 'AnalyzAIRR'),
-#'                      full.names = TRUE)
-#'
-#' metaData <- read.table(system.file(file.path('extdata/sampledata.txt'),
-#'                          package='AnalyzAIRR'),
-#'                          sep = "\t",
-#'                          row.names = 1, header = TRUE)
-#'
-#' dataset1 <- readAIRRSet(fileList = l[c(1:3)],
-#'                        cores=1L,
-#'                        fileFormat = "MiAIRR",
-#'                        chain = "TRA",
-#'                        sampleinfo = metaData[1:3,],
-#'                        filter.singletons = FALSE,
-#'                        outFiltered = FALSE)
-#'
-#' dataset2 <- readAIRRSet(fileList = l[c(4:8)],
-#'                        cores=1L,
-#'                        fileFormat = "MiAIRR",
-#'                        chain = "TRA",
-#'                        sampleinfo = metaData[4:8,],
-#'                        filter.singletons = FALSE,
-#'                        outFiltered = FALSE)
-#'
-#' dataset <- mergeRepSeq(a = dataset1, b = dataset2)
+# l <- list.files(system.file(file.path('extdata/MiAIRR'),
+#                      package = 'AnalyzAIRR'),
+#                      full.names = TRUE)
+# 
+# metaData <- read.table(system.file(file.path('extdata/sampledata.txt'),
+#                          package='AnalyzAIRR'),
+#                          sep = "\t",
+#                          row.names = 1, header = TRUE)
+# 
+# dataset1 <- readAIRRSet(fileList = l[c(1,5)],
+#                        cores=3,
+#                        fileFormat = "MiAIRR",
+#                        chain = "TRA",
+#                        sampleinfo = metaData[c(1,5),],
+#                        filter.singletons = FALSE,
+#                        outFiltered = FALSE)
+# 
+# dataset2 <- readAIRRSet(fileList = l[7:8],
+#                        cores=3,
+#                        fileFormat = "MiAIRR",
+#                        chain = "TRA",
+#                        sampleinfo = metaData[7:8,],
+#                        filter.singletons = FALSE,
+#                        outFiltered = FALSE)
+# 
+# dataset <- mergeRepSeq(a = dataset1, b = dataset2)
 #'
 #'
 mergeRepSeq <- function(a, b) {
@@ -530,14 +540,14 @@ dropSamples <- function(x, sampleNames) {
 #' @export
 #' @examples
 #'
-#' data(RepSeqData)
-#'
 #' RepSeqData<- filterSequence(x = RepSeqData,
 #'                             level="aaClone",
-#'                             name="TRAV11 CVVGDRGSALGRLHF TRAJ18",
-#'                             group=c("cell_subset","Teff"))
+#'                             name="TRAV13-2 CAETQSLQRALIGNLQSPISRF TRAJ50",
+#'                             group=c("cell_subset","nTreg"))
 #'
-filterSequence <- function(x, level=c("aaClone","ntClone","aaCDR3","ntCDR3"), name, group=NULL) {
+filterSequence <- function(x, level=c("aaClone","ntClone","aaCDR3","ntCDR3"), 
+                           name, 
+                           group=NULL) {
   V1 <- NULL
   if (missing(x)) stop("x is missing.")
   if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected.")
@@ -545,32 +555,36 @@ filterSequence <- function(x, level=c("aaClone","ntClone","aaCDR3","ntCDR3"), na
   levelChoice <- match.arg(level)
   cts <- data.table::copy(assay(x))
   metaData <- mData(x)
-  
+
   if(! name %in% cts[, get(levelChoice)]) stop("a valid sequence must be specified.")
   
   if (!is.null(group)) {
-    grp <- metaData[, group[1]]
-    grp.name <- group[2]
-    sampleNames <- rownames(metaData[grp %in% grp.name, ])
-    keep <- cts[, get(levelChoice) == name, by =  c(levelChoice,"sample_id")]
-    keep <- keep[ V1==FALSE | !sample_id %in% sampleNames,]
-    res <- cts[keep, on = c(levelChoice,"sample_id")][, V1:=NULL]
-    setkey(res, sample_id)
-    filterout<- cts[, get(levelChoice) == name, by =  c(levelChoice,"sample_id")][V1 == TRUE & sample_id %in% sampleNames, ]
+    if(!is.null(group) & nrow(metaData[metaData[, group[1]] == group[2],])==0) stop("The chosen group is not present in the metaData")
+    
+    sampleNames <- rownames(metaData[metaData[, group[1]] == group[2],])
+    # 
+    res <- cts[!(get(levelChoice) == name & sample_id %in% sampleNames)]
+    # keep <- cts[, get(levelChoice) == name, by =  c(levelChoice, "sample_id")]
+    # keep <- keep[ V1==FALSE | !sample_id %in% sampleNames,]
+    # res <- cts[keep, on = c(levelChoice,"sample_id")][, V1:=NULL]
+    # setkey(res, sample_id)
+    filterout<- cts[get(levelChoice) == name & sample_id %in% sampleNames]
   }  else {
-    keep <- cts[, get(levelChoice) == name, by =  c(levelChoice,"sample_id")][V1 == FALSE, ]
-    res <- cts[keep, on = c(levelChoice,"sample_id")][, V1:=NULL]
-    setkey(res, sample_id)
-    filterout<- cts[, get(levelChoice) == name, by =  c(levelChoice,"sample_id")][V1 == TRUE, ]
+    res <- cts[!get(levelChoice) == name]
+    filterout<- cts[get(levelChoice) == name ]
+    # keep <- cts[, get(levelChoice) == name, by =  c(levelChoice,"sample_id")][V1 == FALSE, ]
+    # res <- cts[keep, on = c(levelChoice,"sample_id")][, V1:=NULL]
+    # setkey(res, sample_id)
+    # filterout<- cts[, get(levelChoice) == name, by =  c(levelChoice,"sample_id")][V1 == TRUE, ]
   }
   
   nfilter <- nrow(cts) - nrow(res)
   
   stats <- data.frame(res[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols = c("V", "J", "VJ", "ntCDR3", "aaCDR3", "aaClone","ntClone"), by = "sample_id"], row.names = 1)
-  metaData<- metaData %>%
-    dplyr::select(-c(nSequences,ntCDR3,aaCDR3,V,J,VJ,aaClone,ntClone))
-  sdata <- data.frame(base::merge(metaData, stats, by = 0, sort = FALSE),
-                      row.names=1,  stringsAsFactors = TRUE)
+  
+  sdata <- data.frame(base::merge(metaData %>% dplyr::select(-c(nSequences,ntCDR3,aaCDR3,V,J,VJ,aaClone,ntClone)),
+                                  stats, by = 0, sort = FALSE),
+                               row.names=1,  stringsAsFactors = TRUE)
   sdata <- sdata[order(match(rownames(sdata), rownames(stats))), ]
   
   out <- new("RepSeqExperiment",
@@ -580,9 +594,8 @@ filterSequence <- function(x, level=c("aaClone","ntClone","aaCDR3","ntCDR3"), na
              History = data.frame(rbind(History(x),
                                         data.frame(history = paste(nfilter,levelChoice,"were filtered using filterSequence: name=",name, "group1=",group[1],"and group2=",group[2]))),
                                         stringsAsFactors=FALSE))
-  oData(out) <- c(oData(out), filterSequence=list(  cts[filterout, on = c(levelChoice,"sample_id")][, V1:=NULL]))
-  
-  rm(cts, keep)
+  oData(out) <- c(oData(out), filterSequence=list(filterout))
+
   
   return(out)
 }
@@ -610,6 +623,7 @@ filterSequence <- function(x, level=c("aaClone","ntClone","aaCDR3","ntCDR3"), na
 #'
 getProductive <- function(x) {
   ntCDR3 <- NULL
+  chao1 <- NULL
   metaData <- mData(x)
   if (missing(x)) stop("A RepSeqExperiment object is required.")
   if (!is.RepSeqExperiment(x)) stop("x is not an object of class RepSeqExperiment.")
@@ -658,15 +672,13 @@ getProductive <- function(x) {
 #' @export
 #' @examples
 #' 
-#' \donttest{
 #' data(RepSeqData)
 #'
 #' unproductiveData <- getUnproductive(x = RepSeqData)
 #' 
-#' }
-#' 
 getUnproductive <- function(x) {
   ntCDR3 <- NULL
+  chao1 <- NULL
   if (missing(x)) stop("A RepSeqExperiment object is required.")
   if (!is.RepSeqExperiment(x)) stop("x is not an object of class RepSeqExperiment.")
   cts <- data.table::copy(assay(x))
@@ -674,6 +686,12 @@ getUnproductive <- function(x) {
   indx <- cts[, nchar(ntCDR3) %% 3 > 0 | grepl("\\*", aaCDR3) | grepl("\\~", aaCDR3) ]
   res <- cts[indx, ]
 
+  if(nrow(res) == 0){
+    return(res)
+    stop("No unproductive sequences were found in the RepSeqExperiment object.")
+
+  } else {
+  
   stats <- data.frame(res[, c(.(nSequences = sum(count)), lapply(.SD, uniqueN)), .SDcols =c("V", "J", "VJ", "ntCDR3", "aaCDR3", "aaClone","ntClone"), by = "sample_id"], row.names = 1)
   metaData<- metaData %>%
     dplyr::select(-c(nSequences,ntCDR3,aaCDR3,V,J,VJ,aaClone,ntClone, chao1, iChao))
@@ -691,6 +709,7 @@ getUnproductive <- function(x) {
 
 
   return(out)
+  }
 }
 
 
@@ -786,7 +805,6 @@ theme_RepSeq<- function(){
     ggplot2::theme(plot.title = ggplot2::element_text(face = "bold", hjust = 0.5, size=12),
                    axis.title = ggplot2::element_text(size=11),
                    axis.text = ggplot2::element_text(size=10),
-                   legend.title = ggplot2::element_blank(),
                    legend.key.size = ggplot2::unit(.2, 'cm'),
                    strip.background = ggplot2::element_rect(fill="white", color="gray"),
                    strip.text.x = ggplot2::element_text(size = 10, color = "black"),
@@ -806,17 +824,17 @@ theme_RepSeq<- function(){
 #'
 #' @param x an object of class  \code{\linkS4class{RepSeqExperiment}}
 #' @param level a character specifying the level of the repertoire to be taken into account when calculating the clonal distribution. Should be one of "aaClone","ntClone", "ntCDR3" or "aaCDR3".
-#' @param fractions whether intervals should be determined in count or frequency
+#' @param interval_scale whether intervals should be determined in count or frequency
 #' @export
 #' @examples
 #'
 #' data(RepSeqData)
 #'
-#' Intervals(x = RepSeqData, level="aaCDR3",  fractions="count")
+#' Intervals(x = RepSeqData, level="aaCDR3",  interval_scale="count")
 #' 
 Intervals <- function(x, 
                       level = c("aaClone","ntClone", "ntCDR3","aaCDR3"),
-                      fractions=c("count", "frequency")){
+                      interval_scale=c("count", "frequency")){
   
   if (missing(x)) stop("x is missing.")
   if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected.")
@@ -828,7 +846,7 @@ Intervals <- function(x,
   data2plot <- data.table::copy(assay(x))
   data2plot<- data2plot[, lapply(.SD, sum), by = c(levelChoice, "sample_id"), .SDcols = "count"][,frequency := prop.table(count),by="sample_id"]
   
-  if(fractions=="count"){
+  if(interval_scale=="count"){
  
     f <- function(x){
       if(x == 1) "1"
@@ -838,7 +856,7 @@ Intervals <- function(x,
       else if(x <= 10000) "]1000, 10000]"
       else "]10000, Inf]"
     }
-  } else if(fractions=="frequency"){
+  } else if(interval_scale=="frequency"){
    
     f <- function(x){
       if(x <= 0.000001) "]0, 0.000001]"
@@ -850,12 +868,12 @@ Intervals <- function(x,
     }
   }
   
-  data2plot <- data2plot[, lapply(.SD, sum), by = c(levelChoice, "sample_id"), .SDcols = fractions][, `:=`(interval, unlist(lapply(get(fractions), 
+  data2plot <- data2plot[, lapply(.SD, sum), by = c(levelChoice, "sample_id"), .SDcols = interval_scale][, `:=`(interval, unlist(lapply(get(interval_scale), 
                                                                                                                                    f))), by = "sample_id"]
   data2plot_b <- data2plot %>% dplyr::group_by(interval, sample_id) %>% dplyr::summarize(sum=dplyr::n())
   data2plot_b <- data2plot_b %>% dplyr::group_by( sample_id) %>% dplyr::mutate(distribution=sum/sum(sum))
   
-  data2plot <- data2plot[, lapply(.SD, sum), by = c("interval",  "sample_id"), .SDcols = fractions][, `:=`(cumulative_freq, prop.table(get(fractions))), by = "sample_id"]
+  data2plot <- data2plot[, lapply(.SD, sum), by = c("interval",  "sample_id"), .SDcols = interval_scale][, `:=`(cumulative_frequency, prop.table(get(interval_scale))), by = "sample_id"]
   data2plot <- merge(data2plot[,c(1,2,4)], data2plot_b[,c(1,2,4)], by=c("interval", "sample_id"))
   return(data2plot)
 }
@@ -870,19 +888,20 @@ Intervals <- function(x,
 #'  The Jaccard similarity: a measure of similarity between sample sets defined as the size of the intersection divided by the size of the union of the sample sets.
 #'
 #'  The Morisita-Horn similarity: a measure of similarity that tends to be over-sensitive to abundant species.
-#'#'
+#'
 #' @param x an object of class \code{\linkS4class{RepSeqExperiment}}
 #' @param level a character specifying the level of the repertoire on which the indices are computed. Should be one of "aaClone","ntClone", "V", "J", "VJ", "ntCDR3" or "aaCDR3".
 #' @param method a character specifying the distance method to be computed. Should be one of the following: "manhattan", "euclidean", "canberra", "clark", "bray", "kulczynski", "jaccard", "gower", "altGower", "morisita", "horn", "mountford", "raup", "binomial", "chao", "cao", "mahalanobis."
 #' @param binary a boolean indicating whether or not to transform the data into a presence/absence data. Default is FALSE
 #'
-#' @details Details on the calculated indices can be found in the vegan package: https://www.rdocumentation.org/packages/vegan/versions/2.4-2/topics/vegdist
+#' @details Details on the calculated indices can be found in the vegan package: 
+#' https://www.rdocumentation.org/packages/vegan/versions/2.4-2/topics/vegdist
 #' @export
 #' @examples
 #'
-#' data(RepSeqData)
 #'
-#' CalcDissimilarity(x = RepSeqData, level = "aaClone", method = "jaccard", )
+#' CalcDissimilarity(x = RepSeqData, 
+#'                   level = "V", method = "jaccard" )
 #'
 
 
@@ -914,7 +933,12 @@ CalcDissimilarity <- function(x,
 # extract legend
 g_legend<-function(a.gplot){
   tmp <- ggplot2::ggplot_gtable(ggplot2::ggplot_build(a.gplot))
-  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  leg <- which(vapply(tmp$grobs, function(x) x$name) == "guide-box")
   legend <- tmp$grobs[[leg]]
   return(legend)}
+
+# calculate log scale
+log10_points <- function(data, mapping, ..., alpha) {
+  ggally_points(data, mapping, ..., alpha=0.5) + scale_x_log10() + scale_y_log10()
+}
 

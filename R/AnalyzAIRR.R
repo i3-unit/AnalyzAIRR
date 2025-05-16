@@ -28,13 +28,12 @@
 #' \itemize{
 #'  \item \href{https://github.com/i3-unit/AnalyzAIRR}{https://github.com/i3-unit/AnalyzAIRR}
 #'  \item \href{https://github.com/vanessajmh/Shiny-AnalyzAIRR}{https://github.com/vanessajmh/Shiny-AnalyzAIRR}
-#'  \item \href{https://vanessajmh.github.io/AnalyzAIRR.github.io}{Vignette}
 #' }
 #
 #
 # 
 # Imports
-#
+
 # @importClassesFrom data.table data.table
 #' @import data.table
 #' @import utils
@@ -43,36 +42,32 @@
 #' @import parallel
 #' @import methods
 #' @import ggplot2
-#' @import limma
 #' @import stringr
-#' @import scales
 #' @import GGally
 #' @import grDevices
 #' @import ade4
-#' @import ggVennDiagram
 #' @import rstatix
 #' @import ggprism
 #' @import ggpubr
-#' @import ggpmisc
-#' @import tidyr
-#' @import rmdformats
-#' @import gridExtra
-#' @import kableExtra
-#' @import MESS
 #' @import tibble
+#' @import tidyverse
 #' @import smplot2
-#' @import ComplexHeatmap
+#' @import vegan
+#' @import naturalsort
+#' @import RColorBrewer
 #' @import packcircles
+#' @import ComplexHeatmap
+#' @importFrom testthat test_that
 #' @importFrom car dataEllipse
 #' @importFrom rlang sym syms
-#' @importFrom lemon g_legend
-#' @importFrom tidyselect all_of
 #' @importFrom circlize chordDiagram circos.track circos.text 
-#' @importFrom stats median sd as.formula var frequency cmdscale lag lm
+#' @importFrom stats median sd as.formula var frequency cmdscale lag lm cor.test na.omit
 #' @importFrom grDevices colorRampPalette
-#' @importFrom magrittr %>%
 #' @importFrom dplyr group_by summarize n mutate filter select rename
+#' @importFrom magrittr %>%
 #' @importFrom ggrepel geom_text_repel
+#' @importFrom ggVennDiagram ggVennDiagram
+#' @importFrom R.utils decompressFile
 #' @name AnalyzAIRR
 NULL
 

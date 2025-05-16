@@ -7,7 +7,7 @@
 plotRankDistrib(
   x,
   level = c("aaClone", "ntClone", "ntCDR3", "aaCDR3"),
-  scale = c("count", "frequency"),
+  scale = c("count", "frequency", "log"),
   ranks = NULL,
   grouped = FALSE,
   colorBy = NULL,
@@ -20,7 +20,7 @@ plotRankDistrib(
 
 \item{level}{a character specifying the level of the repertoire to be taken into account to plot the clonal distribution. Should be one of "aaClone", "ntClone", "ntCDR3" or "aaCDR3".}
 
-\item{scale}{a character specifying whether to plot the clonal abundance in "count" or "frequency".}
+\item{scale}{a character specifying whether to plot the clonal abundance in "count" or "frequency" or "log" scale.}
 
 \item{ranks}{an integer specifying the number of top ranks to be plotted. Default is NULL, which plots all ranks.}
 
@@ -39,15 +39,22 @@ For instance, the most frequent sequence is attributed a rank of 1, and its rela
 }
 \examples{
 
-data("RepSeqData")
+data(RepSeqData)
 
-plotRankDistrib(x = RepSeqData, level="ntClone", colorBy = "sample_id", 
-                facetBy="sex", scale = "count")
+plotRankDistrib(x=RepSeqData, level = "aaCDR3",
+                 scale="log",
+                 ranks=10,
+                 colorBy="sample_id" )
 
-plotRankDistrib(x = RepSeqData, level="aaClone", colorBy = "cell_subset", 
-                grouped=TRUE, scale = "frequency")
-
-plotRankDistrib(x = RepSeqData,level="ntCDR3", colorBy = "cell_subset", facetBy="sex", 
-                grouped=TRUE,  scale = "frequency")
-
+plotRankDistrib(x=RepSeqData, level = "aaCDR3",
+                 scale="log",
+                 ranks=10,
+                 colorBy="sex" )
+                 
+plotRankDistrib(x=RepSeqData, level = "aaCDR3",
+                 scale="count",
+                 ranks=10,
+                 colorBy="cell_subset",
+                 grouped=TRUE )
+                                 
 }

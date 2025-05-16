@@ -1,4 +1,4 @@
-utils::globalVariables(c("ranks", "exp_shannon"))
+utils::globalVariables(c("ranks", "exp_shannon", "chao1"))
 
 #' @title Calculation of diversity indices
 #'
@@ -117,7 +117,7 @@ divLevel <- function(x, index = c("shannon", "simpson", "invsimpson"), level = c
 # function computes Renyi (Hill's numbers) indices according to \alpha.
 # @param x a vector of counts.
 # @param alpha a number between 0 and infinity, alpha is Renyi's parameter.
-# @param hill a boolean if TRUE the Hill's indice is computed.
+# @param hill a boolean if TRUE the Hill's index is computed.
 # @return a number
 # @export
 .renyiCal <- function(x, alpha=2, hill = FALSE) {
@@ -145,7 +145,7 @@ divLevel <- function(x, index = c("shannon", "simpson", "invsimpson"), level = c
 
 }
 
-#' @title Computation of the Renyi index
+#' @title Computation of the Renyi or the Hill index
 #'
 #' @description This function computes the Renyi values at any repertoire level
 #' for all the samples in the RepSeqExperiment object.
@@ -161,28 +161,38 @@ divLevel <- function(x, index = c("shannon", "simpson", "invsimpson"), level = c
 #' @param level a character specifying the level of the repertoire to be taken
 #' into account when calculate VJ usages. Should be one of "aaClone","ntClone",
 #' "V", "J", "VJ", "ntCDR3" or "aaCDR3".
+#' @param Hill, boolean indicating whether to plot the Renyi or the Hill Index
 #' @return a table with Renyi values calculated for all alpha in each sample.
-#' @details The Renyi index is a generalization of the Shannon index.
-#' It represents the distribution of clonal expansions
-#' as a function of the parameter alpha. At alpha=0, it equally considers all
-#' species including the rare ones, whereas it up-weighs the abundant species
-#' with an increasing value of alpha. Alpha =1 is an approximation of
-#' the Shannon index; alpha = 2 corresponds to the Simpson index and alpha=Inf
-#' corresponds to the Berger-Parker index. The latter expresses the proportional
-#' importance of the most abundant species.
+#' @details Hill diversity uses a parameter q to adjust how species are count. 
+#' If q=0, it just counts the number of species (species richness). If q=1, 
+#' it gives equal weight to all species, balancing rare and common ones. If q=2, 
+#' it focuses more on the most common species.
+#' Rényi diversity is a generalization of the Shannon index. It uses a parameter 
+#' alpha that works similarly. When alpha is small, it gives more weight to rare 
+#' species. When alpha is large, it focuses more on the dominant species. Alpha =1 
+#' is an approximation of the Shannon index; alpha = 2 corresponds to the Simpson
+#' index and alpha=Inf corresponds to the Berger-Parker index.
+#' The main difference is that Hill diversity is designed to give “effective
+#' species numbers” i.e. how many equally abundant species would give the same
+#' diversity, while Rényi diversity is based on entropy and doesn't directly
+#' translate to species counts. Both are useful for exploring how diversity
+#' changes depending on whether you care more about rare or common species.
 #'
 #' @export
 #' @examples
 #'
 #' data(RepSeqData)
 #'
-#' renyiIndex(RepSeqData, level = "V", alpha = 1)
+#' generalizedDiversity(RepSeqData, level = "V", alpha = 1)
 #'
-renyiIndex <- function(x, alpha = c(0, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, Inf),  level = c("aaClone","ntClone", "V", "J", "VJ", "ntCDR3","aaCDR3")) {
+generalizedDiversity <- function(x, alpha = c(0, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, Inf), 
+                       level = c("aaClone","ntClone", "V", "J", "VJ", "ntCDR3","aaCDR3"),
+                       Hill=FALSE) {
     if (missing(x)) stop("x is missing.")
     if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is exprected.")
     levelChoice <- match.arg(level)
-    out <- copy(assay(x))[, .(count=sum(count)), by=c("sample_id", levelChoice)][, lapply(alpha, function(y) .renyiCal(count, y)), by="sample_id"]
+    out <- copy(assay(x))[, .(count=sum(count)), by=c("sample_id", levelChoice)][, lapply(alpha, function(y) .renyiCal(count, y, hill = Hill)), by="sample_id"]
+    
     data.table::setnames(out, c("sample_id", alpha))
     out<-  data.table::melt(out, id.vars = "sample_id")
     out <- data.table::dcast(out, variable ~ sample_id)
@@ -232,7 +242,6 @@ renyiIndex <- function(x, alpha = c(0, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, Inf), 
 #' @export
 #' @keywords internal
 #' @examples
-#' set.seed(1234)
 #' x <- rbinom(20, 5, 0.5)
 #' iChao(x)
 iChao <- function(x) {
@@ -260,7 +269,6 @@ iChao <- function(x) {
 #' @export
 #' @keywords internal
 #' @examples
-#' set.seed(1234)
 #' x <- rbinom(20, 5, 0.5)
 #' chaoWor(x)
 chaoWor <- function(x) {
@@ -301,34 +309,34 @@ rarefyDT <- function(x) {
     return(output)
 }
 
-#' @title Calculation of rarefaction values
-#'
-#' @description This function computes rarefaction values for each sample.
-#'
-#' Rarefaction is a measure of species richness. It assesses the number of
-#' observed clones for sets of N of sequences in a sample by randomly
-#' re-sampling a number of sequences multiple times and calculating the mean
-#' number of observed clones.
-#'
-#' @param x an object of class \code{\linkS4class{RepSeqExperiment}}
-#' @return a data.table of values that can be represented graphically as
-#' rarefaction curves. The function \code{\link{plotRarefaction}} can be used
-#' for that purpose.
-#' @export
-#' @keywords internal
-#' @examples
-#'
-#' data(RepSeqData)
-#'
-#' rarefactionTab(x = RepSeqData)
-#'
-rarefactionTab <- function(x) {
-    if (missing(x)) stop("x is required. An object of class RepSeqExperiment is expected.")
-    if (!is.RepSeqExperiment(x)) stop("An object of class RepSeqExperiment is expected")
-    cts <- data.table::copy(assay(x))
-    raretab <- cts[, round(rarefyDT(count),2), by = sample_id]
-    return(raretab)
-}
+# @title Calculation of rarefaction values
+#
+# @description This function computes rarefaction values for each sample.
+#
+# Rarefaction is a measure of species richness. It assesses the number of
+# observed clones for sets of N of sequences in a sample by randomly
+# re-sampling a number of sequences multiple times and calculating the mean
+# number of observed clones.
+#
+# @param x an object of class \code{\linkS4class{RepSeqExperiment}}
+# @return a data.table of values that can be represented graphically as
+# rarefaction curves. The function \code{\link{plotRarefaction}} can be used
+# for that purpose.
+# @export
+# @keywords internal
+# @examples
+#
+# data(RepSeqData)
+#
+# rarefactionTab(x = RepSeqData)
+#
+# rarefactionTab <- function(x) {
+#     if (missing(x)) stop("x is required. An object of class RepSeqExperiment is expected.")
+#     if (!is.RepSeqExperiment(x)) stop("An object of class RepSeqExperiment is expected")
+#     cts <- data.table::copy(assay(x))
+#     raretab <- cts[, round(rarefyDT(count),2), by = sample_id]
+#     return(raretab)
+# }
 
 #' @title Down-sampling of repertoires
 #'
@@ -464,18 +472,15 @@ ShannonNorm <- function(x) {
   if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected")
   sampleinfo <- mData(x) %>% dplyr::select(-chao1 ,-iChao)
   exp_shannon <- NULL
+  row_number <- NULL
   out <- copy(assay(x))[, .(count = sum(count)), by=c("sample_id", "ntClone")]
-  out[, row_number := .I]
-  # out2 <- out[, exp_shannon :=lapply(1, function(y) .renyiCal(count, y, hill = TRUE)), by="sample_id"]
   out[, exp_shannon := .renyiCal(count, 1, hill = TRUE), by = "sample_id"]
-  
+
   keep <- out[order(-count), .SD[data.table::frank(-count, ties.method = "first") <= exp_shannon], by = sample_id]
-  # keep <- out[order(-count), head(.SD, exp_shannon), by = c("sample_id", "exp_shannon")]
-  
-  res <- copy(assay(x))[keep, on = c("ntClone", "sample_id", "count")][, c("exp_shannon","row_number") := NULL]
+
+  res <- copy(assay(x))[keep, on = c("ntClone", "sample_id", "count")][, c("exp_shannon") := NULL]
   # res[, sample_id := factor(sample_id, levels = rownames(sampleinfo))]
   res <- res[order(sample_id)]
-  
   
   filtered <- out[!keep, on = .(sample_id, ntClone)]
   

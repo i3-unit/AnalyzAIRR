@@ -7,12 +7,13 @@
 plotIntervals(
   x,
   level = c("aaClone", "ntClone", "ntCDR3", "aaCDR3"),
-  grouped = FALSE,
   colorBy = NULL,
   facetBy = NULL,
   label_colors = NULL,
+  grouped = FALSE,
   show_stats = FALSE,
-  fractions = c("count", "frequency")
+  calculation_type = c("distribution", "cumulative frequency"),
+  interval_scale = c("count", "frequency")
 )
 }
 \arguments{
@@ -20,17 +21,19 @@ plotIntervals(
 
 \item{level}{a character specifying the level of the repertoire to be taken into account when calculating the clonal distribution. Should be one of "aaClone","ntClone", "ntCDR3" or "aaCDR3".}
 
-\item{grouped}{a character indicating one or multiple groups to be compared. A Wilcoxon test is thus performed and adjusted p-values using the Holm method are shown. Colors are attributed to the different groups within the first column, and a facet is applied on the second column. If not specified, no statistical tests will be performed, and calculated values for each sample_id will be represented.}
-
 \item{colorBy}{a character indicating a column name in mData. Colors are thus attributed to the different groups within this column. The chosen column must be of class factor.}
 
 \item{facetBy}{a vector of character indicating one or two column names in mData to apply a facet on.}
 
 \item{label_colors}{a list of colors for each variable in ColorBy. See \code{\link{plotColors}}. If NULL, default colors are used.}
 
-\item{show_stats}{whether to statistically compare groups}
+\item{grouped}{a character indicating one or multiple groups to be compared. A Wilcoxon test is thus performed and adjusted p-values using the Holm method are shown. Colors are attributed to the different groups within the first column, and a facet is applied on the second column. If not specified, no statistical tests will be performed, and calculated values for each sample_id will be represented.}
 
-\item{fractions}{whether intervals should be determined in count or frequency}
+\item{show_stats}{whether to statistically compare groups using a wilcoxon test}
+
+\item{calculation_type}{a character indicating the type of calculation to plot, either the distribution or the cumulative frequency}
+
+\item{interval_scale}{whether intervals should be determined in count or frequency}
 }
 \description{
 This function plots two histograms of the clonal distribution per a set of intervals in all the samples within the dataset. 
@@ -45,9 +48,12 @@ Samples can be statistically compared in each interval using the \code{groupBy} 
 
 data(RepSeqData)
 
-plotIntervals(x = RepSeqData, level="aaCDR3", facetBy="cell_subset", fractions="count")
-
+plotIntervals(x = RepSeqData, level="aaCDR3", 
+               facetBy = 'sex', interval_scale="count",
+               calculation_type = "distribution")
+               
 plotIntervals(x = RepSeqData, level="ntCDR3", colorBy="cell_subset", grouped=TRUE, 
-              fractions="frequency", show_stats=TRUE )
+              interval_scale="frequency", show_stats=TRUE ,
+              calculation_type = "cumulative frequency")
 
 }

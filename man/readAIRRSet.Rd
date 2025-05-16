@@ -82,13 +82,13 @@ metaData <- read.table(system.file(file.path('extdata/sampledata.txt'),
 metaData$cell_subset <- factor(metaData$cell_subset)
 metaData$sex <- factor(metaData$sex)
 
-dataset <- readAIRRSet(fileList = l,
+dataset <- readAIRRSet(fileList = l[7:8],
                        fileFormat = "MiAIRR",
                        chain = "TRA",
-                       sampleinfo = metaData,
+                       sampleinfo = metaData[7:8,],
                        filter.singletons = FALSE,
-                       aa.th=9,
+                       aa.th=8,
                        outFiltered = FALSE,
-                       cores=1L)
+                       cores=3)
 
 }

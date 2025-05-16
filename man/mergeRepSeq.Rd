@@ -23,33 +23,3 @@ The two objects must however contain unique and different sample_ids.
 This function can be useful in case users wish to analyze alignment files
 from different formats, or biological/technical replicates.
 }
-\examples{
-l <- list.files(system.file(file.path('extdata/MiAIRR'),
-                     package = 'AnalyzAIRR'),
-                     full.names = TRUE)
-
-metaData <- read.table(system.file(file.path('extdata/sampledata.txt'),
-                         package='AnalyzAIRR'),
-                         sep = "\t",
-                         row.names = 1, header = TRUE)
-
-dataset1 <- readAIRRSet(fileList = l[c(1:3)],
-                       cores=1L,
-                       fileFormat = "MiAIRR",
-                       chain = "TRA",
-                       sampleinfo = metaData[1:3,],
-                       filter.singletons = FALSE,
-                       outFiltered = FALSE)
-
-dataset2 <- readAIRRSet(fileList = l[c(4:8)],
-                       cores=1L,
-                       fileFormat = "MiAIRR",
-                       chain = "TRA",
-                       sampleinfo = metaData[4:8,],
-                       filter.singletons = FALSE,
-                       outFiltered = FALSE)
-
-dataset <- mergeRepSeq(a = dataset1, b = dataset2)
-
-
-}

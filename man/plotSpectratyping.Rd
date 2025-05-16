@@ -45,3 +45,4 @@ plotSpectratyping(x = RepSeqData, sampleName = NULL, scale = "frequency", prop=0
 \seealso{
 \code{\link{perturbationScore}}
 }
+\keyword{internal}

@@ -5,37 +5,29 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="AnalyzAIRR">
 <title>Data exploration • AnalyzAIRR</title>
-<!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
-<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
-<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png">
-<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
-<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.11/clipboard.min.js" integrity="sha512-7O5pXpc0oCRrxk8RUfDYFgn0nO1t+jLuIOQdOMRp4APB7uZ4vSjspzp5y6YDtDs4VzUSTbWzBFZ/LKJhnyFOKw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Data exploration">
-<meta property="og:description" content="AnalyzAIRR">
-<meta property="og:image" content="https://i3-unit.github.io/AnalyzAIRR/logo.png">
-<!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
-<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-<![endif]-->
+<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Data exploration">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
-    
 
-    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light" data-bs-theme="light"><div class="container">
-    
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
     <a class="navbar-brand me-2" href="../index.html">AnalyzAIRR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1</small>
 
-    
+
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -43,51 +35,47 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
 <li class="active nav-item dropdown">
-  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-tutorial">Tutorial</a>
-  <div class="dropdown-menu" aria-labelledby="dropdown-tutorial">
-    <h6 class="dropdown-header" data-toc-skip>Getting started</h6>
-    <a class="dropdown-item" href="../articles/gettingstarted.html">Installation</a>
-    <a class="dropdown-item" href="../articles/dataloading.html">Data loading</a>
-    <div class="dropdown-divider"></div>
-    <h6 class="dropdown-header" data-toc-skip>Advanced data manipulation</h6>
-    <a class="dropdown-item" href="../articles/datamanipulation.html">Data filtering</a>
-    <div class="dropdown-divider"></div>
-    <h6 class="dropdown-header" data-toc-skip>Comprehensive data exploration</h6>
-    <a class="dropdown-item" href="../articles/exploratory.html">Exploratory Analysis</a>
-    <a class="dropdown-item" href="../articles/onesample.html">One-sample analysis</a>
-    <div class="dropdown-divider"></div>
-    <h6 class="dropdown-header" data-toc-skip>In-depth cross-sample comparison</h6>
-    <a class="dropdown-item" href="../articles/datanormalization.html">Data normalization</a>
-    <a class="dropdown-item" href="../articles/multisample.html">Multi-sample analysis</a>
-  </div>
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-tutorial" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Tutorial</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-tutorial">
+<li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Getting started</h6></li>
+    <li><a class="dropdown-item" href="../articles/gettingstarted.html">Installation</a></li>
+    <li><a class="dropdown-item" href="../articles/dataloading.html">Data loading</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Comprehensive data exploration</h6></li>
+    <li><a class="dropdown-item" href="../articles/exploratory.html">Exploratory analysis</a></li>
+    <li><a class="dropdown-item" href="../articles/onesample.html">One-sample analysis</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Advanced data manipulation</h6></li>
+    <li><a class="dropdown-item" href="../articles/datamanipulation.html">Data filtering</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>In-depth cross-sample comparison</h6></li>
+    <li><a class="dropdown-item" href="../articles/datanormalization.html">Data normalization</a></li>
+    <li><a class="dropdown-item" href="../articles/multisample.html">Multi-sample analysis</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Interactive AIRR data analysis</h6></li>
+    <li><a class="dropdown-item" href="../articles/shiny.html">Shiny-AnalyzAIRR</a></li>
+  </ul>
 </li>
-<li class="nav-item">
-  <a class="nav-link" href="../reference/index.html">Reference</a>
-</li>
+<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
       </ul>
-<form class="form-inline my-2 my-lg-0" role="search">
-        <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off">
-</form>
-
-      <ul class="navbar-nav">
-<li class="nav-item">
-  <a class="external-link nav-link" href="https://github.com/i3-unit/AnalyzAIRR/" aria-label="github">
-    <span class="fab fa fab fa-github fa-lg"></span>
-     
-  </a>
-</li>
+<ul class="navbar-nav">
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
+</form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/i3-unit/AnalyzAIRR/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
-    
+
   </div>
 </nav><div class="container template-article">
 
 
 
-<script src="exploratory_files/core-js-2.5.3/shim.min.js"></script><script src="exploratory_files/react-17.0.0/react.min.js"></script><script src="exploratory_files/react-17.0.0/react-dom.min.js"></script><script src="exploratory_files/reactwidget-1.0.0/react-tools.js"></script><link href="exploratory_files/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
-<script src="exploratory_files/htmlwidgets-1.6.1/htmlwidgets.js"></script><link href="exploratory_files/reactable-0.4.3.9000/reactable.css" rel="stylesheet">
-<script src="exploratory_files/reactable-binding-0.4.3.9000/reactable.js"></script><div class="row">
+<script src="exploratory_files/core-js-2.5.3/shim.min.js"></script><script src="exploratory_files/react-18.2.0/react.min.js"></script><script src="exploratory_files/react-18.2.0/react-dom.min.js"></script><script src="exploratory_files/reactwidget-2.0.0/react-tools.js"></script><link href="exploratory_files/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
+<script src="exploratory_files/htmlwidgets-1.6.4/htmlwidgets.js"></script><link href="exploratory_files/reactable-0.4.4/reactable.css" rel="stylesheet">
+<script src="exploratory_files/reactable-binding-0.4.4/reactable.js"></script><div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Data exploration</h1>
             
@@ -98,6 +86,12 @@
 
     
     
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"RepSeqData"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">RepSeqData</span><span class="op">@</span><span class="va">metaData</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  [1] "sample_id"   "cell_subset" "sex"         "nSequences"  "V"          </span></span>
+<span><span class="co">#&gt;  [6] "J"           "VJ"          "ntCDR3"      "aaCDR3"      "aaClone"    </span></span>
+<span><span class="co">#&gt; [11] "ntClone"     "chao1"       "iChao"</span></span></code></pre></div>
 <p><strong>AnalyzAIRR</strong> proposes a series of metrics that can be
 performed on each sample within the dataset, enabling its exploratory
 description. This process can facilitate the detection of potential
@@ -113,7 +107,7 @@ during the building of the RepSeqExperiment object or supplied by the
 user in the metadata file, can be visualized for each sample using the
 <code><a href="../reference/plotStatistics.html">plotStatistics()</a></code> function with the <code>colorBy</code>
 parameter set to the sample id column.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotStatistics.html">plotStatistics</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">RepSeqData</span>,</span>
 <span>               stat <span class="op">=</span> <span class="st">"nSequences"</span>,</span>
 <span>               colorBy <span class="op">=</span> <span class="st">"sample_id"</span><span class="op">)</span></span></code></pre></div>
@@ -122,7 +116,7 @@ sequences identified in each sample.</em>
 </figcaption><p><br></p>
 <p>Groups of samples can be separated using the <code>facetBy</code>
 parameter.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotStatistics.html">plotStatistics</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">RepSeqData</span>,</span>
 <span>               stat <span class="op">=</span> <span class="st">"ntClone"</span>,</span>
 <span>               colorBy <span class="op">=</span> <span class="st">"sample_id"</span>,</span>
@@ -139,12 +133,12 @@ the samples within the RepSeqExperiment object.</p>
 <p>The function takes into account the weight of the studied level,
 i.e. the number of sequences expressing a specific gene segment, or the
 count of a sequence in a sample.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/countFeatures.html">countFeatures</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">RepSeqData</span>, </span>
 <span>              level <span class="op">=</span> <span class="st">"J"</span>, </span>
 <span>              scale <span class="op">=</span> <span class="st">"frequency"</span><span class="op">)</span></span></code></pre></div>
-<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-ac96cb3ee4656e2e9ec3" style="width:auto;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-ac96cb3ee4656e2e9ec3">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"J":["TRAJ11","TRAJ12","TRAJ13","TRAJ15","TRAJ16","TRAJ17"],"tripod-30-813":[0.01,0.04,0.02,0.04,0.02,0.03],"tripod-30-815":[0.01,0.05,0.03,0.05,0.01,0.03],"tripod-31-846":[0.01,0.04,0.02,0.04,0.01,0.02],"tripod-31-848":[0.01,0.05,0.03,0.05,0.01,0.03],"tripod-35-970":[0.01,0.04,0.03,0.04,0.01,0.03],"tripod-35-972":[0.01,0.04,0.03,0.05,0.01,0.03],"tripod-36-1003":[0.01,0.04,0.03,0.04,0.01,0.03],"tripod-36-1005":[0.01,0.05,0.02,0.04,0.01,0.02]},"columns":[{"id":"J","name":"J","type":"character","minWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"tripod-30-813","name":"tripod-30-813","type":"numeric","minWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"tripod-30-815","name":"tripod-30-815","type":"numeric","minWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"tripod-31-846","name":"tripod-31-846","type":"numeric","minWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"tripod-31-848","name":"tripod-31-848","type":"numeric","minWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"tripod-35-970","name":"tripod-35-970","type":"numeric","minWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"tripod-35-972","name":"tripod-35-972","type":"numeric","minWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"tripod-36-1003","name":"tripod-36-1003","type":"numeric","minWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"tripod-36-1005","name":"tripod-36-1005","type":"numeric","minWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}}],"bordered":true,"dataKey":"4f30b8b494c380cf7c639efda1d09c67"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<div class="reactable html-widget html-fill-item" id="htmlwidget-ac96cb3ee4656e2e9ec3" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-ac96cb3ee4656e2e9ec3">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"J":["TRAJ11","TRAJ12","TRAJ13","TRAJ15","TRAJ16","TRAJ17"],"tripod-30-813":[0.00868073079640658,0.0426297903839036,0.0248568093526204,0.0359730105364505,0.017873919761474,0.0255918503622148],"tripod-30-815":[0.0110467231478113,0.0459815934367216,0.0264296245750423,0.0465177407310055,0.0138249409454644,0.0263948098156733],"tripod-31-846":[0.00856312985806512,0.0389609473300486,0.0227260433448183,0.0399040440268583,0.0119439316078505,0.0230012112089747],"tripod-31-848":[0.0112935294166995,0.045372102583032,0.0266239377186433,0.0484542914908432,0.0132750564173119,0.026660850160653],"tripod-35-970":[0.0110889311059036,0.0402947476247572,0.0277067910461355,0.0368038076747104,0.0122772222061498,0.0273671262320886],"tripod-35-972":[0.0108634281789722,0.0429259732106365,0.0250102177109799,0.0458575082268374,0.0132609034563251,0.0279270055154572],"tripod-36-1003":[0.0112362170488197,0.0437351094749345,0.0265173076421912,0.0447528430015732,0.0136584777065608,0.0288847039588737],"tripod-36-1005":[0.0101411350561923,0.0462811578133717,0.0233062779672251,0.0374277159882847,0.0136428497770554,0.024816959827673]},"columns":[{"id":"J","name":"J","type":"character","minWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"tripod-30-813","name":"tripod-30-813","type":"numeric","minWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"tripod-30-815","name":"tripod-30-815","type":"numeric","minWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"tripod-31-846","name":"tripod-31-846","type":"numeric","minWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"tripod-31-848","name":"tripod-31-848","type":"numeric","minWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"tripod-35-970","name":"tripod-35-970","type":"numeric","minWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"tripod-35-972","name":"tripod-35-972","type":"numeric","minWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"tripod-36-1003","name":"tripod-36-1003","type":"numeric","minWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"tripod-36-1005","name":"tripod-36-1005","type":"numeric","minWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}}],"bordered":true,"dataKey":"3112449f56ad09a3b51732ee543d4345"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <div class="section level2">
@@ -153,20 +147,20 @@ count of a sequence in a sample.</p>
 <div class="section level3">
 <h3 id="rarefaction-analysis">Rarefaction analysis<a class="anchor" aria-label="anchor" href="#rarefaction-analysis"></a>
 </h3>
-<p>To evaluate the clonotype richness and the sequencing depth of a
-sample, a rarefaction curve can be plotted, which illustrates the
-relationship between the number of sequences randomly selected from the
-sample and the number of clones they represent. A plateau in the curve
-suggests that sampling is yielding few or no new species, and that the
-observed clonotype richness is approaching the true richness in the
-sequenced sample. In contrast, a steep ascending curve indicates that
-additional sequencing may still yield new clones.</p>
+<p>To evaluate the clonal richness and the sequencing depth of a sample,
+a rarefaction curve can be plotted, which illustrates the relationship
+between the number of sequences randomly selected from the sample and
+the number of clones they represent. A plateau in the curve suggests
+that sampling is yielding few or no new species, and that the observed
+clonal richness is approaching the true richness in the sequenced
+sample. In contrast, a steep ascending curve indicates that additional
+sequencing may still yield new clones.</p>
 <p>Rarefaction curves can be plotted using
 <code><a href="../reference/plotRarefaction.html">plotRarefaction()</a></code>. The <code>colorBy</code> parameter is
 used to assign colors to the curves based on any group column from the
 <strong>metaData</strong> slot, and <code>facetBy</code> to separate the
 samples based on a different set of group columns.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotRarefaction.html">plotRarefaction</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">RepSeqData</span>,</span>
 <span>                colorBy <span class="op">=</span> <span class="st">"sample_id"</span><span class="op">)</span></span></code></pre></div>
 <img src="exploratory_files/figure-html/plot%20rarefaction-1.png" width="768" style="display: block; margin: auto;"><figcaption align="center"><em class="special">Figure 3: Rarefaction curves plotting the number of
@@ -177,13 +171,17 @@ clones against the number of sequences in each sample.</em>
 <h3 id="richness-estimation">Richness estimation<a class="anchor" aria-label="anchor" href="#richness-estimation"></a>
 </h3>
 <p>To calculate the number of clones that are not observed in the
-sample, the Chao index can be used, which estimates the total clone
-richness of a sample including clones that are likely present but unseen
-or undetected. Together, the Chao1 index and rarefaction curves serve
-complementary roles. Rarefaction curves assess the sufficiency of
-sampling effort and provide a visual representation of species
-accumulation, while the Chao1 index estimates the total species richness
-by considering rare species.</p>
+sample, the Chao index can be used. The Chao index is a statistical
+estimator used to predict species richness by accounting for rare
+species. It can be applied in AIRR studies to address the limitation of
+undercounting species due to low sampling/sequencing depth.</p>
+<p>Explicitly, it predicts the total clone richness in a sample,
+including those that are present but not observed due to sampling
+limitations. The Chao1 index and rarefaction curves serve complementary
+roles: rarefaction curves assess the sufficiency of sampling effort and
+visually represent the accumulation of observed richness as sampling
+increases, while the Chao1 index provides a statistical estimate of the
+total richness by accounting for rare, unobserved clones.</p>
 <p>The Chao index, which values are available in the
 <strong>metaData</strong> slot, can be plotted using the
 <code><a href="../reference/plotStatScatter.html">plotStatScatter()</a></code> function. This function plots the values
@@ -191,10 +189,10 @@ of two statistics along two axes, showing the relationship between them.
 Chao values can thus be plotted against the number of observed ntClones
 for instance, to evaluate the difference in the number of observed and
 unseen clones.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plotStatScatter.html">plotStatScatter</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">RepSeqData</span>, </span>
-<span>                stat1 <span class="op">=</span> <span class="st">"chao1"</span>, </span>
-<span>                stat2 <span class="op">=</span> <span class="st">"ntClone"</span>, </span>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plotStatScatter.html">plotStatScatter</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">RepSeqData</span>,</span>
+<span>                stat1 <span class="op">=</span> <span class="st">"chao1"</span>,</span>
+<span>                stat2 <span class="op">=</span> <span class="st">"aaClone"</span>,</span>
 <span>                colorBy <span class="op">=</span> <span class="st">"sample_id"</span><span class="op">)</span></span></code></pre></div>
 <img src="exploratory_files/figure-html/plot%20plotStatScatter-1.png" width="576" style="display: block; margin: auto;"><figcaption align="center"><em class="special">Figure 4: The Chao1 richness estimation is plotted
 as a function of the observed number of ntClones in each sample. The
@@ -226,10 +224,10 @@ sample size and richness (Berger and Parker 1970).</p></li>
 <li><p><strong>Gini coefficient</strong>: Measures the degree of
 inequality in a distribution of abundances (Gini, 1921).</p></li>
 </ul>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/diversityIndices.html">diversityIndices</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">RepSeqData</span>, </span>
 <span>                 level <span class="op">=</span> <span class="st">"aaClone"</span><span class="op">)</span></span></code></pre></div>
-<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-e5c8c404fe174e4c81bd" style="width:auto;height:auto;"></div>
+<div class="reactable html-widget html-fill-item" id="htmlwidget-e5c8c404fe174e4c81bd" style="width:auto;height:auto;"></div>
 <script type="application/json" data-for="htmlwidget-e5c8c404fe174e4c81bd">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"sample_id":["tripod-30-813","tripod-30-815","tripod-31-846","tripod-31-848","tripod-35-970","tripod-35-972","tripod-36-1003","tripod-36-1005"],"shannon":[9.897,10.818,10.078,10.808,9.477,10.738,9.663,9.309],"simpson":[1,1,1,1,1,1,1,1],"invsimpson":[4726.237,18681.702,5729.325,18544.673,2909.454,17974.698,10285.454,3971.856],"bergerparker":[5.29,6.59,5.64,6.59,5,6.51,6.36,5.4],"gini":[0.65,0.55,0.68,0.56,0.66,0.58,0.5,0.61]},"columns":[{"id":"sample_id","name":"sample_id","type":"character","align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"shannon","name":"shannon","type":"numeric","align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"simpson","name":"simpson","type":"numeric","align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"invsimpson","name":"invsimpson","type":"numeric","align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"bergerparker","name":"bergerparker","type":"numeric","align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"gini","name":"gini","type":"numeric","align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}}],"bordered":true,"dataKey":"3192b094596950688a25ca643e7e7cb9"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script><p>The calculated indices can be downloaded as a table for use in other
 visualization platforms or tailor the presentation of the data to
 address specific research needs.<br>
@@ -237,7 +235,7 @@ Alternatively, using the <code><a href="../reference/plotDiversity.html">plotDiv
 <strong>AnalyzAIRR</strong>, it is possible to calculate and plot any of
 these indices all in one step. The parameter <code>index</code> allows
 to choose the index to be plotted.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotDiversity.html">plotDiversity</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">RepSeqData</span>,</span>
 <span>              level <span class="op">=</span> <span class="st">"ntClone"</span>,</span>
 <span>              index <span class="op">=</span> <span class="st">"shannon"</span>,</span>
@@ -247,33 +245,51 @@ calculated at the ntClone level within each sample.</em>
 </figcaption><p><br></p>
 </div>
 <div class="section level3">
-<h3 id="renyi-diversity">Renyi diversity<a class="anchor" aria-label="anchor" href="#renyi-diversity"></a>
+<h3 id="generalized-diversity">Generalized diversity<a class="anchor" aria-label="anchor" href="#generalized-diversity"></a>
 </h3>
-<p>The Renyi index is a generalization of the Shannon entropy.</p>
-<p>It represents the distribution of clonal expansions as a function of
-the parameter alpha. It equally considers all species including the rare
-ones at alpha=0, and up-weighs the abundant species with an increasing
-value of alpha. Alpha =1 is an approximation of the Shannon index; alpha
-= 2 corresponds to the Simpson index and alpha=Inf corresponds to the
-Berger-Parker index. The latter highlights the highest clonal expansion
-in a repertoire.</p>
-<p>Renyi values can be computed at any repertoire level using
-<code><a href="../reference/renyiIndex.html">renyiIndex()</a></code>. By default, it is assessed for the following
-alpha values: <span class="math display">\[\alpha \in {0, 0.25, 0.5, 1,
-2, 4, 8, 16, 32, 64, Inf}\]</span></p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/renyiIndex.html">renyiIndex</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">RepSeqData</span>, </span>
-<span>           level <span class="op">=</span> <span class="st">"aaClone"</span><span class="op">)</span></span></code></pre></div>
-<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-36aa3d2a04d42bbc2145" style="width:auto;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-36aa3d2a04d42bbc2145">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"variable":["0","0.25","0.5","1","2","4","8","16","32","64","Inf"],"tripod-30-813":[10.96,10.75,10.51,9.9,8.46,6.83,6.01,5.64,5.46,5.38,5.29],"tripod-30-815":[11.48,11.34,11.18,10.82,9.84,8.28,7.38,6.97,6.78,6.69,6.59],"tripod-31-846":[11.23,10.99,10.72,10.08,8.65,7.15,6.35,5.99,5.82,5.73,5.64],"tripod-31-848":[11.49,11.34,11.18,10.81,9.83,8.31,7.41,6.99,6.79,6.69,6.59],"tripod-35-970":[10.56,10.33,10.08,9.48,7.98,6.44,5.69,5.33,5.16,5.08,5],"tripod-35-972":[11.45,11.29,11.12,10.74,9.8,8.31,7.39,6.94,6.72,6.61,6.51],"tripod-36-1003":[10.13,9.99,9.87,9.66,9.24,8.16,7.23,6.78,6.56,6.46,6.36],"tripod-36-1005":[10.12,9.91,9.72,9.31,8.29,6.88,6.12,5.75,5.57,5.49,5.4]},"columns":[{"id":"variable","name":"variable","type":"factor","minWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"tripod-30-813","name":"tripod-30-813","type":"numeric","minWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"tripod-30-815","name":"tripod-30-815","type":"numeric","minWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"tripod-31-846","name":"tripod-31-846","type":"numeric","minWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"tripod-31-848","name":"tripod-31-848","type":"numeric","minWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"tripod-35-970","name":"tripod-35-970","type":"numeric","minWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"tripod-35-972","name":"tripod-35-972","type":"numeric","minWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"tripod-36-1003","name":"tripod-36-1003","type":"numeric","minWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"tripod-36-1005","name":"tripod-36-1005","type":"numeric","minWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}}],"pagination":false,"bordered":true,"dataKey":"40ee72201ad13626d766e017f0cdd476"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script><p>Renyi’s entropy values can be plotted using
-<code><a href="../reference/plotRenyiIndex.html">plotRenyiIndex()</a></code>. A curve for each sample is plotted and
-colors are attributed based on the <code>colorBy</code> parameter.</p>
+<p>Rényi and Hill diversity are families of diversity indices used to
+quantify diversity by capturing both species richness (the number of
+species) and evenness (how evenly individuals are distributed among
+species).</p>
+<p>Rényi diversity (or Rényi entropy) is a generalization of several
+classic diversity measures, introducing a parameter alpha that allows
+the index to emphasize different aspects of diversity. By varying this
+parameter, Rényi diversity can represent different indices: at 1, it
+corresponds to the Shannon index, and at 2, to the logarithm of the
+inverse Simpson index. Rényi diversity profiles are useful for comparing
+the diversity and evenness of different communities across a range of
+scales.</p>
+<p>Hill diversity (Hill numbers or true diversity) transforms classic
+diversity measures into the effective number of equally abundant
+species, making interpretation intuitive. Orders 0, 1, and 2 correspond
+to species richness, the exponential of Shannon entropy, and the inverse
+Simpson index, respectively. A key advantage of Hill numbers is the
+doubling property: when combining two completely distinct, equally
+diverse communities, the overall diversity doubles. This replication
+principle aligns with intuitive expectations and is not shared by most
+traditional indices.</p>
+<p>Rényi and Hill diversity values can be computed at any repertoire
+level using <code><a href="../reference/generalizedDiversity.html">generalizedDiversity()</a></code>. By default, it is
+calculated for the following alpha values:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>α</mi><mo>∈</mo><mrow><mn>0</mn><mo>,</mo><mn>0.25</mn><mo>,</mo><mn>0.5</mn><mo>,</mo><mn>1</mn><mo>,</mo><mn>2</mn><mo>,</mo><mn>4</mn><mo>,</mo><mn>8</mn><mo>,</mo><mn>16</mn><mo>,</mo><mn>32</mn><mo>,</mo><mn>64</mn><mo>,</mo><mi>I</mi><mi>n</mi><mi>f</mi></mrow></mrow><annotation encoding="application/x-tex">\alpha \in {0, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, Inf}</annotation></semantics></math>
+but any set of values can be given to the <code>alpha</code>
+parameter.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plotRenyiIndex.html">plotRenyiIndex</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">RepSeqData</span>, </span>
-<span>               level <span class="op">=</span> <span class="st">"aaClone"</span>, </span>
-<span>               colorBy <span class="op">=</span> <span class="st">"sample_id"</span>, </span>
-<span>               facetBy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cell_subset"</span>, <span class="st">"sex"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<img src="exploratory_files/figure-html/plot%20renyi-1.png" width="768" style="display: block; margin: auto;"><figcaption align="center"><em class="special">Figure 5: The Renyi values were calculated at the J
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/generalizedDiversity.html">generalizedDiversity</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">RepSeqData</span>, </span>
+<span>                     Hill <span class="op">=</span> <span class="cn">FALSE</span>, </span>
+<span>                     level <span class="op">=</span> <span class="st">"aaClone"</span><span class="op">)</span></span></code></pre></div>
+<div class="reactable html-widget html-fill-item" id="htmlwidget-36aa3d2a04d42bbc2145" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-36aa3d2a04d42bbc2145">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"variable":["0","0.25","0.5","1","2","4","8","16","32","64","Inf"],"tripod-30-813":[10.96,10.75,10.51,9.9,8.46,6.83,6.01,5.64,5.46,5.38,5.29],"tripod-30-815":[11.48,11.34,11.18,10.82,9.84,8.28,7.38,6.97,6.78,6.69,6.59],"tripod-31-846":[11.23,10.99,10.72,10.08,8.65,7.15,6.35,5.99,5.82,5.73,5.64],"tripod-31-848":[11.49,11.34,11.18,10.81,9.83,8.31,7.41,6.99,6.79,6.69,6.59],"tripod-35-970":[10.56,10.33,10.08,9.48,7.98,6.44,5.69,5.33,5.16,5.08,5],"tripod-35-972":[11.45,11.29,11.12,10.74,9.8,8.31,7.39,6.94,6.72,6.61,6.51],"tripod-36-1003":[10.13,9.99,9.87,9.66,9.24,8.16,7.23,6.78,6.56,6.46,6.36],"tripod-36-1005":[10.12,9.91,9.72,9.31,8.29,6.88,6.12,5.75,5.57,5.49,5.4]},"columns":[{"id":"variable","name":"variable","type":"factor","minWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"tripod-30-813","name":"tripod-30-813","type":"numeric","minWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"tripod-30-815","name":"tripod-30-815","type":"numeric","minWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"tripod-31-846","name":"tripod-31-846","type":"numeric","minWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"tripod-31-848","name":"tripod-31-848","type":"numeric","minWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"tripod-35-970","name":"tripod-35-970","type":"numeric","minWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"tripod-35-972","name":"tripod-35-972","type":"numeric","minWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"tripod-36-1003","name":"tripod-36-1003","type":"numeric","minWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"tripod-36-1005","name":"tripod-36-1005","type":"numeric","minWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}}],"pagination":false,"bordered":true,"dataKey":"40ee72201ad13626d766e017f0cdd476"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script><p>Rényi and Hill diversity values can be plotted using
+<code><a href="../reference/plotGenDiversity.html">plotGenDiversity()</a></code> with the <code>Hill</code> parameter set
+to FALSE or TRUE, respectively. A curve for each sample is plotted and
+colors are attributed based on the <code>colorBy</code> parameter.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plotGenDiversity.html">plotGenDiversity</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">RepSeqData</span>,</span>
+<span>                 Hill<span class="op">=</span><span class="cn">TRUE</span>,</span>
+<span>                 level <span class="op">=</span> <span class="st">"aaClone"</span>, </span>
+<span>                 colorBy <span class="op">=</span> <span class="st">"sample_id"</span>, </span>
+<span>                 facetBy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cell_subset"</span>, <span class="st">"sex"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<img src="exploratory_files/figure-html/plot%20renyi-1.png" width="768" style="display: block; margin: auto;"><figcaption align="center"><em class="special">Figure 5: The Hill numbers were calculated at the J
 gene level at each pre-defined alpha value and plotted for each
 sample.</em>
 </figcaption>
@@ -296,21 +312,30 @@ the distribution.</li>
 interval, thus giving the proportion that each interval occupies in the
 repertoire.</li>
 </ul>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/Intervals.html">Intervals</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">RepSeqData</span>, </span>
 <span>          level<span class="op">=</span><span class="st">"aaCDR3"</span>,  </span>
-<span>          fractions<span class="op">=</span><span class="st">"count"</span><span class="op">)</span></span></code></pre></div>
-<div id="htmlwidget-febe03efa1a2d8d52a86" class="reactable html-widget " style="width:auto;height:300px;"></div>
-<script type="application/json" data-for="htmlwidget-febe03efa1a2d8d52a86">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"interval":["1","1","]1, 10]","]1, 10]","]10, 100]","]10, 100]","]100, 1000]","]100, 1000]","]1000, 10000]","]1000, 10000]"],"sample_id":["tripod-30-813","tripod-30-815","tripod-30-813","tripod-30-815","tripod-30-813","tripod-30-815","tripod-30-813","tripod-30-815","tripod-30-813","tripod-30-815"],"cumulative_freq":[0.03,0.03,0.26,0.33,0.46,0.48,0.23,0.16,0.01,0.01],"distribution":[0.28,0.22,0.55,0.62,0.16,0.16,0.01,0.01,0,0]},"columns":[{"id":"interval","name":"interval","type":"character","minWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"sample_id","name":"sample_id","type":"character","minWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"cumulative_freq","name":"cumulative_freq","type":"numeric","minWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"distribution","name":"distribution","type":"numeric","minWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}}],"pagination":false,"bordered":true,"height":"300px","dataKey":"d351b5c0562acde80ff3ea1a7d89f4ae"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script><p>The <code><a href="../reference/plotIntervals.html">plotIntervals()</a></code> function can be used to plot these
+<span>          interval_scale<span class="op">=</span><span class="st">"count"</span><span class="op">)</span></span></code></pre></div>
+<div id="htmlwidget-febe03efa1a2d8d52a86" class="reactable html-widget" style="width:auto;height:300px;"></div>
+<script type="application/json" data-for="htmlwidget-febe03efa1a2d8d52a86">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"interval":["1","1","]1, 10]","]1, 10]","]10, 100]","]10, 100]","]100, 1000]","]100, 1000]","]1000, 10000]","]1000, 10000]"],"sample_id":["tripod-30-813","tripod-30-815","tripod-30-813","tripod-30-815","tripod-30-813","tripod-30-815","tripod-30-813","tripod-30-815","tripod-30-813","tripod-30-815"],"cumulative_frequency":[0.03,0.03,0.26,0.33,0.46,0.48,0.23,0.16,0.01,0.01],"distribution":[0.28,0.22,0.55,0.62,0.16,0.16,0.01,0.01,0,0]},"columns":[{"id":"interval","name":"interval","type":"character","minWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"sample_id","name":"sample_id","type":"character","minWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"cumulative_frequency","name":"cumulative_frequency","type":"numeric","minWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"distribution","name":"distribution","type":"numeric","minWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}}],"pagination":false,"bordered":true,"height":"300px","dataKey":"f8bb0192ef6d272cc0052c587308b82b"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script><p>The <code><a href="../reference/plotIntervals.html">plotIntervals()</a></code> function can be used to plot these
 intervals.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotIntervals.html">plotIntervals</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">RepSeqData</span>, </span>
 <span>              level <span class="op">=</span> <span class="st">"aaClone"</span>, </span>
-<span>              fractions <span class="op">=</span> <span class="st">"frequency"</span>, </span>
-<span>              facetBy <span class="op">=</span> <span class="st">"cell_subset"</span><span class="op">)</span></span></code></pre></div>
-<img src="exploratory_files/figure-html/intervals-1.png" width="768" style="display: block; margin: auto;"><figcaption align="center"><em class="special">Figure 6: Stacked bars showing the distribution
-(upper plot) and the cumulative frequency (lower plot) of clones within
-each count interval in each sample.</em>
+<span>              interval_scale <span class="op">=</span> <span class="st">"frequency"</span>, </span>
+<span>              facetBy <span class="op">=</span> <span class="st">"cell_subset"</span>,</span>
+<span>              calculation_type<span class="op">=</span><span class="st">"distribution"</span><span class="op">)</span></span></code></pre></div>
+<img src="exploratory_files/figure-html/intervals-1.png" width="768" style="display: block; margin: auto;"><figcaption align="center"><em class="special">Figure 6: Stacked bars showing the distribution of
+clones within each count interval in each sample.</em>
+</figcaption><p><br></p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plotIntervals.html">plotIntervals</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">RepSeqData</span>, </span>
+<span>              level <span class="op">=</span> <span class="st">"aaClone"</span>, </span>
+<span>              interval_scale <span class="op">=</span> <span class="st">"frequency"</span>, </span>
+<span>              facetBy <span class="op">=</span> <span class="st">"cell_subset"</span>,</span>
+<span>              calculation_type<span class="op">=</span><span class="st">"cumulative frequency"</span><span class="op">)</span></span></code></pre></div>
+<img src="exploratory_files/figure-html/intervals%202-1.png" width="768" style="display: block; margin: auto;"><figcaption align="center"><em class="special">Figure 6: Stacked bars showing the cumulative
+frequency of clones within each count interval in each sample.</em>
 </figcaption><p><br></p>
 </div>
 <div class="section level3">
@@ -324,7 +349,7 @@ plot only the top X ranks within the repertoires.</p>
 <p>When <code>colorBy</code> = “sample_id”, the color legend is hidden
 for visual clarity. However, it can be easily added as in the example
 below.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotRankDistrib.html">plotRankDistrib</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">RepSeqData</span>,</span>
 <span>                level <span class="op">=</span> <span class="st">"aaClone"</span>, </span>
 <span>                colorBy <span class="op">=</span> <span class="st">"sample_id"</span>, </span>
@@ -337,7 +362,7 @@ occurrence rank for each sample.</em>
 </figcaption>
 </div>
 </div>
-  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
 </div>
 
@@ -348,15 +373,15 @@ occurrence rank for each sample.</em>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
 </div>
 
     </footer>
 </div>
 
-  
 
-  
+
+
 
   </body>
 </html>

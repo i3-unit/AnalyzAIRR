@@ -10,7 +10,7 @@ AnalyzAIRR is an R package developed to analyze bulk Ig/TCR repertoire datasets.
 - It allows the calculation of a set of diversity measures and statistical metrics applicable at any level of granularity.
 - It offers different types of data visualization and ready-to-publish graphics that can be easily personalized.
 
-<img src="man/figures/graphical.png" align="right" width="1000" />
+<img src="man/figures/scheme.png" align="right" width="1000" />
 <br>
 <br>
 <br>

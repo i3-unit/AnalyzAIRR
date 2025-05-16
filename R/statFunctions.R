@@ -15,15 +15,16 @@ utils::globalVariables(c("Log2FC", "sdata"))
 #' Finally, a generalized linear model is fitted using a Negative Binomial distribution and Wald statistics.
 #' @return a data.frame with 6 columns: the repertoire level in rownames, and the baseMean, log2FoldChange, lfcSE, stat, pvalue and padj in columns.
 #' The table is ordered by adjusted p-values.
+#' @references Hill, M.O. (1973). Diversity and evenness: a unifying notation and its consequences. Ecology 54, 427–473.
+#' Kindt, R., Van Damme, P., Simons, A.J. (2006). Tree diversity in western Kenya: using profiles to characterise richness and evenness. Biodiversity and Conservation 15, 1253–1270.
 #' @export
 #' @examples
-#'
-#' data(RepSeqData)
+#' if (requireNamespace("DESeq2", quietly = TRUE)) {
 #' dds1 <- diffExpGroup(x = RepSeqData,
 #'                     colGrp = "cell_subset" ,
 #'                     level = "V",
 #'                     group = c("cell_subset", "amTreg", "nTreg"))
-#'
+#'}
 #'
 diffExpGroup <- function(x, colGrp,
                          level = c("aaClone","ntClone", "V", "J", "VJ", "ntCDR3","aaCDR3"),
@@ -55,6 +56,10 @@ diffExpGroup <- function(x, colGrp,
 #'
 .toDESeq2 <- function(x, colGrp, level = c("aaClone","ntClone", "V", "J", "VJ", "ntCDR3","aaCDR3")) {
 
+  if (!requireNamespace("DESeq2", quietly = TRUE)) {
+    stop("The DESeq2 package is required but not installed. Please install it using BiocManager::install('DESeq2').")
+  }
+  
   if (missing(x)) stop("x is missing. An object of class RepSeqExperiment is epxected.")
   if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected.")
   if (missing(colGrp)) stop("user musts provide at least 1 condition.")
@@ -285,6 +290,7 @@ diffExpInd <- function(x,  sampleNames = NULL, level = c("aaClone","ntClone", "V
   if (!is.RepSeqExperiment(x)) stop("an object of class RepSeqExperiment is expected.")
   if (length(sampleNames) == 1) stop("Two sampleNames are required.")
 
+  
   if (is.null(sampleNames)) sampleNames <- rownames(sdata)[seq_len(2)]
   levelChoice <- match.arg(level)
   scaleChoice <- match.arg(scale)

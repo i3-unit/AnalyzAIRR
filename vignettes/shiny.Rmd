@@ -1,6 +1,20 @@
 ---
 title: "Shiny-AnalyzAIRR"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Shiny-AnalyzAIRR}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
+
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+'%>%' <-  kableExtra::'%>%'
+```
 
 
 **Shiny-AnalyzAIRR** is a Shiny web application developed for the [AnalyzAIRR package](https://github.com/vanessajmh/AnalyzAIRR), making it user-friendly for biologists with little or no background in bioinformatics.

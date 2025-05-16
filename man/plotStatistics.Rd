@@ -7,10 +7,10 @@
 plotStatistics(
   x,
   stat = NULL,
-  grouped = FALSE,
   colorBy = NULL,
   facetBy = NULL,
   label_colors = NULL,
+  grouped = FALSE,
   show_stats = FALSE
 )
 }
@@ -19,13 +19,13 @@ plotStatistics(
 
 \item{stat}{a character specifying any numeric column name in the metadata to plot.}
 
-\item{grouped}{a character indicating one or multiple groups to be compared. A Wilcoxon test is thus performed and adjusted p-values using the Holm method are shown. Colors are attributed to the different groups within the first column, and a facet is applied on the second column. If not specified, no statistical tests will be performed, and calculated values for each sample_id will be represented.}
-
 \item{colorBy}{a character indicating a column name in mData. Colors are thus attributed to the different groups within this column. The chosen column must be of class factor.}
 
 \item{facetBy}{a vector of character indicating one or two column names in mData to apply a facet on.}
 
 \item{label_colors}{a list of colors for each variable in groupBy See \code{\link{plotColors}}. If NULL, default colors are used.}
+
+\item{grouped}{a character indicating one or multiple groups to be compared. A Wilcoxon test is thus performed and adjusted p-values using the Holm method are shown. Colors are attributed to the different groups within the first column, and a facet is applied on the second column. If not specified, no statistical tests will be performed, and calculated values for each sample_id will be represented.}
 
 \item{show_stats}{whether to statistically compare groups}
 }
@@ -58,8 +58,9 @@ They can be compared between groups of samples or simply plotted for each sample
 
 data(RepSeqData)
 
-plotStatistics(x = RepSeqData, stat = "V", colorBy = "sex")
+plotStatistics(x = RepSeqData, stat = "V", colorBy = "sample_id")
 
-plotStatistics(x = RepSeqData, colorBy = "cell_subset", facetBy="sex", stat = "aaClone", grouped=TRUE)
+plotStatistics(x = RepSeqData, colorBy = "cell_subset", 
+              facetBy="sex", stat = "aaClone", grouped=TRUE)
 
 }

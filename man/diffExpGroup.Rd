@@ -34,12 +34,15 @@ It then performs a default analysis by estimating the dispersion using a local r
 Finally, a generalized linear model is fitted using a Negative Binomial distribution and Wald statistics.
 }
 \examples{
-
-data(RepSeqData)
+if (requireNamespace("DESeq2", quietly = TRUE)) {
 dds1 <- diffExpGroup(x = RepSeqData,
                     colGrp = "cell_subset" ,
                     level = "V",
                     group = c("cell_subset", "amTreg", "nTreg"))
+}
 
-
+}
+\references{
+Hill, M.O. (1973). Diversity and evenness: a unifying notation and its consequences. Ecology 54, 427–473.
+Kindt, R., Van Damme, P., Simons, A.J. (2006). Tree diversity in western Kenya: using profiles to characterise richness and evenness. Biodiversity and Conservation 15, 1253–1270.
 }

@@ -27,7 +27,7 @@ data(RepSeqData)
 
 plotRarefaction(x = RepSeqData, colorBy = "sex")
 
-plotRarefaction(x = RepSeqData, colorBy = "cell_subset")
+plotRarefaction(x = RepSeqData, colorBy = "sample_id")
 
 
 }

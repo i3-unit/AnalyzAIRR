@@ -1,4 +1,7 @@
-utils::globalVariables(c("J", ".", "..sNames", ".SD", "variable2", "cdr3", "cdr3_nt", "v_gene", "j_gene", "barcode","raw_clonotype_id", ".SDcols", "key", ".N", "count", "..keep.cols", "sampleNames", "aaCDR3.length", "aaCDR3", "pct", "ctrl.mean", "ID","prop"))
+utils::globalVariables(c("J", ".", "..sNames", ".SD", "variable2", "cdr3", "cdr3_nt", 
+                         "v_gene", "j_gene", "barcode","raw_clonotype_id", ".SDcols",
+                         "key", ".N", "count", "..keep.cols", "sampleNames", "aaCDR3.length",
+                         "aaCDR3", "pct", "ctrl.mean", "ID","prop","clone"))
 
 #' @title parse MiXCR output
 #'
@@ -15,11 +18,8 @@ utils::globalVariables(c("J", ".", "..sNames", ".SD", "variable2", "cdr3", "cdr3
 parseMiXCR <- function(path, chain = c("TRA", "TRB","TRG","TRD","IGH","IGK","IGL")) {
   if (path == "" | missing(path))  stop("Empty file name.")
   tab=V=ntCDR3=aaCDR3=J=sample_id <- NULL
-  if (filetype(path)=="gzfile") {
-    tab <- data.table::fread(cmd=eval(paste("gunzip -c ", path)))
-  } else {
-    tab <- data.table::fread(path)
-  }
+  tab <- data.table::fread(path)
+
   namelist <- colnames(tab)
   aacdr3 <- ifelse(length(grep("aaSeqShortCDR3", namelist)) > 0, "aaSeqShortCDR3", "aaSeqCDR3")
   ntcdr3 <- ifelse(length(grep("nSeqShortCDR3", namelist)) > 0, "nSeqShortCDR3", "nSeqCDR3")
@@ -123,11 +123,8 @@ parseMiXCR <- function(path, chain = c("TRA", "TRB","TRG","TRD","IGH","IGK","IGL
 parseImmunoseq <- function(path, chain = c("TRA", "TRB","TRG","TRD","IGH","IGK","IGL")) {
   if (path == "" | missing(path))  stop("Empty file name.")
   tab=V=ntCDR3=aaCDR3=J=sample_id=vMaxResolved=jMaxResolved <- NULL
-  if (filetype(path) == "gzfile") {
-    tab <- data.table::fread(cmd=eval(paste("gunzip -c ", path)))
-  } else {
-    tab <- data.table::fread(path)
-  }
+  tab <- data.table::fread(path)
+ 
   namelist <- colnames(tab)
   aacdr3 <- "aminoAcid"
   ntcdr3 <- "nucleotide"
@@ -179,11 +176,8 @@ parseImmunoseq <- function(path, chain = c("TRA", "TRB","TRG","TRD","IGH","IGK",
 parseAIRRC <- function(path, chain = c("TRA", "TRB","TRG","TRD","IGH","IGK","IGL")) {
   if (path == "" | missing(path))  stop("Empty file name.")
   tab=V=ntCDR3=aaCDR3=J=sample_id <- NULL
-  if (filetype(path)=="gzfile") {
-    tab <- data.table::fread(cmd=eval(paste("gunzip -c ", path)))
-  } else {
-    tab <- data.table::fread(path)
-  }
+  tab <- data.table::fread(path)
+
   namelist <- colnames(tab)
   n_count <- ifelse(length(grep("duplicate_count", namelist)) > 0, "duplicate_count", "consensus_count")
   keep.cols <- c("junction", "junction_aa", "v_call", "j_call", n_count)
@@ -251,11 +245,7 @@ readInFormat <- function(path,
                          aa.th = NULL, outFiltered = FALSE) {
   if (path == "" | missing(path))  stop("Empty file name.")
   tab=V=ntCDR3=aaCDR3=J=sample_id <- NULL
-  if (filetype(path)=="gzfile") {
-    tab <- data.table::fread(cmd=eval(paste("gunzip -c ", path)))
-  } else {
-    tab <- data.table::fread(path)
-  }
+  tab <- data.table::fread(path)
 
   coltab <- c("sample_id", "V", "J", "ntCDR3", "aaCDR3", "count")
 
@@ -419,8 +409,7 @@ filterClones <- function(raw,
 #'                           chain = "TRA",
 #'                           keep.ambiguous = FALSE,
 #'                           keep.unproductive = FALSE,
-#'                          outFiltered = FALSE,
-#'                           aa.th = NULL)
+#'                          outFiltered = FALSE)
 #'
 readAIRR <- function(path, fileFormat=c("MiXCR", "immunoseq", "MiAIRR"),
                            chain=c("TRA", "TRB","TRG","TRD","IGH","IGK","IGL"),
@@ -507,14 +496,14 @@ readAIRR <- function(path, fileFormat=c("MiXCR", "immunoseq", "MiAIRR"),
 #' metaData$cell_subset <- factor(metaData$cell_subset)
 #' metaData$sex <- factor(metaData$sex)
 #'
-#' dataset <- readAIRRSet(fileList = l,
+#' dataset <- readAIRRSet(fileList = l[7:8],
 #'                        fileFormat = "MiAIRR",
 #'                        chain = "TRA",
-#'                        sampleinfo = metaData,
+#'                        sampleinfo = metaData[7:8,],
 #'                        filter.singletons = FALSE,
-#'                        aa.th=9,
+#'                        aa.th=8,
 #'                        outFiltered = FALSE,
-#'                        cores=1L)
+#'                        cores=3)
 #'
 readAIRRSet <- function(fileList, fileFormat = c("MiXCR", "immunoseq",  "MiAIRR"),
                              chain = c("TRA", "TRB","TRG","TRD","IGH","IGK","IGL"),
@@ -611,11 +600,6 @@ readAIRRSet <- function(fileList, fileFormat = c("MiXCR", "immunoseq",  "MiAIRR"
                         History = x.hist)
   }
 
-  # if (raretab == TRUE) {
-  #   cat("Computing rarefaction table...\n")
-  #   oData(out) <- c(oData(out), raretab=list(rarefactionTab(out)))
-  # 
-  # }
   if (filter.singletons) {
     cat ("Removing singleton sequences...")
     out <- filterCount(out,level="ntClone", n = 1)
@@ -869,10 +853,6 @@ readFormatSet <- function(fileList,
   }
 
 
-  # if (raretab == TRUE) {
-  #   cat("Computing rarefaction table...\n")
-  #   oData(out) <- c(oData(out), raretab=list(rarefactionTab(out)))
-  # }
   if (filter.singletons) {
     cat("Removing singleton sequences...")
     out <- filterCount(out, level = "ntClone", n = 1)
@@ -898,13 +878,8 @@ formatSingleCell<-function(path)
   if (path == "" | missing(path)) 
     stop("Empty file name.")
   tab = V = ntCDR3 = aaCDR3 = J = sample_id = cell_barcode = clonotype_ID <- NULL
-  if (filetype(path) == "gzfile") {
-    tab <- data.table::fread(cmd = eval(paste("gunzip -c ", 
-                                              path)))
-  }
-  else {
-    tab <- data.table::fread(path)
-  }
+  tab <- data.table::fread(path)
+
 
   summ<- tab %>% 
   count(barcode) %>%

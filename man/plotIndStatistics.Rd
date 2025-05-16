@@ -57,7 +57,7 @@ Diversity statistics include:
 
 data(RepSeqData)
 
-plotIndStatistics(x = RepSeqData, stat = "metadata")
+plotIndStatistics(x = RepSeqData, stat = "metadata", level= "ntCDR3" )
 
 plotIndStatistics(x = RepSeqData, stat = "diversity",  level = "aaClone")
 

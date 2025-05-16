@@ -25,6 +25,7 @@ No limitations in the number of sample_ids is imposed, however for visualization
 }
 \examples{
 
+
 data(RepSeqData)
 
 snames <- rownames(mData(RepSeqData))[1:4]
