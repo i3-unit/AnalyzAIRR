@@ -25,6 +25,8 @@
 <url><loc>https://i3-unit.github.io/AnalyzAIRR/reference/diffExpInd.html</loc></url>
 <url><loc>https://i3-unit.github.io/AnalyzAIRR/reference/divLevel.html</loc></url>
 <url><loc>https://i3-unit.github.io/AnalyzAIRR/reference/diversityIndices.html</loc></url>
+<url><loc>https://i3-unit.github.io/AnalyzAIRR/reference/dot-safe_kruskal_pairwise.html</loc></url>
+<url><loc>https://i3-unit.github.io/AnalyzAIRR/reference/dot-safe_wilcox.html</loc></url>
 <url><loc>https://i3-unit.github.io/AnalyzAIRR/reference/dot-toDESeq2.html</loc></url>
 <url><loc>https://i3-unit.github.io/AnalyzAIRR/reference/dropSamples.html</loc></url>
 <url><loc>https://i3-unit.github.io/AnalyzAIRR/reference/filetype.html</loc></url>
@@ -32,6 +34,7 @@
 <url><loc>https://i3-unit.github.io/AnalyzAIRR/reference/filterCount.html</loc></url>
 <url><loc>https://i3-unit.github.io/AnalyzAIRR/reference/filterSequence.html</loc></url>
 <url><loc>https://i3-unit.github.io/AnalyzAIRR/reference/formatSingleCell.html</loc></url>
+<url><loc>https://i3-unit.github.io/AnalyzAIRR/reference/generalizedDiversity.html</loc></url>
 <url><loc>https://i3-unit.github.io/AnalyzAIRR/reference/getPrivate.html</loc></url>
 <url><loc>https://i3-unit.github.io/AnalyzAIRR/reference/getProductive.html</loc></url>
 <url><loc>https://i3-unit.github.io/AnalyzAIRR/reference/getPublic.html</loc></url>
@@ -47,8 +50,11 @@
 <url><loc>https://i3-unit.github.io/AnalyzAIRR/reference/perturbationScore.html</loc></url>
 <url><loc>https://i3-unit.github.io/AnalyzAIRR/reference/plotColors.html</loc></url>
 <url><loc>https://i3-unit.github.io/AnalyzAIRR/reference/plotDiffExp.html</loc></url>
+<url><loc>https://i3-unit.github.io/AnalyzAIRR/reference/plotDissHeatmap.html</loc></url>
+<url><loc>https://i3-unit.github.io/AnalyzAIRR/reference/plotDissMDS.html</loc></url>
 <url><loc>https://i3-unit.github.io/AnalyzAIRR/reference/plotDissimilarity.html</loc></url>
 <url><loc>https://i3-unit.github.io/AnalyzAIRR/reference/plotDiversity.html</loc></url>
+<url><loc>https://i3-unit.github.io/AnalyzAIRR/reference/plotGenDiversity.html</loc></url>
 <url><loc>https://i3-unit.github.io/AnalyzAIRR/reference/plotGeneUsage.html</loc></url>
 <url><loc>https://i3-unit.github.io/AnalyzAIRR/reference/plotIndGeneUsage.html</loc></url>
 <url><loc>https://i3-unit.github.io/AnalyzAIRR/reference/plotIndIntervals.html</loc></url>

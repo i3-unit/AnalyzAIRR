@@ -1,5 +1,5 @@
 pandoc: 3.1.11
-pkgdown: 2.1.0
+pkgdown: 2.1.2
 pkgdown_sha: ~
 articles:
   dataloading: dataloading.html
@@ -10,7 +10,7 @@ articles:
   multisample: multisample.html
   onesample: onesample.html
   shiny: shiny.html
-last_built: 2024-09-10T13:39Z
+last_built: 2025-05-16T22:50Z
 urls:
   reference: https://i3-unit.github.io/AnalyzAIRR/reference
   article: https://i3-unit.github.io/AnalyzAIRR/articles

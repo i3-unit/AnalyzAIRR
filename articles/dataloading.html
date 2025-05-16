@@ -6,16 +6,15 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Data loading • AnalyzAIRR</title>
-<!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
-<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
-<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png">
-<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
-<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
-<link href="../deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Data loading">
 </head>
 <body>
@@ -26,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">AnalyzAIRR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,12 +42,12 @@
     <li><a class="dropdown-item" href="../articles/gettingstarted.html">Installation</a></li>
     <li><a class="dropdown-item" href="../articles/dataloading.html">Data loading</a></li>
     <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Advanced data manipulation</h6></li>
-    <li><a class="dropdown-item" href="../articles/datamanipulation.html">Data filtering</a></li>
-    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Comprehensive data exploration</h6></li>
     <li><a class="dropdown-item" href="../articles/exploratory.html">Exploratory analysis</a></li>
     <li><a class="dropdown-item" href="../articles/onesample.html">One-sample analysis</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Advanced data manipulation</h6></li>
+    <li><a class="dropdown-item" href="../articles/datamanipulation.html">Data filtering</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>In-depth cross-sample comparison</h6></li>
     <li><a class="dropdown-item" href="../articles/datanormalization.html">Data normalization</a></li>
@@ -74,7 +73,7 @@
 
 
 
-<script src="dataloading_files/core-js-2.5.3/shim.min.js"></script><script src="dataloading_files/react-18.2.0/react.min.js"></script><script src="dataloading_files/react-18.2.0/react-dom.min.js"></script><script src="dataloading_files/reactwidget-2.0.0/react-tools.umd.cjs"></script><link href="dataloading_files/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
+<script src="dataloading_files/core-js-2.5.3/shim.min.js"></script><script src="dataloading_files/react-18.2.0/react.min.js"></script><script src="dataloading_files/react-18.2.0/react-dom.min.js"></script><script src="dataloading_files/reactwidget-2.0.0/react-tools.js"></script><link href="dataloading_files/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
 <script src="dataloading_files/htmlwidgets-1.6.4/htmlwidgets.js"></script><link href="dataloading_files/reactable-0.4.4/reactable.css" rel="stylesheet">
 <script src="dataloading_files/reactable-binding-0.4.4/reactable.js"></script><div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
@@ -99,7 +98,7 @@ processes depending on the alignment files format.</p>
 automatically detect the following formats:</p>
 <ul>
 <li><p><strong>MiXCR</strong>: <a href="https://github.com/milaboratory/mixcr" class="external-link uri">https://github.com/milaboratory/mixcr</a></p></li>
-<li><p><strong>immunoSEQ</strong>: <a href="https://www.immunoseq.com/" class="external-link uri">https://www.immunoseq.com/</a></p></li>
+<li><p><strong>immunoSEQ</strong>: <a href="https://www.adaptivebiotech.com/adaptive-immunosequencing/" class="external-link uri">https://www.adaptivebiotech.com/adaptive-immunosequencing/</a></p></li>
 <li><p><strong>MiAIRR</strong>: <a href="https://docs.airr-community.org/en/latest/datarep/rearrangements.html" class="external-link uri">https://docs.airr-community.org/en/latest/datarep/rearrangements.html</a></p></li>
 </ul>
 <p>These alignment files can be loaded using the
@@ -147,7 +146,7 @@ be found at <a href="https://github.com/i3-unit/AnalyzAIRR/tree/master/inst/extd
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">l</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="st">'extdata/MiAIRR'</span><span class="op">)</span>,</span>
 <span>                            package <span class="op">=</span> <span class="st">'AnalyzAIRR'</span><span class="op">)</span>,</span>
-<span>                            full.names <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span></code></pre></div>
+<span>                            full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="metadata">Metadata<a class="anchor" aria-label="anchor" href="#metadata"></a>
@@ -175,7 +174,7 @@ factors.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">metadata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="st">'extdata/sampledata.txt'</span><span class="op">)</span>,</span>
 <span>                            package <span class="op">=</span> <span class="st">'AnalyzAIRR'</span><span class="op">)</span>, </span>
-<span>                            header <span class="op">=</span> <span class="cn">T</span>,</span>
+<span>                            header <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                            row.names <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">metadata</span><span class="op">$</span><span class="va">cell_subset</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">metadata</span><span class="op">$</span><span class="va">cell_subset</span><span class="op">)</span></span>
 <span><span class="va">metadata</span><span class="op">$</span><span class="va">sex</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">metadata</span><span class="op">$</span><span class="va">sex</span><span class="op">)</span></span></code></pre></div>
@@ -295,12 +294,16 @@ CDR3s</p></li>
 CDR3s</p></li>
 <li><p><strong>aaClone</strong>: The number of unique aaClones</p></li>
 <li><p><strong>ntClone</strong>: The number of unique ntClones</p></li>
-<li><p><strong>Chao1</strong>: Estimates undetected species using the
-information on the rarest species (the numbers of singletons and
-doubletons) (Chao, 1984).</p></li>
+<li><p><strong>Chao1</strong>: Estimates total species richness using
+the counts of rare species (singletons and doubletons) (Chao, 1984). A
+higher Chao1 value indicates greater estimated species richness. It
+corrects for unseen species by extrapolating from rare species
+counts.</p></li>
 <li><p><strong>Improved Chao1</strong>: An extension of
-<strong>Chao1</strong> which uses additional information, namely, the
-numbers of tripletons and quadrupletons (Chiu et al., 2014).</p></li>
+<strong>Chao1</strong> which uses higher-order rare species,
+specifically, tripletons and quadrupletons, and adjusts for sample size
+to improve accuracy in small or unevenly samples datasets (Chiu et al.,
+2014).</p></li>
 </ul>
 </li>
 </ul>
@@ -309,7 +312,7 @@ function.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/RepSeqExperiment-class.html">mData</a></span><span class="op">(</span><span class="va">RepSeqData</span><span class="op">)</span></span></code></pre></div>
 <div class="reactable html-widget html-fill-item" id="htmlwidget-36aa3d2a04d42bbc2145" style="width:auto;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-36aa3d2a04d42bbc2145">{"x":{"tag":{"name":"Reactable","attribs":{"data":{".rownames":["tripod-30-813","tripod-30-815","tripod-31-846","tripod-31-848","tripod-35-970","tripod-35-972","tripod-36-1003","tripod-36-1005"],"sample_id":["tripod-30-813","tripod-30-815","tripod-31-846","tripod-31-848","tripod-35-970","tripod-35-972","tripod-36-1003","tripod-36-1005"],"cell_subset":["amTreg","nTreg","amTreg","nTreg","amTreg","nTreg","nTreg","amTreg"],"sex":["F","F","M","M","F","F","M","M"],"nSequences":[386373,574469,850390,596005,933273,949332,729071,1134587],"V":[98,99,98,95,95,100,96,99],"J":[43,44,43,43,43,43,43,43],"VJ":[3540,3692,3629,3680,3345,3705,3026,3104],"ntCDR3":[64180,110601,84910,111238,42605,107506,26863,26721],"aaCDR3":[44097,69043,55848,69494,30781,67215,20428,20582],"aaClone":[57670,96796,75041,97371,38659,94066,24988,24752],"ntClone":[64180,110601,84910,111238,42605,107506,26863,26721],"chao1":[80147.43,127377.37,96934.79,129285.32,49657.34,115369.45,30108.53,29426.78],"iChao":[84110.14,131571.37,99886.65,133796.36,50706.05,117328.87,30674.24,29973.08]},"columns":[{"id":".rownames","name":"","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"},"sortable":false,"filterable":false,"rowHeader":true},{"id":"sample_id","name":"sample_id","type":"factor","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"cell_subset","name":"cell_subset","type":"factor","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"sex","name":"sex","type":"factor","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"nSequences","name":"nSequences","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"V","name":"V","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"J","name":"J","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"VJ","name":"VJ","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"ntCDR3","name":"ntCDR3","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"aaCDR3","name":"aaCDR3","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"aaClone","name":"aaClone","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"ntClone","name":"ntClone","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"chao1","name":"chao1","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"iChao","name":"iChao","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}}],"bordered":true,"dataKey":"865156c160a4ad78ef662b00be4e075d"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script><ul>
+<script type="application/json" data-for="htmlwidget-36aa3d2a04d42bbc2145">{"x":{"tag":{"name":"Reactable","attribs":{"data":{".rownames":["tripod-30-813","tripod-30-815","tripod-31-846","tripod-31-848","tripod-35-970","tripod-35-972","tripod-36-1003","tripod-36-1005"],"sample_id":["tripod-30-813","tripod-30-815","tripod-31-846","tripod-31-848","tripod-35-970","tripod-35-972","tripod-36-1003","tripod-36-1005"],"cell_subset":["amTreg","nTreg","amTreg","nTreg","amTreg","nTreg","nTreg","amTreg"],"sex":["F","F","M","M","F","F","M","M"],"nSequences":[386373,574469,850390,596005,933273,949332,729071,1134587],"V":[98,99,98,95,95,100,96,99],"J":[43,44,43,43,43,43,43,43],"VJ":[3540,3692,3629,3680,3345,3705,3026,3104],"ntCDR3":[64180,110601,84910,111238,42605,107506,26863,26721],"aaCDR3":[44097,69043,55848,69494,30781,67215,20428,20582],"aaClone":[57670,96796,75041,97371,38659,94066,24988,24752],"ntClone":[64180,110601,84910,111238,42605,107506,26863,26721],"chao1":[80147.43,127377.37,96934.79,129285.32,49657.34,115369.45,30108.53,29426.78],"iChao":[84110.14,131571.37,99886.65,133796.37,50706.05,117328.87,30674.24,29973.08]},"columns":[{"id":".rownames","name":"","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"},"sortable":false,"filterable":false,"rowHeader":true},{"id":"sample_id","name":"sample_id","type":"factor","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"cell_subset","name":"cell_subset","type":"factor","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"sex","name":"sex","type":"factor","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"nSequences","name":"nSequences","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"V","name":"V","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"J","name":"J","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"VJ","name":"VJ","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"ntCDR3","name":"ntCDR3","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"aaCDR3","name":"aaCDR3","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"aaClone","name":"aaClone","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"ntClone","name":"ntClone","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"chao1","name":"chao1","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"iChao","name":"iChao","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}}],"bordered":true,"dataKey":"a0065a140752ed682fded4328bdd74d4"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script><ul>
 <li>
 <strong>otherData</strong>: a list encompassing the output of a
 defined set of functions.</li>
@@ -324,20 +327,20 @@ have been stored in this slot and can be viewed as followed.</p>
 <p>In addition, <code>oData</code> contains a list of colors attributed
 for each group in the metadata file</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/RepSeqExperiment-class.html">oData</a></span><span class="op">(</span><span class="va">RepSeqData</span><span class="op">)</span><span class="op">$</span><span class="va">label_colors</span></span></code></pre></div>
-<pre><code><span><span class="co">## $sample_id</span></span>
-<span><span class="co">##  tripod-30-813  tripod-30-815  tripod-31-846  tripod-31-848  tripod-35-970 </span></span>
-<span><span class="co">##      "#7FC97F"      "#BEAED4"      "#FDC086"      "#FFFF99"      "#386CB0" </span></span>
-<span><span class="co">##  tripod-35-972 tripod-36-1003 tripod-36-1005 </span></span>
-<span><span class="co">##      "#F0027F"      "#BF5B17"      "#666666" </span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## $cell_subset</span></span>
-<span><span class="co">##    amTreg     nTreg </span></span>
-<span><span class="co">## "#7FC97F" "#BEAED4" </span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## $sex</span></span>
-<span><span class="co">##         F         M </span></span>
-<span><span class="co">## "#FDC086" "#FFFF99"</span></span></code></pre>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/RepSeqExperiment-class.html">oData</a></span><span class="op">(</span><span class="va">RepSeqData</span><span class="op">)</span><span class="op">$</span><span class="va">label_colors</span></span>
+<span><span class="co">#&gt; $sample_id</span></span>
+<span><span class="co">#&gt;  tripod-30-813  tripod-30-815  tripod-31-846  tripod-31-848  tripod-35-970 </span></span>
+<span><span class="co">#&gt;      "#7FC97F"      "#BEAED4"      "#FDC086"      "#FFFF99"      "#386CB0" </span></span>
+<span><span class="co">#&gt;  tripod-35-972 tripod-36-1003 tripod-36-1005 </span></span>
+<span><span class="co">#&gt;      "#F0027F"      "#BF5B17"      "#666666" </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $cell_subset</span></span>
+<span><span class="co">#&gt;    amTreg     nTreg </span></span>
+<span><span class="co">#&gt; "#7FC97F" "#BEAED4" </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $sex</span></span>
+<span><span class="co">#&gt;         F         M </span></span>
+<span><span class="co">#&gt; "#FDC086" "#FFFF99"</span></span></code></pre></div>
 <ul>
 <li>
 <strong>History</strong>: a data frame registering all operations
@@ -346,10 +349,10 @@ down-sampling.</li>
 </ul>
 <p>This slot can be extracted using the <code><a href="../reference/RepSeqExperiment-class.html">History()</a></code>
 function.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/RepSeqExperiment-class.html">History</a></span><span class="op">(</span><span class="va">RepSeqData</span><span class="op">)</span></span></code></pre></div>
 <div class="reactable html-widget html-fill-item" id="htmlwidget-febe03efa1a2d8d52a86" style="width:auto;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-febe03efa1a2d8d52a86">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"history":["data directory=./extdata/MiAIRR","readAIRRSet; cores=2; fileFormat=MiAIRR; chain=TRA; ambiguous FALSE; unprod FALSE; filter.singletons FALSE; aa threshold=8; raretab FALSE"]},"columns":[{"id":"history","name":"history","type":"character","headerStyle":{"background":"#f7f7f8"}}],"bordered":true,"dataKey":"e06405b20f95913554c0abb0fe79877c"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-febe03efa1a2d8d52a86">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"history":["data directory=./extdata/MiAIRR","readAIRRSet; cores=2; fileFormat=MiAIRR; chain=TRA; ambiguous FALSE; unprod FALSE; filter.singletons FALSE; aa threshold=8"]},"columns":[{"id":"history","name":"history","type":"character","headerStyle":{"background":"#f7f7f8"}}],"bordered":true,"dataKey":"9d78e66e30b26e38ea1ee83505a5c191"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
 <div class="section level3">
 <h3 id="repseqexp-merging">RepSeqExp merging<a class="anchor" aria-label="anchor" href="#repseqexp-merging"></a>
@@ -358,7 +361,7 @@ function.</p>
 objects encompassing different datasets. As such, a same
 <strong>sample_id</strong> cannot be in both datasets and should be
 renamed before using this function.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">l</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="st">'extdata/MiAIRR'</span><span class="op">)</span>,</span>
 <span>                     package <span class="op">=</span> <span class="st">'AnalyzAIRR'</span><span class="op">)</span>,</span>
 <span>                     full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -369,27 +372,27 @@ renamed before using this function.</p>
 <span>                       chain <span class="op">=</span> <span class="st">"TRA"</span>,</span>
 <span>                       sampleinfo <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>                       filter.singletons <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>                       outFiltered <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Running on 1 cores...</span></span>
-<span><span class="co">## Loading and filtering sequences...</span></span>
-<span><span class="co">## Assembling sequences...</span></span>
-<span><span class="co">## Creating a RepSeqExperiment object...</span></span>
-<span><span class="co">## Done.</span></span></code></pre>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">dataset2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/readAIRRSet.html">readAIRRSet</a></span><span class="op">(</span>fileList <span class="op">=</span> <span class="va">l</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span><span class="op">:</span><span class="fl">8</span><span class="op">)</span><span class="op">]</span>,</span>
+<span>                       outFiltered <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Running on 1 cores...</span></span>
+<span><span class="co">#&gt; Loading and filtering sequences...</span></span>
+<span><span class="co">#&gt; Assembling sequences...</span></span>
+<span><span class="co">#&gt; Creating a RepSeqExperiment object...</span></span>
+<span><span class="co">#&gt; Done.</span></span>
+<span></span>
+<span><span class="va">dataset2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/readAIRRSet.html">readAIRRSet</a></span><span class="op">(</span>fileList <span class="op">=</span> <span class="va">l</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span><span class="op">:</span><span class="fl">8</span><span class="op">)</span><span class="op">]</span>,</span>
 <span>                       cores <span class="op">=</span> <span class="fl">1L</span>,</span>
 <span>                       fileFormat <span class="op">=</span> <span class="st">"MiAIRR"</span>,</span>
 <span>                       chain <span class="op">=</span> <span class="st">"TRA"</span>,</span>
 <span>                       sampleinfo <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>                       filter.singletons <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>                       outFiltered <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Running on 1 cores...</span></span>
-<span><span class="co">## Loading and filtering sequences...</span></span>
-<span><span class="co">## Assembling sequences...</span></span>
-<span><span class="co">## Creating a RepSeqExperiment object...</span></span>
-<span><span class="co">## Done.</span></span></code></pre>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">dataset</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mergeRepSeq.html">mergeRepSeq</a></span><span class="op">(</span>a <span class="op">=</span> <span class="va">dataset1</span>, b <span class="op">=</span> <span class="va">dataset2</span><span class="op">)</span></span></code></pre></div>
+<span>                       outFiltered <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Running on 1 cores...</span></span>
+<span><span class="co">#&gt; Loading and filtering sequences...</span></span>
+<span><span class="co">#&gt; Assembling sequences...</span></span>
+<span><span class="co">#&gt; Creating a RepSeqExperiment object...</span></span>
+<span><span class="co">#&gt; Done.</span></span>
+<span></span>
+<span><span class="va">dataset</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mergeRepSeq.html">mergeRepSeq</a></span><span class="op">(</span>a <span class="op">=</span> <span class="va">dataset1</span>, b <span class="op">=</span> <span class="va">dataset2</span><span class="op">)</span></span></code></pre></div>
 <div class="reactable html-widget html-fill-item" id="htmlwidget-1fb4450895fe099f74a1" style="width:auto;height:auto;"></div>
 <script type="application/json" data-for="htmlwidget-1fb4450895fe099f74a1">{"x":{"tag":{"name":"Reactable","attribs":{"data":{".rownames":["tripod-30-813","tripod-30-815","tripod-31-846","tripod-31-848","tripod-35-970","tripod-35-972","tripod-36-1003","tripod-36-1005"],"sample_id":["tripod-30-813","tripod-30-815","tripod-31-846","tripod-31-848","tripod-35-970","tripod-35-972","tripod-36-1003","tripod-36-1005"],"nSequences":[386417,574542,850465,596086,933370,949481,729348,1134680],"V":[98,99,98,95,95,100,96,99],"J":[43,44,43,43,43,43,43,43],"VJ":[3540,3692,3629,3680,3345,3707,3026,3104],"ntCDR3":[64196,110624,84923,111265,42610,107535,26874,26725],"aaCDR3":[44112,69066,55861,69521,30786,67244,20439,20586],"aaClone":[57686,96819,75054,97398,38664,94095,24999,24756],"ntClone":[64196,110624,84923,111265,42610,107535,26874,26725],"chao1":[80170.8,127396.99,96946.52,129314.9,49665.03,115403.18,30121.45,29430.56],"iChao":[84135.19,131590.18,99898.12,133826.67,50713.99,117363.9,30687.55,29976.98]},"columns":[{"id":".rownames","name":"","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"},"sortable":false,"filterable":false,"rowHeader":true},{"id":"sample_id","name":"sample_id","type":"factor","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":150,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"nSequences","name":"nSequences","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"V","name":"V","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"J","name":"J","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"VJ","name":"VJ","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"ntCDR3","name":"ntCDR3","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"aaCDR3","name":"aaCDR3","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"aaClone","name":"aaClone","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"ntClone","name":"ntClone","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"chao1","name":"chao1","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}},{"id":"iChao","name":"iChao","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"maxWidth":110,"align":"center","vAlign":"center","headerStyle":{"background":"#f7f7f8"}}],"bordered":true,"dataKey":"a0dda9d1ddb63495ffdf82d6425a5f0d"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
@@ -405,7 +408,7 @@ renamed before using this function.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
 </div>
 
     </footer>
