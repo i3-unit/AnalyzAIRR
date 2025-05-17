@@ -13,8 +13,8 @@ Imports: pbapply, parallel, utils, stats, methods, graphics, ggplot2, magrittr,
 	 ade4, packcircles, smplot2, vegan, naturalsort, RColorBrewer, 
 	 dplyr, ggVennDiagram, GGally, grDevices, ggprism, rstatix, ggpubr,
 	 stringr, tidyverse, ggrepel, car, circlize, ComplexHeatmap, rlang, tibble, 
-	 testthat, R.utils
-Suggests: knitr, rmarkdown, kableExtra, rmdformats, gridExtra, reactable, DESeq2
+	 testthat, R.utils, DESeq2
+Suggests: knitr, rmarkdown, kableExtra, rmdformats, gridExtra, reactable
 License: GPL-3 + file LICENSE
 URL: https://github.com/i3-unit/AnalyzAIRR, https://i3-unit.github.io/AnalyzAIRR/
 BugReports: https://github.com/i3-unit/AnalyzAIRR/issues
