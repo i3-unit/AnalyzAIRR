@@ -2258,7 +2258,7 @@ plotDiffExp <- function(x,
   }
   
   if (!is.null(facet_var)) {
-    df <- df %>% dplyr::group_by(!!rlang::sym(group_var), !!rlang::sym(facet_var))
+    df <- df %>% dplyr::group_by(!!rlang::sym(group_var), !!!rlang::syms(facet_var))
   } else {
     df <- df %>% dplyr::group_by(!!rlang::sym(group_var))
   }
@@ -2299,7 +2299,7 @@ plotDiffExp <- function(x,
      merge(., test, by = c(group_var, facet_var)) %>%
      {
        if(!is.null(facet_var)) {
-         dplyr::group_by(., !!rlang::sym(group_var), !!rlang::sym(facet_var))
+         dplyr::group_by(., !!rlang::sym(group_var), !!!rlang::syms(facet_var))
        } else {
          dplyr::group_by(., !!rlang::sym(group_var))
        }
@@ -2316,7 +2316,7 @@ plotDiffExp <- function(x,
      merge(., test, by = c(group_var, facet_var)) %>%
      {
        if(!is.null(facet_var)) {
-         dplyr::group_by(., !!rlang::sym(group_var), !!rlang::sym(facet_var))
+         dplyr::group_by(., !!rlang::sym(group_var),  !!!rlang::syms(facet_var))
        } else {
          dplyr::group_by(., !!rlang::sym(group_var))
        }
@@ -2325,7 +2325,7 @@ plotDiffExp <- function(x,
      .,
      formula = as.formula(paste(value_var, "~", color_var)),
      p.adjust.method = "bonferroni"  ) %>%
-     add_xy_position(x = group_var, dodge = .8)
+     rstatix::add_xy_position(x = group_var, dodge = .8)
    
  }
    
