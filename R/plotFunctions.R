@@ -1596,7 +1596,7 @@ plotIntervals <- function(x,
         axis.text.x = ggplot2::element_text(size=8, angle=45, hjust=1),
         axis.text.y = ggplot2::element_text(size=8))+
       {if(show_stats==TRUE) ggpubr::stat_pvalue_manual(stat.test, label = "p.adj.signif",
-                                                       size=4, hide.ns = TRUE)}
+                                                       size=4, hide.ns = FALSE, tip.length = 0)}
     
   } else {
     
@@ -2263,8 +2263,7 @@ plotDiffExp <- function(x,
     df <- df %>% dplyr::group_by(!!rlang::sym(group_var))
   }
   
-
- test <- df %>%
+  test <- df %>%
     dplyr::group_modify(~{
       subdf <- .x
       color_levels <- length(unique(subdf[[color_var]]))
@@ -2290,48 +2289,84 @@ plotDiffExp <- function(x,
         ))
       }
     })
- 
- test=stats::na.omit(test)
- if (unique(test$test) ==  "Wilcoxon") {
-   print('Performing Wilcoxon test with Bonferroni correction for 2 groups')
-   
-   res<- df %>% 
-     merge(., test, by = c(group_var, facet_var)) %>%
-     {
-       if(!is.null(facet_var)) {
-         dplyr::group_by(., !!rlang::sym(group_var), !!!rlang::syms(facet_var))
-       } else {
-         dplyr::group_by(., !!rlang::sym(group_var))
-       }
-     } %>%
-     rstatix::wilcox_test(., as.formula(paste(value_var, "~", color_var))) %>%
-     rstatix::adjust_pvalue(method = "bonferroni") %>%
-     rstatix::add_significance() %>%
-     rstatix::add_xy_position()
-     
- } else if (unique(test$test) == "Pairwise Wilcoxon"){
-   print('Performing Pairwise Wilcoxon test with Bonferroni correction for 3 groups')
-   
-   res<- df %>% 
-     merge(., test, by = c(group_var, facet_var)) %>%
-     {
-       if(!is.null(facet_var)) {
-         dplyr::group_by(., !!rlang::sym(group_var),  !!!rlang::syms(facet_var))
-       } else {
-         dplyr::group_by(., !!rlang::sym(group_var))
-       }
-     } %>%
-     rstatix::pairwise_wilcox_test(
-     .,
-     formula = as.formula(paste(value_var, "~", color_var)),
-     p.adjust.method = "bonferroni"  ) %>%
-     rstatix::add_xy_position(x = group_var, dodge = .8)
-   
- }
-   
- res<- res %>%
+  
+  test=stats::na.omit(test)
+  if (unique(test$test) ==  "Wilcoxon") {
+    print('Performing Wilcoxon test with Bonferroni correction for 2 groups')
+    
+    res<- df %>% 
+      merge(., test, by = c(group_var, facet_var)) %>%
+      {
+        if(!is.null(facet_var)) {
+          dplyr::group_by(., !!rlang::sym(group_var), !!!rlang::syms(facet_var))
+        } else {
+          dplyr::group_by(., !!rlang::sym(group_var))
+        }
+      } %>%
+      rstatix::wilcox_test(., as.formula(paste(value_var, "~", color_var))) %>%
+      rstatix::adjust_pvalue(method = "bonferroni") %>%
+      rstatix::add_significance() %>%
+      rstatix::add_xy_position(x = group_var, dodge = .8)
+    
+  } else if (unique(test$test) == "Pairwise Wilcoxon"){
+    print('Performing Pairwise Wilcoxon test with Bonferroni correction for 3 groups')
+    
+    res<- df %>% 
+      merge(., test, by = c(group_var, facet_var)) %>%
+      {
+        if(!is.null(facet_var)) {
+          dplyr::group_by(., !!rlang::sym(group_var),  !!!rlang::syms(facet_var))
+        } else {
+          dplyr::group_by(., !!rlang::sym(group_var))
+        }
+      } %>%
+      rstatix::pairwise_wilcox_test(
+        .,
+        formula = as.formula(paste(value_var, "~", color_var)),
+        p.adjust.method = "bonferroni"  ) %>%
+      rstatix::add_xy_position(x = group_var, dodge = .8)
+    
+  }
+  
+  if(group_var == 'interval'){
+    all_intervals_a <- c("[0, 0.00001[", "[0.00001, 0.0001[", "[0.0001, 0.001[", "[0.001, 0.01[", "[0.01, 1]")
+    all_intervals_b <- c("1", "]1, 10[", "[10, 100[", "[100, 1000[", "[1000, 10000[", "[10000, Inf]")
+    
+    unique_intervals <- unique(df$interval)
+    if (all(unique_intervals %in% all_intervals_a)) {
+      intervals <- all_intervals_a
+    } else {
+      intervals <- all_intervals_b
+    }
+    
+    # df$interval <- factor(df$interval, levels = intervals)
+    d2 <- df %>%
+      dplyr::select(interval, !!!rlang::syms(facet_var)) %>%
+      dplyr::distinct() %>%
+      dplyr::group_by(!!!rlang::syms(facet_var)) %>%
+      dplyr::mutate(interval = factor(interval, levels = intervals[intervals %in% df$interval])) %>%
+      dplyr::arrange(interval) %>%
+      dplyr::mutate(rows = dplyr::row_number())
+    
+    x_positions <- tibble::tibble(
+      rows = 1:length(intervals),
+      xmin = seq(0.8,  length(intervals), by = 1),
+      interval = intervals
+    )
+
+    interval_position_lookup =  merge(x_positions[,1:2], d2, by='rows')
+    
+    # Merge interval positions into result
+    res <- res %>%
+      dplyr::select(-xmin, -xmax) %>%
+      dplyr::left_join(interval_position_lookup, by = c("interval", facet_var)) %>%
+      dplyr::mutate(xmax = xmin + 0.4)
+  }
+  
+  res<- res %>%
     dplyr::ungroup()
 }
+
 
 
 #' @title Calculate wilcoxon safe
