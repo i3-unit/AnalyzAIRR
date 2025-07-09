@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 ```
 
 
-**Shiny-AnalyzAIRR** is a Shiny web application developed for the [AnalyzAIRR package](https://github.com/vanessajmh/AnalyzAIRR), making it user-friendly for biologists with little or no background in bioinformatics.
+**Shiny-AnalyzAIRR** is a Shiny web application developed for the [AnalyzAIRR package](https://github.com/i3-unit/AnalyzAIRR), making it user-friendly for biologists with little or no background in bioinformatics.
 
 Users are can apply the full range of analytical methods proposed by AnalyzAIRR and described in this documentation, without requiring any bioinformatics expertise.
 
@@ -32,7 +32,7 @@ The Shiny includes additional features:
 The latest release of **AnalyzAIRR** can be installed from Github using devtools:
 
 ```{r, eval=FALSE}
-devtools::install_github("vanessajmh/AnalyzAIRR")
+devtools::install_github("i3-unit/AnalyzAIRR")
 
 ```
 
@@ -53,14 +53,13 @@ cd Shiny-AnalyzAIRR
 R -e 'shiny::runApp("./")'
 ```
 
-Alternatively, it can be run in Rstudio:
+Or run in Rstudio:
 ```{r,eval=FALSE}
 # Open the global.R file in RStudio and run:
 shiny::runApp("./")
 ```
 
-The interface can be opened in a web browser using the displayed hyper link address.
-
+Alternatively, **Shiny-AnalyzAIRR** has been deployed on the web and can be used directly at [this link](https://i3-analyzairr.fr).
 
 # Data loading
 
