@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">AnalyzAIRR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -158,18 +158,18 @@ details on AnalyzAIRR-supported input data can be found <a href="dataloading.htm
 inter-group comparative analyses.</p>
 <p>The metadata should be provided as a table containing:</p>
 <ul>
-<li>a column with the sample names that match the name of the alignment
-files and their order in the list.</li>
+<li>a column <code>sample_id</code> with the sample names that match the
+name of the alignment files and their order.</li>
 </ul>
-<p>Only one column containing the sample names should be provided in the
-metadata file. This column is assigned to the <code>row.names</code>
-argument when loading the metadata.</p>
+<p>Only one column containing the sample ids should be provided in the
+metadata file.</p>
 <ul>
 <li>any additional columns with relevant information for the analyses.
 Columns could encompass the experimental conditions, clinical variables,
 etc…</li>
 </ul>
-<p>No specific column names nor order are required.</p>
+<p>Besides <code>sample_id</code>, no specific column names nor order
+are required.</p>
 <p>Additional information on the metadata can be found <a href="dataloading.html#metadata">here</a>.</p>
 </div>
 <div class="section level4">
