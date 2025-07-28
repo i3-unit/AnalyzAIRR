@@ -1,6 +1,6 @@
 Package: AnalyzAIRR
 Title: R Package Developed to Analyze Bulk Ig/TR Repertoire Datasets
-Version: 1.2.2
+Version: 1.2.3
 Description: A general data exploration to evaluate the homogeneity 
  within defined groups, identify outliers and filter them out. AnalyzAIRR also proposes
  a set of diversity measures and statistical metrics applicable at any level of granularity. Thus, single-sample repertoire explorations or in-depth cross-comparisons of AIRR datasets 

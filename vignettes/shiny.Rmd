@@ -78,13 +78,13 @@ It is possible to provide a metadata if users wish to perform inter-group compar
 
 The metadata should be provided as a table containing:
 
-  * a column with the sample names that match the name of the alignment files and their order in the list.
+  * a column `sample_id` with the sample names that match the name of the alignment files and their order.
 
-  Only one column containing the sample names should be provided in the metadata file. This column is assigned to the `row.names` argument when loading the metadata. 
+  Only one column containing the sample ids should be provided in the metadata file.
 
   * any additional columns with relevant information for the analyses. Columns could encompass the experimental conditions, clinical variables, etc... 
   
-  No specific column names nor order are required.
+  Besides `sample_id`, no specific column names nor order are required.
 
 Additional information on the metadata can be found [here](dataloading.html#metadata).
 
